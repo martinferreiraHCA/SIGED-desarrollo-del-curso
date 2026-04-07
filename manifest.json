@@ -1,0 +1,34 @@
+{
+  "manifest_version": 3,
+  "name": "SIGED - Desarrollo del Curso",
+  "version": "1.0",
+  "description": "Carga automática del desarrollo del curso en SIGED desde archivos CSV. Para docentes de HCA.",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage"
+  ],
+  "host_permissions": [
+    "*://*.siged.com.uy/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*.siged.com.uy/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  }
+}
