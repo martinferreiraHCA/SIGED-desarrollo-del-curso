@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "SIGED - Desarrollo del Curso",
-  "version": "1.0",
+  "version": "1.1",
   "description": "Carga automática del desarrollo del curso en SIGED desde archivos CSV. Para docentes de HCA.",
   "permissions": [
     "activeTab",
