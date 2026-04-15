@@ -45,6 +45,28 @@ header {
 header h1 { font-family:'Fraunces',serif; font-size: 1.3rem; font-weight: 600; letter-spacing: -.01em; }
 header h1 span { color: var(--gold); }
 .header-sub { font-size: .72rem; opacity: .6; font-weight: 300; letter-spacing: .03em; }
+.hdr-act { display: flex; align-items: center; gap: .4rem; }
+.key-btn {
+  background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2);
+  color: #fff; padding: .4rem .7rem; border-radius: var(--r-sm); cursor: pointer;
+  font-size: .72rem; font-weight: 600; font-family:'Outfit'; transition: var(--transition);
+  display: inline-flex; align-items: center; gap: .3rem;
+}
+.key-btn:hover { background: rgba(255,255,255,.18); }
+.key-btn.ok { background: rgba(46,204,113,.2); border-color: rgba(46,204,113,.4); }
+.key-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--fire); }
+.key-btn.ok .key-dot { background: var(--mint); }
+
+/* ═══ AI EDITOR ═══ */
+.ai-edit {
+  display: flex; gap: .4rem; margin-top: .5rem; align-items: stretch; flex-wrap: wrap;
+}
+.ai-edit input {
+  flex: 1; min-width: 200px; font-size: .78rem; padding: .45rem .6rem;
+  background: var(--card); border: 2px solid var(--bdr); border-radius: var(--r-sm);
+}
+.ai-edit input:focus { border-color: var(--hca3); outline: none; }
+.ai-hint { font-size: .68rem; color: var(--text3); margin-top: .3rem; font-style: italic; }
 
 /* ═══ NAV ═══ */
 nav {
@@ -285,6 +307,11 @@ textarea { resize: vertical; min-height: 52px; line-height: 1.5; }
       <h1>Desarrollo <span>del Curso</span></h1>
       <div class="header-sub">Prof. Ferreira, Martín — Colegio y Liceo HCA</div>
     </div>
+    <div class="hdr-act">
+      <button class="key-btn" id="keyBtn" onclick="setApiKey()" title="Configurar API key de Claude">
+        <span class="key-dot"></span><span id="keyLbl">API key</span>
+      </button>
+    </div>
   </div>
 </header>
 
@@ -388,12 +415,53 @@ const LEVELS=[
 
 const ALL_MATERIAS = LEVELS.flatMap(l=>l.materias);
 const DL={1:"Lun",2:"Mar",3:"Mié",4:"Jue",5:"Vie"};
+const AI_MODEL = "claude-haiku-4-5";
 let data={},pending=[],weeks=[],curLevel="7",hfg="all";
 
 // ═══ INIT ═══
-function init(){ loadD(); setDates(); updW(); buildLevelTabs(); }
+function init(){ loadD(); setDates(); updW(); buildLevelTabs(); refreshKeyBtn(); }
 function loadD(){ try{const r=localStorage.getItem('hca_v8');if(r)data=JSON.parse(r);}catch(e){data={};} }
 function saveD(){ localStorage.setItem('hca_v8',JSON.stringify(data)); }
+
+// ═══ API KEY ═══
+function getApiKey(){ return localStorage.getItem('hca_apikey')||''; }
+function setApiKey(){
+  const cur=getApiKey();
+  const v=prompt('API key de Claude (sk-ant-...)\n\nSe guarda solo en tu navegador. Dejá vacío para borrar.',cur);
+  if(v===null)return;
+  const t=v.trim();
+  if(!t){ localStorage.removeItem('hca_apikey'); showT('API key eliminada'); }
+  else if(!t.startsWith('sk-ant-')){ showT('Formato inválido (sk-ant-...)'); return; }
+  else { localStorage.setItem('hca_apikey',t); showT('API key guardada ✓'); }
+  refreshKeyBtn();
+}
+function refreshKeyBtn(){
+  const b=document.getElementById('keyBtn'),l=document.getElementById('keyLbl');
+  if(!b)return;
+  const has=!!getApiKey();
+  b.classList.toggle('ok',has);
+  l.textContent=has?'API conectada':'API key';
+}
+async function callClaude(system,userMsg,maxTokens){
+  const key=getApiKey();
+  if(!key) throw new Error('Falta API key');
+  const resp=await fetch("https://api.anthropic.com/v1/messages",{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "x-api-key":key,
+      "anthropic-version":"2023-06-01",
+      "anthropic-dangerous-direct-browser-access":"true"
+    },
+    body:JSON.stringify({
+      model:AI_MODEL,max_tokens:maxTokens||1500,system,
+      messages:[{role:"user",content:userMsg}]
+    })
+  });
+  if(!resp.ok){ const e=await resp.text(); throw new Error('API '+resp.status+': '+e.slice(0,120)); }
+  const res=await resp.json();
+  return res.content.map(c=>c.text||'').join('');
+}
 
 function swTab(n){
   document.querySelectorAll('.nav-btn').forEach(t=>t.classList.remove('active'));
@@ -560,40 +628,39 @@ async function generar(){
     }
   }
 
-  // AI split in batches
+  // AI split in batches (único lote → 1 sola llamada por defecto)
   if(needsSplit.length>0){
-    const batches=[];
-    for(let i=0;i<needsSplit.length;i+=10)batches.push(needsSplit.slice(i,i+10));
-    for(const batch of batches){
-      try{
-        const prompt=batch.map((ns,i)=>
-          `[${i}] ${ns.group} (${ns.course}): ${ns.sessions.map(s=>`${DL[s.dow]} ${s.h}h`).join('+')} → "${ns.dev}"`
-        ).join('\n');
-
-        const resp=await fetch("https://api.anthropic.com/v1/messages",{
-          method:"POST",headers:{"Content-Type":"application/json"},
-          body:JSON.stringify({
-            model:"claude-sonnet-4-20250514",max_tokens:2000,
-            system:`Distribuís contenido semanal entre sesiones. Proporcional a horas. Primera sesión=intro, más horas=práctica. Si empieza con "STEM - ...", eso va en la primera sesión. No inventes. SOLO JSON: {"splits":[{"idx":N,"sessions":[{"dow":N,"dev":"texto"},...]},...]}`,
-            messages:[{role:"user",content:prompt}]
-          })
-        });
-        const res=await resp.json();
-        const txt=res.content.map(c=>c.text||'').join('');
-        const parsed=JSON.parse(txt.replace(/```json|```/g,'').trim());
-        for(const sp of parsed.splits){
-          const ns=batch[sp.idx];if(!ns)continue;
-          for(const sess of sp.sessions){
-            const match=ns.sessions.find(s=>s.dow===sess.dow);if(!match)continue;
-            pending.push({g:ns.group,date:fI(wDate(ns.mon,sess.dow)),h:match.h,hnd:0,dev:sess.dev});
+    const fallback=batch=>{
+      for(const ns of batch){
+        for(const s of ns.sessions) pending.push({g:ns.group,date:fI(wDate(ns.mon,s.dow)),h:s.h,hnd:0,dev:ns.dev});
+      }
+    };
+    if(!getApiKey()){
+      fallback(needsSplit);
+      showT('Sin API key: se duplicó el contenido, editá manualmente');
+    } else {
+      const batches=[];
+      for(let i=0;i<needsSplit.length;i+=15)batches.push(needsSplit.slice(i,i+15));
+      for(const batch of batches){
+        try{
+          const prompt=batch.map((ns,i)=>
+            `[${i}] ${ns.group} (${ns.course}): ${ns.sessions.map(s=>`${DL[s.dow]} ${s.h}h`).join('+')} → "${ns.dev}"`
+          ).join('\n');
+          const sys=`Distribuís contenido semanal entre sesiones. Proporcional a horas. Primera sesión=intro, más horas=práctica. Si empieza con "STEM - ...", eso va en la primera sesión. No inventes. SOLO JSON: {"splits":[{"idx":N,"sessions":[{"dow":N,"dev":"texto"},...]},...]}`;
+          const txt=await callClaude(sys,prompt,2000);
+          const parsed=JSON.parse(txt.replace(/```json|```/g,'').trim());
+          for(const sp of parsed.splits){
+            const ns=batch[sp.idx];if(!ns)continue;
+            for(const sess of sp.sessions){
+              const match=ns.sessions.find(s=>s.dow===sess.dow);if(!match)continue;
+              pending.push({g:ns.group,date:fI(wDate(ns.mon,sess.dow)),h:match.h,hnd:0,dev:sess.dev});
+            }
           }
+        }catch(e){
+          console.error(e);
+          fallback(batch);
+          showT('IA falló: '+e.message.slice(0,50));
         }
-      }catch(e){
-        console.error(e);
-        for(const ns of batch){
-          for(const s of ns.sessions) pending.push({g:ns.group,date:fI(wDate(ns.mon,s.dow)),h:s.h,hnd:0,dev:ns.dev});
-        }
-        showT('IA no disponible, editá manualmente');
       }
     }
   }
@@ -672,25 +739,85 @@ function rH(){
 function dE(g,i){if(!confirm('¿Eliminar?'))return;data[g].splice(i,1);if(!data[g].length)delete data[g];saveD();bHF();rH();showT('Eliminada');}
 
 // ═══ EXPORT ═══
+function buildCSV(g){
+  const hdr='Fecha;Horas dictadas;Horas no dictadas;Desarrollo';
+  const lines=data[g].map(e=>{
+    const[y,m,d]=e.date.split('-');
+    return `${d}/${m}/${y};${e.h};${e.hnd||0};${e.dev.replace(/;/g,',').replace(/\n/g,' ')}`;
+  });
+  return hdr+'\n'+lines.join('\n');
+}
+
 function rExp(){
   const el=document.getElementById('expA');
   const gs=Object.keys(data).filter(g=>data[g]&&data[g].length).sort();
   if(!gs.length){el.innerHTML='<div class="empty">Sin entradas.</div>';return;}
   let h='';
   for(const g of gs){
-    const hdr='Fecha;Horas dictadas;Horas no dictadas;Desarrollo';
-    const lines=data[g].map(e=>{
-      const[y,m,d]=e.date.split('-');
-      return `${d}/${m}/${y};${e.h};${e.hnd||0};${e.dev.replace(/;/g,',').replace(/\n/g,' ')}`;
-    });
-    const csv=hdr+'\n'+lines.join('\n');
+    const csv=buildCSV(g);
     const sl=g.replace(/[^a-zA-Z0-9]/g,'_');
     h+=`<div class="egc"><h3>${g}<span style="display:flex;gap:.3rem">
       <button class="btn btn-f btn-sm" onclick="cT('x${sl}')">📋 Copiar</button>
       <button class="btn btn-o btn-sm" onclick="dlC('${g}','x${sl}')">⬇ CSV</button>
-    </span></h3><textarea id="x${sl}" readonly>${esc(csv)}</textarea></div>`;
+    </span></h3><textarea id="x${sl}" readonly>${esc(csv)}</textarea>
+    <div class="ai-edit">
+      <input type="text" id="ai_${sl}" placeholder="Ej: mejorar redacción, agregar detalles de laboratorio, hacer más formal...">
+      <button class="btn btn-p btn-sm" id="aib_${sl}" onclick="aiEdit('${g}','${sl}')">✨ Editar con IA</button>
+    </div>
+    <div class="ai-hint">1 llamada a Claude — solo modifica la columna "Desarrollo", preserva fechas y horas.</div>
+    </div>`;
   }
   el.innerHTML=h;
+}
+
+async function aiEdit(g,sl){
+  if(!getApiKey()){ showT('Configurá tu API key arriba ⚙️'); return; }
+  const inp=document.getElementById('ai_'+sl);
+  const btn=document.getElementById('aib_'+sl);
+  const instr=(inp.value||'').trim();
+  if(!instr){ showT('Escribí una instrucción'); inp.focus(); return; }
+  const csv=buildCSV(g);
+  btn.disabled=true; const orig=btn.textContent; btn.textContent='⏳ Editando...';
+  try{
+    const sys=`Editás CSVs de desarrollo de clases. Formato EXACTO (separador ;):
+Fecha;Horas dictadas;Horas no dictadas;Desarrollo
+La Fecha (DD/MM/AAAA) y ambas columnas de horas NO se modifican NUNCA.
+Solo aplicás la instrucción del usuario a la columna Desarrollo de cada fila.
+NUNCA inventes contenido nuevo: trabajá sobre el texto existente.
+Si una fila dice "No se dictó..." dejala igual.
+Devolvé SOLO el CSV completo con el mismo número de filas, sin markdown, sin comentarios.`;
+    const userMsg=`Instrucción: ${instr}\n\nCSV a editar:\n${csv}`;
+    const out=await callClaude(sys,userMsg,Math.min(4000,csv.length*2+500));
+    const edited=out.replace(/```csv|```/gi,'').trim();
+    const rows=edited.split('\n').map(r=>r.trim()).filter(r=>r);
+    // Remove header if returned
+    if(rows[0]&&rows[0].toLowerCase().startsWith('fecha'))rows.shift();
+    if(rows.length!==data[g].length){
+      if(!confirm(`La IA devolvió ${rows.length} filas (original: ${data[g].length}). ¿Aplicar igual?`)){
+        btn.disabled=false;btn.textContent=orig;return;
+      }
+    }
+    const newEntries=[];
+    for(const ln of rows){
+      const parts=ln.split(';');
+      if(parts.length<4)continue;
+      const[fecha,hh,hnd,...rest]=parts;
+      const dev=rest.join(';').trim();
+      const[d,m,y]=fecha.split('/');
+      if(!d||!m||!y)continue;
+      newEntries.push({date:`${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`,h:parseInt(hh)||0,hnd:parseInt(hnd)||0,dev});
+    }
+    if(!newEntries.length)throw new Error('Respuesta inválida');
+    data[g]=newEntries.sort((a,b)=>a.date.localeCompare(b.date));
+    saveD();
+    inp.value='';
+    rExp();
+    showT('CSV editado con IA ✓');
+  }catch(e){
+    console.error(e);
+    showT('Error: '+e.message.slice(0,60));
+    btn.disabled=false;btn.textContent=orig;
+  }
 }
 function cT(id){const t=document.getElementById(id);if(!t)return;navigator.clipboard.writeText(t.value).then(()=>showT('Copiado ✓')).catch(()=>{t.select();document.execCommand('copy');showT('Copiado ✓')});}
 function dlC(g,id){const t=document.getElementById(id);if(!t)return;const fn=`desarrollo_${g.replace(/[^a-zA-Z0-9]/g,'_')}.csv`;const b=new Blob(['\ufeff'+t.value],{type:'text/csv;charset=utf-8;'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=fn;a.click();showT('Descargado ✓');}
