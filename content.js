@@ -165,7 +165,9 @@
   async function ensureOnForm() {
     const dateField = document.getElementById('W00450001vFECVAL1_0001');
     if (dateField && isVisible(dateField)) {
-      return; // Already on form
+      // Already on form - still make sure CKEditor is ready
+      await waitForCKEditorReady('W00450001vTXTVAL1_0004', 5000);
+      return;
     }
 
     // Need to click "Nuevo"
@@ -178,7 +180,39 @@
 
     // Wait for form to appear
     await waitForElement('W00450001vFECVAL1_0001', 10000);
-    await sleep(800); // Let CKEditor initialize
+    // Wait for CKEditor to be fully ready (much more reliable than a fixed delay)
+    await waitForCKEditorReady('W00450001vTXTVAL1_0004', 10000);
+  }
+
+  // Wait until the CKEditor instance bound to `textareaId` is ready to receive data
+  async function waitForCKEditorReady(textareaId, timeout) {
+    const start = Date.now();
+    while (Date.now() - start < timeout) {
+      const ed = findEditorForTextarea(textareaId);
+      if (ed && ed.status === 'ready') return ed;
+      await sleep(200);
+    }
+    // Give it one last chance - editor may still be usable even if status !== ready
+    return findEditorForTextarea(textareaId);
+  }
+
+  // Find the CKEditor instance attached to a given textarea id.
+  function findEditorForTextarea(textareaId) {
+    if (typeof CKEDITOR === 'undefined' || !CKEDITOR.instances) return null;
+    // Most common: editor name matches textarea id
+    if (CKEDITOR.instances[textareaId]) return CKEDITOR.instances[textareaId];
+    const ta = document.getElementById(textareaId);
+    if (!ta) return null;
+    for (const name in CKEDITOR.instances) {
+      const ed = CKEDITOR.instances[name];
+      try {
+        if (ed.element && ed.element.$ === ta) return ed;
+      } catch (e) { /* ignore */ }
+      // Also check if the editor's DOM wrapper is inside the textarea's parent
+      const wrapper = document.getElementById('cke_' + name);
+      if (wrapper && ta.parentElement && ta.parentElement.contains(wrapper)) return ed;
+    }
+    return null;
   }
 
   function clickNuevo() {
@@ -235,66 +269,86 @@
 
   async function setDesarrolloText(text) {
     const htmlText = '<p>' + escHtml(text) + '</p>';
+    const textareaId = 'W00450001vTXTVAL1_0004';
+    const textarea = document.getElementById(textareaId);
 
-    // Method 1: CKEditor API (most reliable)
-    if (typeof CKEDITOR !== 'undefined' && CKEDITOR.instances) {
-      // The DESARROLLO field is in container W00450001WGVAL1Container_0004
-      const container = document.getElementById('W00450001WGVAL1Container_0004');
+    // Method 1: CKEditor API (most reliable) - find the editor bound to our textarea
+    let editor = findEditorForTextarea(textareaId);
 
-      if (container && container.style.display !== 'none') {
-        // Find which CKEditor instance belongs to this container
-        for (const name in CKEDITOR.instances) {
-          const ed = CKEDITOR.instances[name];
-          const edElement = document.getElementById('cke_' + name);
-          if (edElement && container.contains(edElement)) {
-            ed.setData(htmlText);
-            console.log('📘 Desarrollo escrito via CKEditor:', name);
-            return;
-          }
-        }
-      }
-
-      // Fallback: the 4th editor is usually DESARROLLO
-      const names = Object.keys(CKEDITOR.instances);
-      for (let i = names.length - 1; i >= 0; i--) {
-        const edContainer = document.getElementById('W00450001WGVAL1Container_' + String(i + 1).padStart(4, '0'));
-        if (edContainer && edContainer.style.display === 'block') {
-          CKEDITOR.instances[names[i]].setData(htmlText);
-          console.log('📘 Desarrollo escrito via CKEditor (display check):', names[i]);
-          return;
-        }
-      }
-
-      // Last resort: use index-based (editor4 = desarrollo)
-      if (names.length >= 4) {
-        CKEDITOR.instances[names[3]].setData(htmlText);
-        console.log('📘 Desarrollo escrito via CKEditor index 3');
-        return;
-      }
+    // If no editor yet, give it a moment to initialize
+    if (!editor) {
+      editor = await waitForCKEditorReady(textareaId, 3000);
     }
 
-    // Method 2: Direct textarea
-    const ta = document.getElementById('W00450001vTXTVAL1_0004');
-    if (ta) {
-      ta.value = text;
-      ta.dispatchEvent(new Event('change', { bubbles: true }));
-      console.log('📘 Desarrollo escrito via textarea');
+    if (editor) {
+      // Write via CKEditor API and wait for it to finish
+      await new Promise((resolve) => {
+        try {
+          editor.setData(htmlText, { callback: resolve });
+        } catch (e) {
+          // Some CKEditor versions use the older signature
+          editor.setData(htmlText);
+          setTimeout(resolve, 300);
+        }
+      });
+
+      // CRITICAL: sync the editor content back to the underlying textarea.
+      // GeneXus reads the textarea value on submit, not the CKEditor instance.
+      try { editor.updateElement(); } catch (e) { /* ignore */ }
+
+      // Belt-and-suspenders: also write the textarea directly and fire events
+      if (textarea) {
+        textarea.value = htmlText;
+        textarea.dispatchEvent(new Event('input', { bubbles: true }));
+        textarea.dispatchEvent(new Event('change', { bubbles: true }));
+        if (textarea.dataset && textarea.dataset.gxoldvalue !== undefined) {
+          textarea.dataset.gxoldvalue = htmlText;
+        }
+      }
+
+      // Let GeneXus process the change event
+      await sleep(300);
+
+      // Verify the textarea actually has the content; if not, write it again
+      if (textarea && !textarea.value) {
+        try { editor.updateElement(); } catch (e) { /* ignore */ }
+        textarea.value = htmlText;
+        textarea.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+
+      console.log('📘 Desarrollo escrito via CKEditor:', editor.name);
       return;
     }
 
-    // Method 3: iframe manipulation
+    // Method 2: Direct iframe manipulation (visual) + textarea (submit value)
     const iframes = document.querySelectorAll('.cke_wysiwyg_frame');
+    let iframeWritten = false;
     for (const iframe of iframes) {
       try {
         if (!isVisible(iframe)) continue;
         const doc = iframe.contentDocument || iframe.contentWindow.document;
         if (doc && doc.body) {
           doc.body.innerHTML = htmlText;
+          iframeWritten = true;
           console.log('📘 Desarrollo escrito via iframe');
-          return;
+          break;
         }
       } catch (e) { /* cross-origin */ }
     }
+
+    // Method 3: Textarea fallback (must include HTML wrapping, not plain text)
+    if (textarea) {
+      textarea.value = htmlText;
+      textarea.dispatchEvent(new Event('input', { bubbles: true }));
+      textarea.dispatchEvent(new Event('change', { bubbles: true }));
+      if (textarea.dataset && textarea.dataset.gxoldvalue !== undefined) {
+        textarea.dataset.gxoldvalue = htmlText;
+      }
+      console.log('📘 Desarrollo escrito via textarea (fallback)');
+      return;
+    }
+
+    if (iframeWritten) return;
 
     throw new Error('No se pudo escribir el texto de desarrollo');
   }
