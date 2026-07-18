@@ -16,6 +16,7 @@
   --sky: #4A90D9;
   --mint: #2ECC71;
   --plum: #8E44AD;
+  --red: #e74c3c;
   --bg: #F4F2ED;
   --bg2: #EAE7E0;
   --card: #FFFFFF;
@@ -34,63 +35,58 @@
 * { margin:0; padding:0; box-sizing:border-box; }
 body { font-family:'Outfit',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; -webkit-font-smoothing:antialiased; }
 
+/* ═══ ICONS ═══ */
+.ic { width:18px; height:18px; stroke:currentColor; stroke-width:1.9; fill:none; stroke-linecap:round; stroke-linejoin:round; vertical-align:-3px; flex-shrink:0; }
+.ic.sm { width:14px; height:14px; vertical-align:-2px; }
+.ic.lg { width:24px; height:24px; }
+
 /* ═══ HEADER ═══ */
 header {
   background: linear-gradient(135deg, var(--hca) 0%, var(--hca2) 100%);
-  color: #fff; padding: 1rem 1.5rem;
+  color: #fff; padding: .9rem 1.5rem;
   position: sticky; top: 0; z-index: 200;
   box-shadow: 0 4px 24px rgba(36,43,89,.3);
 }
-.header-inner { max-width: 1040px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
-header h1 { font-family:'Fraunces',serif; font-size: 1.3rem; font-weight: 600; letter-spacing: -.01em; }
+.header-inner { max-width: 1040px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap:.8rem; }
+header h1 { font-family:'Fraunces',serif; font-size: 1.25rem; font-weight: 600; letter-spacing: -.01em; }
 header h1 span { color: var(--gold); }
-.header-sub { font-size: .72rem; opacity: .6; font-weight: 300; letter-spacing: .03em; }
-.hdr-act { display: flex; align-items: center; gap: .4rem; }
+.header-sub { font-size: .72rem; opacity: .65; font-weight: 300; letter-spacing: .03em; }
+.hdr-act { display: flex; align-items: center; gap: .45rem; }
+.year-badge {
+  background: rgba(242,167,53,.18); border:1px solid rgba(242,167,53,.45); color: var(--gold);
+  font-size:.74rem; font-weight:700; padding:.32rem .7rem; border-radius:2rem; letter-spacing:.04em;
+}
 .key-btn {
   background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2);
-  color: #fff; padding: .4rem .7rem; border-radius: var(--r-sm); cursor: pointer;
+  color: #fff; padding: .42rem .75rem; border-radius: var(--r-sm); cursor: pointer;
   font-size: .72rem; font-weight: 600; font-family:'Outfit'; transition: var(--transition);
-  display: inline-flex; align-items: center; gap: .3rem;
+  display: inline-flex; align-items: center; gap: .35rem;
 }
 .key-btn:hover { background: rgba(255,255,255,.18); }
-.key-btn.ok { background: rgba(46,204,113,.2); border-color: rgba(46,204,113,.4); }
-.key-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--fire); }
+.key-btn.ok { background: rgba(46,204,113,.18); border-color: rgba(46,204,113,.4); }
+.key-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--fire); flex-shrink:0; }
 .key-btn.ok .key-dot { background: var(--mint); }
-
-/* ═══ AI EDITOR ═══ */
-.ai-edit {
-  display: flex; gap: .4rem; margin-top: .5rem; align-items: stretch; flex-wrap: wrap;
-}
-.ai-edit input {
-  flex: 1; min-width: 200px; font-size: .78rem; padding: .45rem .6rem;
-  background: var(--card); border: 2px solid var(--bdr); border-radius: var(--r-sm);
-}
-.ai-edit input:focus { border-color: var(--hca3); outline: none; }
-.ai-hint { font-size: .68rem; color: var(--text3); margin-top: .3rem; font-style: italic; }
 
 /* ═══ NAV ═══ */
 nav {
   background: var(--card); border-bottom: 2px solid var(--bdr);
-  position: sticky; top: 56px; z-index: 190;
+  position: sticky; top: 58px; z-index: 190;
   box-shadow: var(--shadow-sm);
 }
-.nav-inner { max-width: 1040px; margin: 0 auto; display: flex; gap: 0; overflow-x: auto; }
+.nav-inner { max-width: 1040px; margin: 0 auto; display: flex; gap: 0; overflow-x: auto; scrollbar-width:none; }
+.nav-inner::-webkit-scrollbar { display:none; }
 .nav-btn {
   font-family:'Outfit'; font-weight: 600; font-size: .82rem;
-  padding: .75rem 1.2rem; border: none; background: none;
+  padding: .72rem 1rem; border: none; background: none;
   color: var(--text3); cursor: pointer; white-space: nowrap;
   border-bottom: 3px solid transparent; transition: var(--transition);
-  position: relative;
+  display:inline-flex; align-items:center; gap:.42rem;
 }
+.nav-btn .ic { width:16px; height:16px; }
 .nav-btn:hover { color: var(--text); background: var(--bg); }
 .nav-btn.active { color: var(--hca); border-bottom-color: var(--fire); }
-.nav-btn .badge {
-  font-size: .6rem; background: var(--fire); color: #fff;
-  padding: .1rem .35rem; border-radius: 1rem; margin-left: .3rem;
-  vertical-align: middle; font-weight: 700;
-}
 
-/* ═══ CONTAINER ═══ */
+/* ═══ CONTAINER / PANELS ═══ */
 .ctn { max-width: 1040px; margin: 0 auto; padding: 1.5rem; }
 .pnl { display: none; animation: fadeIn .25s ease; }
 .pnl.active { display: block; }
@@ -99,29 +95,30 @@ nav {
 /* ═══ CARDS ═══ */
 .card {
   background: var(--card); border-radius: var(--r);
-  padding: 1.5rem; box-shadow: var(--shadow);
+  padding: 1.4rem 1.5rem; box-shadow: var(--shadow);
   margin-bottom: 1.25rem; border: 1px solid rgba(0,0,0,.04);
 }
 .card-title {
   font-family:'Fraunces',serif; font-size: 1.05rem; font-weight: 600;
-  color: var(--hca); margin-bottom: .6rem; display: flex;
-  align-items: center; gap: .5rem;
+  color: var(--hca); margin-bottom: .55rem; display: flex;
+  align-items: center; gap: .55rem;
 }
-.card-title .icon { font-size: 1.1rem; }
-.card-desc { font-size: .8rem; color: var(--text2); margin-bottom: 1rem; line-height: 1.5; }
+.card-title .ic { width:20px; height:20px; color: var(--fire); }
+.card-desc { font-size: .8rem; color: var(--text2); margin-bottom: 1rem; line-height: 1.55; }
 
 /* ═══ FORMS ═══ */
 .lbl {
   font-size: .68rem; font-weight: 700; text-transform: uppercase;
   letter-spacing: .08em; color: var(--text3); display: block; margin-bottom: .25rem;
 }
-input[type=date], input[type=text], textarea, select {
+input[type=date], input[type=text], input[type=time], input[type=number], input[type=password], textarea, select {
   font-family:'Outfit'; font-size: .9rem; padding: .55rem .75rem;
   border: 2px solid var(--bdr); border-radius: var(--r-sm);
   background: var(--bg); color: var(--text); width: 100%;
   transition: border-color var(--transition), box-shadow var(--transition);
 }
-input:focus, textarea:focus { outline: none; border-color: var(--hca3); box-shadow: 0 0 0 3px rgba(52,61,122,.1); }
+input[type=color] { border:2px solid var(--bdr); border-radius:var(--r-sm); background:var(--bg); width:44px; height:36px; padding:2px; cursor:pointer; }
+input:focus, textarea:focus, select:focus { outline: none; border-color: var(--hca3); box-shadow: 0 0 0 3px rgba(52,61,122,.1); }
 textarea { resize: vertical; min-height: 52px; line-height: 1.5; }
 .row { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: .8rem; }
 .fg { display: flex; flex-direction: column; gap: .2rem; }
@@ -131,9 +128,9 @@ textarea { resize: vertical; min-height: 52px; line-height: 1.5; }
 /* ═══ BUTTONS ═══ */
 .btn {
   font-family:'Outfit'; font-weight: 600; font-size: .85rem;
-  padding: .6rem 1.3rem; border: none; border-radius: var(--r-sm);
+  padding: .58rem 1.2rem; border: none; border-radius: var(--r-sm);
   cursor: pointer; transition: var(--transition);
-  display: inline-flex; align-items: center; gap: .35rem;
+  display: inline-flex; align-items: center; gap: .4rem;
 }
 .btn:active { transform: scale(.97); }
 .btn-p { background: var(--hca); color: #fff; }
@@ -142,11 +139,76 @@ textarea { resize: vertical; min-height: 52px; line-height: 1.5; }
 .btn-f:hover { background: var(--fire2); }
 .btn-o { background: transparent; border: 2px solid var(--bdr); color: var(--text); }
 .btn-o:hover { border-color: var(--hca3); }
-.btn-sm { font-size: .75rem; padding: .35rem .65rem; }
+.btn-sm { font-size: .75rem; padding: .35rem .7rem; }
+.btn-sm .ic { width:14px; height:14px; }
 .btn:disabled { opacity: .45; cursor: not-allowed; }
 .acts { display: flex; gap: .5rem; flex-wrap: wrap; }
 
-/* ═══ WEEK RANGE ═══ */
+/* ═══ HOME ═══ */
+.hero {
+  background: linear-gradient(135deg, var(--hca) 0%, var(--hca3) 100%);
+  border-radius: var(--r); color:#fff; padding:1.6rem 1.7rem; margin-bottom:1.25rem;
+  box-shadow: var(--shadow-lg);
+}
+.hero h2 { font-family:'Fraunces',serif; font-size:1.4rem; font-weight:600; margin-bottom:.35rem; }
+.hero h2 span { color: var(--gold); }
+.hero p { font-size:.85rem; opacity:.85; line-height:1.55; max-width:640px; }
+.steps { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:.9rem; margin-bottom:1.25rem; }
+.step-card {
+  background:var(--card); border-radius:var(--r); padding:1.1rem 1.2rem;
+  box-shadow:var(--shadow); border:1px solid rgba(0,0,0,.04);
+  display:flex; flex-direction:column; gap:.45rem; cursor:pointer; transition:var(--transition);
+  position:relative;
+}
+.step-card:hover { transform:translateY(-2px); box-shadow:var(--shadow-lg); }
+.step-num {
+  width:26px; height:26px; border-radius:50%; background:var(--bg2); color:var(--text3);
+  font-size:.78rem; font-weight:800; display:flex; align-items:center; justify-content:center;
+}
+.step-card.done .step-num { background:var(--mint); color:#fff; }
+.step-card h3 { font-size:.92rem; font-weight:700; color:var(--hca); display:flex; align-items:center; gap:.45rem; }
+.step-card h3 .ic { color:var(--fire); }
+.step-card p { font-size:.74rem; color:var(--text2); line-height:1.45; flex:1; }
+.step-status { font-size:.7rem; font-weight:700; }
+.step-status.ok { color:var(--mint); }
+.step-status.pend { color:var(--gold); }
+.today-list { display:flex; flex-direction:column; gap:.4rem; }
+.today-row {
+  display:flex; align-items:center; gap:.7rem; padding:.55rem .8rem;
+  border:1px solid var(--bdr); border-radius:var(--r-sm); background:var(--bg);
+  font-size:.84rem;
+}
+.today-row .tg { font-weight:700; color:var(--hca); min-width:90px; }
+.today-row .tt { color:var(--text2); font-size:.76rem; flex:1; }
+
+/* ═══ SUBTABS (segmented) ═══ */
+.seg { display:flex; gap:.3rem; margin-bottom:1rem; flex-wrap:wrap; }
+.seg button {
+  background: var(--card); border: 2px solid var(--bdr); color: var(--text2);
+  font-family:'Outfit'; font-weight:600; font-size:.78rem;
+  padding:.42rem .9rem; border-radius:2rem; cursor:pointer; transition:var(--transition);
+  display:inline-flex; align-items:center; gap:.4rem;
+}
+.seg button .ic { width:14px; height:14px; }
+.seg button:hover { border-color: var(--hca3); }
+.seg button.active { background: var(--hca); color:#fff; border-color: var(--hca); }
+.sub { display:none; }
+.sub.active { display:block; animation: fadeIn .2s ease; }
+
+/* ═══ CHIPS ═══ */
+.chips { display:flex; gap:.35rem; flex-wrap:wrap; margin:.5rem 0; }
+.chip {
+  font-size:.73rem; font-weight:600; padding:.32rem .7rem; border-radius:2rem;
+  border:1.5px solid var(--bdr); background:var(--card); color:var(--text2);
+  cursor:pointer; transition:var(--transition); display:inline-flex; align-items:center; gap:.3rem;
+}
+.chip .ic { width:13px; height:13px; }
+.chip:hover { border-color:var(--fire); color:var(--fire2); }
+.chip.sel { background:var(--fire); border-color:var(--fire); color:#fff; }
+.chip.ai { border-style:dashed; border-color:var(--sky); color:var(--sky); }
+.chip.ai:hover { background:rgba(74,144,217,.08); }
+
+/* ═══ WEEK RANGE / PILLS ═══ */
 .week-pills { display: flex; gap: .4rem; flex-wrap: wrap; margin-top: .5rem; }
 .week-pill {
   font-size: .72rem; font-weight: 600; padding: .25rem .6rem;
@@ -156,7 +218,7 @@ textarea { resize: vertical; min-height: 52px; line-height: 1.5; }
 .week-pill.current { background: var(--gold); color: var(--hca); border-color: var(--gold); }
 
 /* ═══ LEVEL TABS ═══ */
-.level-tabs { display: flex; gap: .5rem; margin-bottom: 1.2rem; }
+.level-tabs { display: flex; gap: .5rem; margin-bottom: 1.2rem; flex-wrap:wrap; }
 .level-tab {
   padding: .5rem 1.1rem; border-radius: 2rem; font-weight: 700;
   font-size: .85rem; cursor: pointer; transition: var(--transition);
@@ -164,14 +226,12 @@ textarea { resize: vertical; min-height: 52px; line-height: 1.5; }
 }
 .level-tab:hover { border-color: var(--hca3); }
 .level-tab.active { border-color: transparent; color: #fff; }
-.level-tab[data-level="7"] .active, .level-tab.active[data-level="7"] { background: var(--mint); }
-.level-tab.active[data-level="8"] { background: var(--sky); }
-.level-tab.active[data-level="9"] { background: var(--plum); }
 
 /* ═══ MATERIA SECTIONS ═══ */
 .mat-section {
   border: 2px solid var(--bdr); border-radius: var(--r);
   margin-bottom: 1rem; overflow: hidden; transition: border-color var(--transition);
+  background:var(--card);
 }
 .mat-section:focus-within { border-color: var(--hca3); }
 .mat-head {
@@ -183,32 +243,23 @@ textarea { resize: vertical; min-height: 52px; line-height: 1.5; }
 .mat-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
 .mat-name { font-weight: 700; font-size: .88rem; color: var(--text); }
 .mat-info { font-size: .7rem; color: var(--text3); }
-.mat-arrow { margin-left: auto; font-size: .7rem; color: var(--text3); transition: transform var(--transition); }
+.mat-arrow { margin-left: auto; color: var(--text3); transition: transform var(--transition); display:flex; }
 .mat-section.open .mat-arrow { transform: rotate(180deg); }
 .mat-body { display: none; padding: .5rem 1rem 1rem; }
 .mat-section.open .mat-body { display: block; }
-
 .mat-opts { display: flex; gap: 1rem; margin-bottom: .6rem; flex-wrap: wrap; }
 .mopt { display: flex; align-items: center; gap: .3rem; font-size: .78rem; color: var(--text2); }
 .mopt input[type=checkbox] { width: auto; margin: 0; accent-color: var(--hca); }
 
 /* ═══ WEEK ROWS ═══ */
-.wk-row {
-  display: flex; gap: .6rem; align-items: flex-start;
-  padding: .55rem 0; border-bottom: 1px solid #f0ede8;
-}
+.wk-row { display: flex; gap: .6rem; align-items: flex-start; padding: .55rem 0; border-bottom: 1px solid #f0ede8; }
 .wk-row:last-child { border-bottom: none; }
-.wk-label {
-  min-width: 110px; flex-shrink: 0; padding-top: .5rem;
-}
+.wk-label { min-width: 110px; flex-shrink: 0; padding-top: .5rem; }
 .wk-label-main { font-size: .78rem; font-weight: 600; color: var(--hca); }
 .wk-label-sub { font-size: .65rem; color: var(--text3); }
 .wk-input { flex: 1; }
 .wk-input textarea { font-size: .85rem; }
-.wk-nd {
-  flex-shrink: 0; padding-top: .45rem; display: flex;
-  align-items: center; gap: .25rem;
-}
+.wk-nd { flex-shrink: 0; padding-top: .45rem; display: flex; align-items: center; gap: .25rem; }
 .wk-nd input { width: auto; margin: 0; accent-color: var(--red); }
 .wk-nd label { font-size: .65rem; color: var(--text3); font-weight: 600; cursor: pointer; }
 
@@ -220,10 +271,7 @@ textarea { resize: vertical; min-height: 52px; line-height: 1.5; }
 }
 .pv-group:first-child { margin-top: 0; }
 .pv-group .cnt { font-weight: 400; font-size: .7rem; color: var(--text3); }
-.pv-row {
-  display: flex; gap: .5rem; padding: .4rem 0;
-  border-bottom: 1px solid #f0ede8; font-size: .82rem; align-items: flex-start;
-}
+.pv-row { display: flex; gap: .5rem; padding: .4rem 0; border-bottom: 1px solid #f0ede8; font-size: .82rem; align-items: flex-start; }
 .pv-row:last-child { border-bottom: none; }
 .pv-date { font-weight: 600; color: var(--hca); min-width: 58px; font-size: .76rem; padding-top: 2px; }
 .pv-hrs { font-size: .68rem; color: var(--text3); min-width: 32px; padding-top: 3px; }
@@ -231,7 +279,7 @@ textarea { resize: vertical; min-height: 52px; line-height: 1.5; }
 .pv-tw textarea { min-height: 34px; font-size: .82rem; background: var(--card); }
 
 .ld-bar { display: flex; align-items: center; gap: .6rem; padding: 1.5rem; color: var(--text3); font-size: .85rem; }
-.spin { width: 20px; height: 20px; border: 3px solid var(--bdr); border-top-color: var(--fire); border-radius: 50%; animation: sp .7s linear infinite; }
+.spin { width: 20px; height: 20px; border: 3px solid var(--bdr); border-top-color: var(--fire); border-radius: 50%; animation: sp .7s linear infinite; flex-shrink:0; }
 @keyframes sp { to { transform: rotate(360deg); } }
 
 /* ═══ HISTORY ═══ */
@@ -243,11 +291,9 @@ textarea { resize: vertical; min-height: 52px; line-height: 1.5; }
 }
 .fbtn:hover { border-color: var(--hca3); }
 .fbtn.a { background: var(--hca); color: #fff; border-color: var(--hca); }
-
 .h-gh {
   font-family:'Fraunces',serif; font-size: .95rem; color: var(--hca);
-  padding: .4rem 0; margin-top: .8rem;
-  border-bottom: 2px solid var(--hca);
+  padding: .4rem 0; margin-top: .8rem; border-bottom: 2px solid var(--hca);
   display: flex; justify-content: space-between; align-items: center;
 }
 .h-gh:first-child { margin-top: 0; }
@@ -257,9 +303,10 @@ textarea { resize: vertical; min-height: 52px; line-height: 1.5; }
 .h-ed { font-weight: 600; color: var(--hca); min-width: 68px; font-size: .78rem; padding-top: 2px; }
 .h-eh { font-size: .68rem; color: var(--text3); min-width: 42px; padding-top: 3px; }
 .h-et { flex: 1; line-height: 1.4; }
-.h-ea { flex-shrink: 0; }
-.ib { background: none; border: none; cursor: pointer; font-size: .85rem; padding: .2rem; border-radius: 6px; color: var(--text3); transition: var(--transition); }
+.h-ea { flex-shrink: 0; display:flex; gap:.15rem; }
+.ib { background: none; border: none; cursor: pointer; padding: .25rem; border-radius: 6px; color: var(--text3); transition: var(--transition); display:inline-flex; }
 .ib:hover { background: var(--bg2); color: var(--fire); }
+.ib .ic { width:15px; height:15px; }
 .empty { text-align: center; padding: 2.5rem 1rem; color: var(--text3); font-size: .88rem; }
 
 /* ═══ EXPORT ═══ */
@@ -275,26 +322,30 @@ textarea { resize: vertical; min-height: 52px; line-height: 1.5; }
   line-height: 1.5; padding: .5rem; border: 2px solid var(--bdr);
   border-radius: var(--r-sm); resize: vertical;
 }
+.ai-edit { display: flex; gap: .4rem; margin-top: .5rem; align-items: stretch; flex-wrap: wrap; }
+.ai-edit input { flex: 1; min-width: 200px; font-size: .78rem; padding: .45rem .6rem; background: var(--card); }
+.ai-hint { font-size: .68rem; color: var(--text3); margin-top: .3rem; font-style: italic; }
+.csv-tools { display:flex; gap:.35rem; flex-wrap:wrap; margin-top:.5rem; align-items:center; }
 
-/* ═══ TOAST ═══ */
-.toast {
-  position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(80px);
-  background: var(--hca); color: #fff; padding: .7rem 1.3rem;
-  border-radius: var(--r); font-size: .82rem; font-weight: 600;
-  box-shadow: var(--shadow-lg); opacity: 0; transition: all .35s cubic-bezier(.4,0,.2,1); z-index: 999;
+/* ═══ INFO BOXES ═══ */
+.info-box {
+  background: rgba(74,144,217,.08); border-left: 3px solid var(--sky);
+  padding:.6rem .8rem; border-radius:var(--r-sm); font-size:.78rem;
+  color:var(--text2); margin-bottom:.8rem; line-height:1.5;
 }
-.toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
-
-/* ═══ PLANNING / HOLIDAYS / DAILY ═══ */
-.seg { display:flex; gap:.3rem; margin-bottom:.9rem; flex-wrap:wrap; }
-.seg button {
-  background: var(--card); border: 2px solid var(--bdr); color: var(--text2);
-  font-family:'Outfit'; font-weight:600; font-size:.78rem;
-  padding:.4rem .85rem; border-radius:2rem; cursor:pointer; transition:var(--transition);
+.info-box b { color: var(--hca); }
+.warn-box {
+  background: rgba(242,167,53,.1); border-left: 3px solid var(--gold);
+  padding:.6rem .8rem; border-radius:var(--r-sm); font-size:.78rem;
+  color:var(--text2); margin-bottom:.8rem; line-height:1.5;
 }
-.seg button:hover { border-color: var(--hca3); }
-.seg button.active { background: var(--hca); color:#fff; border-color: var(--hca); }
+.danger-box {
+  background: rgba(232,85,58,.07); border-left: 3px solid var(--fire);
+  padding:.6rem .8rem; border-radius:var(--r-sm); font-size:.78rem;
+  color:var(--text2); margin-bottom:.8rem; line-height:1.5;
+}
 
+/* ═══ HOLIDAYS ═══ */
 .hol-tag {
   display:inline-flex; align-items:center; gap:.3rem;
   background: rgba(232,85,58,.12); color: var(--fire2);
@@ -311,6 +362,7 @@ textarea { resize: vertical; min-height: 52px; line-height: 1.5; }
   font-weight:600; padding:.3rem 0; border-bottom:1px solid var(--bdr); margin-bottom:.4rem;
 }
 
+/* ═══ PLAN ═══ */
 .plan-wk {
   display:flex; gap:.6rem; padding:.55rem .7rem; border:1px solid var(--bdr);
   border-radius:var(--r-sm); margin-bottom:.4rem; background:var(--card);
@@ -325,7 +377,6 @@ textarea { resize: vertical; min-height: 52px; line-height: 1.5; }
 .plan-wk-txt { flex:1; }
 .plan-wk-txt textarea { font-size:.82rem; min-height:38px; }
 .plan-wk-meta { font-size:.65rem; color:var(--text3); margin-top:.2rem; }
-
 .pl-mat-pick { display:flex; flex-wrap:wrap; gap:.35rem; margin-bottom:.8rem; }
 .pl-mat-pick .mp {
   padding:.35rem .85rem; border:2px solid var(--bdr); border-radius:2rem;
@@ -335,231 +386,539 @@ textarea { resize: vertical; min-height: 52px; line-height: 1.5; }
 .pl-mat-pick .mp:hover { border-color: var(--hca3); }
 .pl-mat-pick .mp.active { color:#fff; border-color:transparent; }
 
-.info-box {
-  background: rgba(74,144,217,.08); border-left: 3px solid var(--sky);
-  padding:.6rem .8rem; border-radius:var(--r-sm); font-size:.78rem;
-  color:var(--text2); margin-bottom:.8rem; line-height:1.5;
-}
-.info-box b { color: var(--hca); }
-.warn-box {
-  background: rgba(242,167,53,.1); border-left: 3px solid var(--gold);
-  padding:.6rem .8rem; border-radius:var(--r-sm); font-size:.78rem;
-  color:var(--text2); margin-bottom:.8rem; line-height:1.5;
-}
-
-.mini-grid { display:grid; grid-template-columns: repeat(auto-fill,minmax(100px,1fr)); gap:.35rem; }
-.mini-grid .md {
-  padding:.4rem; border:1px solid var(--bdr); border-radius:var(--r-sm);
-  text-align:center; background:var(--card); font-size:.72rem;
-}
-.mini-grid .md.h { background: rgba(232,85,58,.1); color: var(--fire2); border-color: rgba(232,85,58,.3); font-weight:600; }
-.mini-grid .md .nm { font-size:.62rem; color:var(--text3); margin-top:.15rem; }
-
 .file-upl {
   display:flex; align-items:center; gap:.5rem; padding:.7rem; border:2px dashed var(--bdr);
   border-radius: var(--r-sm); cursor:pointer; transition:var(--transition); background:var(--bg);
 }
 .file-upl:hover { border-color: var(--hca3); background: var(--bg2); }
 .file-upl input { display:none; }
-.file-upl .ico { font-size:1.3rem; }
+.file-upl .ic { color:var(--text3); width:22px; height:22px; }
 .file-upl .lab { flex:1; font-size:.8rem; color:var(--text2); }
 .file-upl .fn { font-size:.7rem; color: var(--mint); font-weight:600; }
 
-.csv-tools { display:flex; gap:.35rem; flex-wrap:wrap; margin-top:.5rem; }
+/* ═══ CONFIG: FRANJAS TABLE ═══ */
+.slots-tbl { width:100%; border-collapse:collapse; font-size:.82rem; }
+.slots-tbl th { text-align:left; font-size:.66rem; text-transform:uppercase; letter-spacing:.06em; color:var(--text3); padding:.3rem .4rem; border-bottom:2px solid var(--bdr); }
+.slots-tbl td { padding:.3rem .4rem; border-bottom:1px solid #f0ede8; }
+.slots-tbl input[type=time] { padding:.35rem .5rem; font-size:.82rem; width:110px; }
+.slots-tbl .num { font-weight:800; color:var(--hca); width:34px; text-align:center; }
+
+/* ═══ CONFIG: SCHEDULE GRID ═══ */
+.grid-wrap { overflow-x:auto; }
+.slot-grid { border-collapse:collapse; width:100%; min-width:420px; }
+.slot-grid th {
+  font-size:.68rem; text-transform:uppercase; letter-spacing:.05em; color:var(--text3);
+  padding:.35rem .4rem; border-bottom:2px solid var(--bdr); text-align:center;
+}
+.slot-grid th.fr { text-align:left; min-width:100px; }
+.slot-grid td { padding:2px; }
+.slot-grid td.fr {
+  font-size:.72rem; font-weight:700; color:var(--hca); padding:.3rem .4rem; white-space:nowrap;
+}
+.slot-grid td.fr small { display:block; font-weight:400; color:var(--text3); font-size:.62rem; }
+.gcell {
+  height:34px; border:1.5px solid var(--bdr); border-radius:6px; cursor:pointer;
+  background:var(--bg); transition:var(--transition);
+}
+.gcell:hover { border-color:var(--hca3); }
+.gcell.on { background:var(--hca); border-color:var(--hca); }
+.gcell.on:hover { background:var(--hca3); }
+.legacy-note { font-size:.7rem; color:var(--gold); font-weight:600; margin-top:.4rem; }
+
+/* ═══ CONFIG: GROUP PILLS / LEVELS ═══ */
+.gpills { display:flex; flex-wrap:wrap; gap:.35rem; margin-bottom:.9rem; }
+.gpills .gp {
+  padding:.35rem .8rem; border:2px solid var(--bdr); border-radius:2rem;
+  font-size:.76rem; font-weight:600; cursor:pointer; background:var(--card); color:var(--text2);
+  transition:var(--transition);
+}
+.gpills .gp:hover { border-color:var(--hca3); }
+.gpills .gp.active { background:var(--hca); border-color:var(--hca); color:#fff; }
+.lvl-block { border:1.5px solid var(--bdr); border-radius:var(--r-sm); padding:.8rem; margin-bottom:.7rem; background:var(--bg); }
+.lvl-head { display:flex; gap:.5rem; align-items:center; margin-bottom:.5rem; flex-wrap:wrap; }
+.lvl-head input[type=text] { width:90px; }
+.mat-row { display:flex; gap:.5rem; align-items:center; margin-bottom:.4rem; flex-wrap:wrap; background:var(--card); padding:.45rem .6rem; border-radius:var(--r-sm); border:1px solid var(--bdr); }
+.mat-row input[type=text] { flex:1; min-width:140px; }
+.mat-row select { width:auto; min-width:130px; font-size:.78rem; padding:.4rem .5rem; }
+.mat-row .tag { font-size:.64rem; color:var(--text3); font-weight:700; text-transform:uppercase; letter-spacing:.05em; }
+
+/* ═══ CONFIG: AI PROVIDERS ═══ */
+.prov-card {
+  border:2px solid var(--bdr); border-radius:var(--r); padding:1rem 1.1rem; margin-bottom:.8rem;
+  background:var(--bg); transition:var(--transition);
+}
+.prov-card.active { border-color:var(--mint); background:rgba(46,204,113,.04); }
+.prov-head { display:flex; align-items:center; gap:.6rem; margin-bottom:.6rem; flex-wrap:wrap; }
+.prov-head input[type=radio] { width:auto; accent-color:var(--mint); transform:scale(1.2); cursor:pointer; }
+.prov-head h3 { font-size:.92rem; font-weight:700; color:var(--hca); flex:1; }
+.prov-badge { font-size:.64rem; font-weight:800; text-transform:uppercase; letter-spacing:.06em; padding:.18rem .5rem; border-radius:1rem; background:var(--bg2); color:var(--text3); }
+.prov-card.active .prov-badge { background:var(--mint); color:#fff; }
+.keyrow { display:flex; gap:.4rem; align-items:center; }
+.keyrow input { flex:1; }
+.prov-status { font-size:.72rem; margin-top:.4rem; font-weight:600; }
+.prov-status.ok { color:var(--mint); }
+.prov-status.err { color:var(--fire2); }
+
+/* ═══ MODAL ═══ */
+.modal-bg {
+  position:fixed; inset:0; background:rgba(28,28,43,.55); z-index:400;
+  display:none; align-items:flex-start; justify-content:center; padding:4rem 1rem 2rem; overflow-y:auto;
+  backdrop-filter: blur(2px);
+}
+.modal-bg.show { display:flex; }
+.modal {
+  background:var(--card); border-radius:var(--r); padding:1.4rem 1.5rem;
+  max-width:640px; width:100%; box-shadow:var(--shadow-lg);
+  animation: fadeIn .2s ease;
+}
+.modal h3 { font-family:'Fraunces',serif; font-size:1.05rem; color:var(--hca); margin-bottom:.3rem; display:flex; align-items:center; gap:.5rem; }
+.modal h3 .ic { color:var(--fire); width:20px; height:20px; }
+.modal .msub { font-size:.76rem; color:var(--text3); margin-bottom:.9rem; }
+
+/* ═══ TOAST ═══ */
+.toast {
+  position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(80px);
+  background: var(--hca); color: #fff; padding: .7rem 1.3rem;
+  border-radius: var(--r); font-size: .82rem; font-weight: 600;
+  box-shadow: var(--shadow-lg); opacity: 0; transition: all .35s cubic-bezier(.4,0,.2,1); z-index: 999;
+  max-width:90vw;
+}
+.toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+.mini-grid { display:grid; grid-template-columns: repeat(auto-fill,minmax(100px,1fr)); gap:.35rem; }
 
 /* ═══ RESPONSIVE ═══ */
 @media(max-width:640px) {
   .ctn { padding: 1rem; }
   .row { flex-direction: column; }
   .fg.wd { width: 100%; }
-  header h1 { font-size: 1.1rem; }
+  header h1 { font-size: 1.05rem; }
+  .header-sub { display:none; }
   .wk-row { flex-direction: column; gap: .3rem; }
   .wk-label { min-width: auto; padding-top: 0; }
   .h-er { flex-direction: column; gap: .15rem; }
   .level-tabs { flex-wrap: wrap; }
-  .nav-btn { padding: .65rem .8rem; font-size: .78rem; }
+  .nav-btn { padding: .65rem .7rem; font-size: .74rem; }
+  .nav-btn .txt { display:none; }
+  .nav-btn .ic { width:19px; height:19px; }
 }
 </style>
 </head>
 <body>
 
+<!-- ═══ SVG ICON SPRITE (Feather-style) ═══ -->
+<svg style="display:none" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></symbol>
+  <symbol id="i-edit" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></symbol>
+  <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></symbol>
+  <symbol id="i-list" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></symbol>
+  <symbol id="i-upload" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></symbol>
+  <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></symbol>
+  <symbol id="i-zap" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></symbol>
+  <symbol id="i-sparkle" viewBox="0 0 24 24"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15l.75 2.25L22 18l-2.25.75L19 21l-.75-2.25L16 18l2.25-.75z"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><polyline points="23 20 23 14 17 14"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/></symbol>
+  <symbol id="i-key" viewBox="0 0 24 24"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></symbol>
+  <symbol id="i-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-save" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></symbol>
+  <symbol id="i-cpu" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></symbol>
+  <symbol id="i-db" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></symbol>
+  <symbol id="i-arrow-r" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></symbol>
+  <symbol id="i-msg" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></symbol>
+</svg>
+
 <header>
   <div class="header-inner">
     <div>
       <h1>Desarrollo <span>del Curso</span></h1>
-      <div class="header-sub">Prof. Ferreira, Martín — Colegio y Liceo HCA</div>
+      <div class="header-sub" id="hdrSub">Colegio y Liceo HCA</div>
     </div>
     <div class="hdr-act">
-      <button class="key-btn" id="keyBtn" onclick="setApiKey()" title="Configurar API key de Claude">
-        <span class="key-dot"></span><span id="keyLbl">API key</span>
+      <span class="year-badge" id="yearBadge">2026</span>
+      <button class="key-btn" id="keyBtn" onclick="swTab('config');swCfgSub('cfg-ai')" title="Configurar inteligencia artificial">
+        <span class="key-dot"></span><span id="keyLbl">Conectar IA</span>
       </button>
     </div>
   </div>
 </header>
 
 <nav>
-  <div class="nav-inner">
-    <button class="nav-btn active" onclick="swTab('write')">✏️ Cargar</button>
-    <button class="nav-btn" onclick="swTab('plan')">📅 Planificación</button>
-    <button class="nav-btn" onclick="swTab('daily')">🗓️ Día a día</button>
-    <button class="nav-btn" onclick="swTab('holidays')">🎉 Feriados</button>
-    <button class="nav-btn" onclick="swTab('history')">📋 Historial</button>
-    <button class="nav-btn" onclick="swTab('export')">📤 Exportar</button>
+  <div class="nav-inner" id="mainNav">
+    <button class="nav-btn active" data-tab="home" onclick="swTab('home')"><svg class="ic"><use href="#i-home"/></svg><span class="txt">Inicio</span></button>
+    <button class="nav-btn" data-tab="write" onclick="swTab('write')"><svg class="ic"><use href="#i-edit"/></svg><span class="txt">Redactar</span></button>
+    <button class="nav-btn" data-tab="plan" onclick="swTab('plan')"><svg class="ic"><use href="#i-book"/></svg><span class="txt">Planificar</span></button>
+    <button class="nav-btn" data-tab="history" onclick="swTab('history')"><svg class="ic"><use href="#i-list"/></svg><span class="txt">Historial</span></button>
+    <button class="nav-btn" data-tab="export" onclick="swTab('export')"><svg class="ic"><use href="#i-download"/></svg><span class="txt">Exportar</span></button>
+    <button class="nav-btn" data-tab="config" onclick="swTab('config')"><svg class="ic"><use href="#i-settings"/></svg><span class="txt">Configuración</span></button>
   </div>
 </nav>
 
 <div class="ctn">
 
-  <!-- ═══ WRITE ═══ -->
-  <div class="pnl active" id="pnl-write">
+  <!-- ════════════════ INICIO ════════════════ -->
+  <div class="pnl active" id="pnl-home">
+    <div class="hero">
+      <h2>Hola, <span id="heroName">docente</span></h2>
+      <p>Esta herramienta te acompaña en todo el ciclo del desarrollo del curso: configurás tu horario una vez al año, planificás con IA, redactás lo que pasó en cada clase y exportás el CSV listo para SIGED.</p>
+    </div>
+
+    <div class="steps" id="homeSteps"></div>
 
     <div class="card">
-      <div class="card-title"><span class="icon">📅</span> Período</div>
-      <div class="card-desc">Seleccioná el rango de semanas. Ambas fechas deben ser lunes.</div>
-      <div class="row">
-        <div class="fg wd"><label class="lbl">Desde</label><input type="date" id="dFrom" onchange="updW()"></div>
-        <div class="fg wd"><label class="lbl">Hasta</label><input type="date" id="dTo" onchange="updW()"></div>
+      <div class="card-title"><svg class="ic"><use href="#i-clock"/></svg> Clases de hoy</div>
+      <div id="todayClasses"></div>
+    </div>
+  </div>
+
+  <!-- ════════════════ REDACTAR ════════════════ -->
+  <div class="pnl" id="pnl-write">
+    <div class="seg">
+      <button class="active" data-sub="write-ai" onclick="swWriteSub('write-ai')"><svg class="ic"><use href="#i-sparkle"/></svg> Clase por clase</button>
+      <button data-sub="write-week" onclick="swWriteSub('write-week')"><svg class="ic"><use href="#i-calendar"/></svg> Por semanas</button>
+    </div>
+
+    <!-- ── Clase por clase (IA) ── -->
+    <div class="sub active" id="sub-write-ai">
+      <div class="card">
+        <div class="card-title"><svg class="ic"><use href="#i-sparkle"/></svg> Redactar una clase</div>
+        <div class="card-desc">Elegí el grupo y la fecha, contá con tus palabras qué pasó en la clase, y la IA lo redacta en formato formal para SIGED usando tu horario configurado.</div>
+
+        <div class="row">
+          <div class="fg f1"><label class="lbl">Grupo</label><select id="waGroup" onchange="waRefreshInfo()"></select></div>
+          <div class="fg wd"><label class="lbl">Fecha</label><input type="date" id="waDate" onchange="waRefreshInfo()"></div>
+        </div>
+        <div id="waInfo"></div>
+
+        <label class="lbl" style="margin-top:.6rem">¿Qué se trabajó en clase? Contalo con tus palabras</label>
+        <textarea id="waDesc" placeholder="Ej: vimos MRUV, arranqué repasando MRU con preguntas orales, después definimos aceleración y resolvimos 3 ejercicios de la ficha 4. Al final quedó pendiente la gráfica v-t. Fulanito preguntó por la caída libre..." style="min-height:90px"></textarea>
+
+        <label class="lbl" style="margin-top:.6rem">Tipo de clase (opcional, agrega contexto)</label>
+        <div class="chips" id="waTypeChips">
+          <span class="chip" onclick="waAddType(this,'Clase teórica con exposición y ejemplos.')">Teórica</span>
+          <span class="chip" onclick="waAddType(this,'Clase práctica de resolución de ejercicios.')">Práctica</span>
+          <span class="chip" onclick="waAddType(this,'Práctica de laboratorio / actividad experimental.')">Laboratorio</span>
+          <span class="chip" onclick="waAddType(this,'Instancia de evaluación escrita.')">Evaluación</span>
+          <span class="chip" onclick="waAddType(this,'Clase de repaso e integración de contenidos.')">Repaso</span>
+          <span class="chip" onclick="waAddType(this,'Trabajo en proyecto / actividad en equipos.')">Proyecto</span>
+          <span class="chip" onclick="waAddType(this,'ND')">No se dictó</span>
+        </div>
+
+        <div class="acts" style="margin:.7rem 0 .3rem">
+          <button class="btn btn-o btn-sm" id="waSugBtn" onclick="waSugerir()"><svg class="ic"><use href="#i-sparkle"/></svg> Sugerir enfoques de redacción con IA</button>
+        </div>
+        <div class="chips" id="waSug"></div>
+
+        <label class="lbl" style="margin-top:.4rem">Instrucción de redacción (opcional)</label>
+        <input type="text" id="waInstr" placeholder="Ej: formal y conciso, mencionar la ficha de ejercicios, destacar el trabajo experimental...">
+
+        <div class="acts" style="margin-top:.9rem">
+          <button class="btn btn-f" id="waGenBtn" onclick="waRedactar()"><svg class="ic"><use href="#i-zap"/></svg> Redactar con IA</button>
+          <button class="btn btn-o" onclick="waLimpiar()">Limpiar</button>
+        </div>
+
+        <div id="waResult" style="display:none;margin-top:1rem">
+          <label class="lbl">Desarrollo redactado (editable)</label>
+          <textarea id="waOut" style="min-height:80px"></textarea>
+          <div class="acts" style="margin-top:.6rem">
+            <button class="btn btn-p" onclick="waGuardar()"><svg class="ic"><use href="#i-save"/></svg> Guardar en historial</button>
+            <button class="btn btn-o btn-sm" onclick="waRedactar()"><svg class="ic"><use href="#i-refresh"/></svg> Regenerar</button>
+            <button class="btn btn-o btn-sm" onclick="cpText('waOut')"><svg class="ic"><use href="#i-copy"/></svg> Copiar</button>
+          </div>
+        </div>
       </div>
-      <div class="week-pills" id="wPills"></div>
     </div>
 
-    <div id="levelArea">
-      <div class="level-tabs" id="levelTabs"></div>
-      <div id="levelContent"></div>
-    </div>
+    <!-- ── Por semanas (carga masiva) ── -->
+    <div class="sub" id="sub-write-week">
+      <div class="card">
+        <div class="card-title"><svg class="ic"><use href="#i-calendar"/></svg> Período</div>
+        <div class="card-desc">Seleccioná el rango de semanas. Ambas fechas deben ser lunes.</div>
+        <div class="row">
+          <div class="fg wd"><label class="lbl">Desde</label><input type="date" id="dFrom" onchange="updW()"></div>
+          <div class="fg wd"><label class="lbl">Hasta</label><input type="date" id="dTo" onchange="updW()"></div>
+        </div>
+        <div class="week-pills" id="wPills"></div>
+      </div>
 
-    <div class="acts" id="genActs" style="display:none;margin-bottom:1.5rem">
-      <button class="btn btn-f" id="btnGen" onclick="generar()">⚡ Generar todas las entradas</button>
-    </div>
+      <div id="levelArea">
+        <div class="level-tabs" id="levelTabs"></div>
+        <div id="levelContent"></div>
+      </div>
 
-    <div class="card" id="pvCard" style="display:none">
-      <div class="card-title"><span class="icon">👁️</span> Vista previa</div>
-      <div class="card-desc">Revisá y editá cada entrada antes de guardar.</div>
-      <div id="pvList"></div>
-      <div class="acts" style="margin-top:1rem">
-        <button class="btn btn-f" onclick="confirmar()">✓ Guardar todo</button>
-        <button class="btn btn-o" onclick="cancelar()">Cancelar</button>
+      <div class="acts" id="genActs" style="display:none;margin-bottom:1.5rem">
+        <button class="btn btn-f" id="btnGen" onclick="generar()"><svg class="ic"><use href="#i-zap"/></svg> Generar todas las entradas</button>
+      </div>
+
+      <div class="card" id="pvCard" style="display:none">
+        <div class="card-title"><svg class="ic"><use href="#i-eye"/></svg> Vista previa</div>
+        <div class="card-desc">Revisá y editá cada entrada antes de guardar.</div>
+        <div id="pvList"></div>
+        <div class="acts" style="margin-top:1rem">
+          <button class="btn btn-f" onclick="confirmar()"><svg class="ic"><use href="#i-check"/></svg> Guardar todo</button>
+          <button class="btn btn-o" onclick="cancelar()">Cancelar</button>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- ═══ HISTORY ═══ -->
+  <!-- ════════════════ PLANIFICAR ════════════════ -->
+  <div class="pnl" id="pnl-plan">
+    <div class="seg">
+      <button class="active" data-sub="plan-year" onclick="swPlanSub('plan-year')"><svg class="ic"><use href="#i-book"/></svg> Plan anual</button>
+      <button data-sub="plan-daily" onclick="swPlanSub('plan-daily')"><svg class="ic"><use href="#i-calendar"/></svg> Día a día</button>
+    </div>
+
+    <!-- ── Plan anual ── -->
+    <div class="sub active" id="sub-plan-year">
+      <div class="card">
+        <div class="card-title"><svg class="ic"><use href="#i-book"/></svg> Planificación anual con IA</div>
+        <div class="card-desc">Subí el programa de la materia y la IA propone una planificación semana a semana respetando los feriados lectivos. Después podés editarla y volcarla a "Redactar" o generar un desarrollo detallado día a día.</div>
+
+        <div class="pl-mat-pick" id="planMatPick"></div>
+
+        <div class="row">
+          <div class="fg wd"><label class="lbl">Año desde</label><input type="date" id="planFrom"></div>
+          <div class="fg wd"><label class="lbl">Año hasta</label><input type="date" id="planTo"></div>
+        </div>
+
+        <label class="lbl">Programa / contenidos del año (pegá texto o subí archivo)</label>
+        <label class="file-upl" for="planFile">
+          <svg class="ic"><use href="#i-file"/></svg>
+          <span class="lab">Seleccionar archivo .txt / .md / .csv con el programa</span>
+          <span class="fn" id="planFileN"></span>
+          <input type="file" id="planFile" accept=".txt,.md,.csv,.rtf">
+        </label>
+        <textarea id="planProg" placeholder="Pegá acá los contenidos del año: unidades, temas, objetivos, proyectos, evaluaciones..." style="min-height:120px;margin-top:.5rem"></textarea>
+
+        <div class="acts" style="margin-top:.7rem">
+          <button class="btn btn-f" onclick="generarPlanAnual()"><svg class="ic"><use href="#i-zap"/></svg> Sugerir planificación anual con IA</button>
+          <button class="btn btn-o" onclick="limpiarPlan()"><svg class="ic"><use href="#i-trash"/></svg> Limpiar plan de esta materia</button>
+        </div>
+
+        <div id="planStatus"></div>
+      </div>
+
+      <div class="card" id="planViewCard" style="display:none">
+        <div class="card-title"><svg class="ic"><use href="#i-list"/></svg> Plan editable</div>
+        <div class="card-desc">Editá los temas de cada semana. Seleccioná las semanas a usar y elegí qué hacer con ellas.</div>
+
+        <div class="acts" style="margin-bottom:.8rem">
+          <button class="btn btn-o btn-sm" onclick="planSelAll(true)">Seleccionar todo</button>
+          <button class="btn btn-o btn-sm" onclick="planSelAll(false)">Deseleccionar</button>
+          <button class="btn btn-o btn-sm" onclick="planSelCurrent()">Solo semana actual</button>
+        </div>
+
+        <div id="planWeeks"></div>
+
+        <div class="acts" style="margin-top:1rem">
+          <button class="btn btn-p" onclick="planAplicarACargar()"><svg class="ic"><use href="#i-arrow-r"/></svg> Volcar seleccionadas a "Por semanas"</button>
+          <button class="btn btn-f" onclick="planGenerarDesarrollo()"><svg class="ic"><use href="#i-zap"/></svg> Generar desarrollo día a día con IA</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Día a día ── -->
+    <div class="sub" id="sub-plan-daily">
+      <div class="card">
+        <div class="card-title"><svg class="ic"><use href="#i-calendar"/></svg> Sugerir desarrollo día a día</div>
+        <div class="card-desc">Elegí un tramo de fechas, un grupo y describí los temas o el tramo de planificación. La IA sugiere un desarrollo clase por clase — respeta feriados y el horario del grupo.</div>
+
+        <label class="lbl">Grupo</label>
+        <select id="dayGroup" style="margin-bottom:.6rem"></select>
+
+        <div class="row">
+          <div class="fg wd"><label class="lbl">Desde</label><input type="date" id="dayFrom"></div>
+          <div class="fg wd"><label class="lbl">Hasta</label><input type="date" id="dayTo"></div>
+        </div>
+
+        <label class="lbl">Temas / tramos de la planificación para este período</label>
+        <label class="file-upl" for="dayFile">
+          <svg class="ic"><use href="#i-file"/></svg>
+          <span class="lab">Subir archivo con temas (.txt / .md / .csv)</span>
+          <span class="fn" id="dayFileN"></span>
+          <input type="file" id="dayFile" accept=".txt,.md,.csv,.rtf">
+        </label>
+        <textarea id="dayTopics" placeholder="Ej: Unidad 2 — MRUV. Empezar con repaso de MRU, luego definir aceleración, gráficas v–t, ecuaciones, caída libre, laboratorio con micro:bit, ejercicios integradores, prueba escrita al cierre." style="min-height:100px;margin-top:.5rem"></textarea>
+
+        <div class="acts" style="margin-top:.7rem">
+          <button class="btn btn-f" onclick="generarDiaADia()"><svg class="ic"><use href="#i-zap"/></svg> Generar desarrollo día a día</button>
+          <button class="btn btn-o" onclick="document.getElementById('dayTopics').value=''">Limpiar</button>
+        </div>
+
+        <div id="dayPreview" style="margin-top:1rem"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════ HISTORIAL ════════════════ -->
   <div class="pnl" id="pnl-history">
     <div class="card">
-      <div class="card-title"><span class="icon">📋</span> Historial de entradas</div>
+      <div class="card-title"><svg class="ic"><use href="#i-list"/></svg> Historial de entradas</div>
+      <div class="card-desc">Todo lo guardado, por grupo. Podés editar cada entrada a mano o con ayuda de la IA.</div>
       <div class="frow" id="hF"></div>
       <div id="hL"></div>
     </div>
   </div>
 
-  <!-- ═══ PLANIFICACIÓN ═══ -->
-  <div class="pnl" id="pnl-plan">
-    <div class="card">
-      <div class="card-title"><span class="icon">📅</span> Planificación anual con IA</div>
-      <div class="card-desc">Subí el programa de la materia y la IA propone una planificación semana a semana respetando los feriados lectivos. Después podés editarla y volcarla a "Cargar" o generar un desarrollo detallado día a día.</div>
-
-      <div class="pl-mat-pick" id="planMatPick"></div>
-
-      <div class="row">
-        <div class="fg wd"><label class="lbl">Año desde</label><input type="date" id="planFrom"></div>
-        <div class="fg wd"><label class="lbl">Año hasta</label><input type="date" id="planTo"></div>
-      </div>
-
-      <label class="lbl">Programa / contenidos del año (pegá texto o subí archivo)</label>
-      <label class="file-upl" for="planFile">
-        <span class="ico">📄</span>
-        <span class="lab">Seleccionar archivo .txt / .md / .csv con el programa</span>
-        <span class="fn" id="planFileN"></span>
-        <input type="file" id="planFile" accept=".txt,.md,.csv,.rtf">
-      </label>
-      <textarea id="planProg" placeholder="Pegá acá los contenidos del año: unidades, temas, objetivos, proyectos, evaluaciones..." style="min-height:120px;margin-top:.5rem"></textarea>
-
-      <div class="acts" style="margin-top:.7rem">
-        <button class="btn btn-f" onclick="generarPlanAnual()">⚡ Sugerir planificación anual con IA</button>
-        <button class="btn btn-o" onclick="limpiarPlan()">🗑️ Limpiar plan de esta materia</button>
-      </div>
-
-      <div id="planStatus"></div>
-    </div>
-
-    <div class="card" id="planViewCard" style="display:none">
-      <div class="card-title"><span class="icon">🗂️</span> Plan editable</div>
-      <div class="card-desc">Editá los temas de cada semana. Seleccioná las semanas a usar y elegí qué hacer con ellas.</div>
-
-      <div class="acts" style="margin-bottom:.8rem">
-        <button class="btn btn-o btn-sm" onclick="planSelAll(true)">Seleccionar todo</button>
-        <button class="btn btn-o btn-sm" onclick="planSelAll(false)">Deseleccionar</button>
-        <button class="btn btn-o btn-sm" onclick="planSelCurrent()">Solo semana actual</button>
-      </div>
-
-      <div id="planWeeks"></div>
-
-      <div class="acts" style="margin-top:1rem">
-        <button class="btn btn-p" onclick="planAplicarACargar()">📥 Volcar seleccionadas a "Cargar"</button>
-        <button class="btn btn-f" onclick="planGenerarDesarrollo()">⚡ Generar desarrollo detallado día a día con IA</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ═══ DÍA A DÍA ═══ -->
-  <div class="pnl" id="pnl-daily">
-    <div class="card">
-      <div class="card-title"><span class="icon">🗓️</span> Sugerir desarrollo día a día</div>
-      <div class="card-desc">Elegí un tramo de fechas, un grupo y describí los temas o el tramo de planificación. La IA sugiere un desarrollo clase por clase — respeta feriados y horarios del grupo.</div>
-
-      <label class="lbl">Grupo</label>
-      <select id="dayGroup" style="margin-bottom:.6rem"></select>
-
-      <div class="row">
-        <div class="fg wd"><label class="lbl">Desde</label><input type="date" id="dayFrom"></div>
-        <div class="fg wd"><label class="lbl">Hasta</label><input type="date" id="dayTo"></div>
-      </div>
-
-      <label class="lbl">Temas / tramos de la planificación para este período</label>
-      <label class="file-upl" for="dayFile">
-        <span class="ico">📎</span>
-        <span class="lab">Subir archivo con temas (.txt / .md / .csv)</span>
-        <span class="fn" id="dayFileN"></span>
-        <input type="file" id="dayFile" accept=".txt,.md,.csv,.rtf">
-      </label>
-      <textarea id="dayTopics" placeholder="Ej: Unidad 2 — MRUV. Empezar con repaso de MRU, luego definir aceleración, gráficas v–t, ecuaciones, caída libre, laboratorio con micro:bit, ejercicios integradores, prueba escrita al cierre." style="min-height:100px;margin-top:.5rem"></textarea>
-
-      <div class="acts" style="margin-top:.7rem">
-        <button class="btn btn-f" onclick="generarDiaADia()">⚡ Generar desarrollo día a día</button>
-        <button class="btn btn-o" onclick="document.getElementById('dayTopics').value=''">Limpiar</button>
-      </div>
-
-      <div id="dayPreview" style="margin-top:1rem"></div>
-    </div>
-  </div>
-
-  <!-- ═══ FERIADOS ═══ -->
-  <div class="pnl" id="pnl-holidays">
-    <div class="card">
-      <div class="card-title"><span class="icon">🎉</span> Feriados y días no lectivos</div>
-      <div class="card-desc">Los feriados nacionales del año en curso vienen precargados. Podés agregar jornadas pedagógicas, paros, actividades institucionales u otros días no lectivos. Cuando una fecha coincide con un feriado, las funciones "Cargar", "Planificación" y "Día a día" la marcan automáticamente como no dictada.</div>
-
-      <div class="hol-row">
-        <div class="fg f1"><label class="lbl">Fecha</label><input type="date" id="holDate"></div>
-        <div class="fg f1"><label class="lbl">Motivo</label><input type="text" id="holName" placeholder="Ej: Jornada pedagógica"></div>
-        <button class="btn btn-p btn-sm" onclick="addHol()">➕ Agregar</button>
-      </div>
-
-      <div class="acts" style="margin-top:.7rem">
-        <button class="btn btn-o btn-sm" onclick="resetHols()">↺ Restaurar feriados por defecto</button>
-        <button class="btn btn-o btn-sm" onclick="clearCustomHols()">🗑️ Borrar personalizados</button>
-      </div>
-
-      <div id="holList" style="margin-top:1rem"></div>
-    </div>
-  </div>
-
-  <!-- ═══ EXPORT ═══ -->
+  <!-- ════════════════ EXPORTAR ════════════════ -->
   <div class="pnl" id="pnl-export">
     <div class="card">
-      <div class="card-title"><span class="icon">📤</span> Exportar CSV por grupo</div>
-      <div class="card-desc">Cada grupo genera su propio archivo para cargar en SIGED.</div>
+      <div class="card-title"><svg class="ic"><use href="#i-download"/></svg> Exportar CSV por grupo</div>
+      <div class="card-desc">Cada grupo genera su propio archivo para cargar en SIGED con la extensión de Chrome. También podés retocar el CSV a mano o con IA antes de descargarlo.</div>
       <div id="expA"></div>
+    </div>
+  </div>
+
+  <!-- ════════════════ CONFIGURACIÓN ════════════════ -->
+  <div class="pnl" id="pnl-config">
+    <div class="seg">
+      <button class="active" data-sub="cfg-hor" onclick="swCfgSub('cfg-hor')"><svg class="ic"><use href="#i-clock"/></svg> Año y horario</button>
+      <button data-sub="cfg-hol" onclick="swCfgSub('cfg-hol')"><svg class="ic"><use href="#i-sun"/></svg> Feriados</button>
+      <button data-sub="cfg-ai" onclick="swCfgSub('cfg-ai')"><svg class="ic"><use href="#i-cpu"/></svg> Inteligencia artificial</button>
+      <button data-sub="cfg-data" onclick="swCfgSub('cfg-data')"><svg class="ic"><use href="#i-db"/></svg> Datos y respaldo</button>
+    </div>
+
+    <!-- ── Año y horario ── -->
+    <div class="sub active" id="sub-cfg-hor">
+      <div class="card">
+        <div class="card-title"><svg class="ic"><use href="#i-calendar"/></svg> Año lectivo</div>
+        <div class="card-desc">El setup inicial de cada año: datos generales y período de clases. Todo se guarda automáticamente en tu navegador.</div>
+        <div class="row">
+          <div class="fg wd"><label class="lbl">Año</label><input type="number" id="cfgYear" min="2020" max="2100" onchange="cfgMetaChanged()"></div>
+          <div class="fg f1"><label class="lbl">Docente</label><input type="text" id="cfgTeacher" placeholder="Prof. Apellido, Nombre" onchange="cfgMetaChanged()"></div>
+          <div class="fg f1"><label class="lbl">Institución</label><input type="text" id="cfgSchool" onchange="cfgMetaChanged()"></div>
+        </div>
+        <div class="row">
+          <div class="fg wd"><label class="lbl">Inicio de clases</label><input type="date" id="cfgYearStart" onchange="cfgMetaChanged()"></div>
+          <div class="fg wd"><label class="lbl">Fin de clases</label><input type="date" id="cfgYearEnd" onchange="cfgMetaChanged()"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><svg class="ic"><use href="#i-clock"/></svg> Franjas horarias</div>
+        <div class="card-desc">Definí las horas de clase del día (1 franja = 1 hora de clase). Después asignás cada grupo a sus franjas en el horario semanal. La IA usa estos horarios para redactar mejor.</div>
+        <div class="grid-wrap"><table class="slots-tbl" id="slotsTbl"></table></div>
+        <div class="acts" style="margin-top:.7rem">
+          <button class="btn btn-o btn-sm" onclick="addSlot()"><svg class="ic"><use href="#i-plus"/></svg> Agregar franja</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><svg class="ic"><use href="#i-book"/></svg> Niveles y materias</div>
+        <div class="card-desc">Organizá tus materias por nivel (7°, 8°, 9°...). El color identifica cada materia en toda la app. Si una materia STEM comparte desarrollo con Cs. Físico-Químicas, vinculala con "Prefijo STEM".</div>
+        <div id="cfgLevels"></div>
+        <div class="acts" style="margin-top:.5rem">
+          <button class="btn btn-o btn-sm" onclick="addLevel()"><svg class="ic"><use href="#i-plus"/></svg> Agregar nivel</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><svg class="ic"><use href="#i-users"/></svg> Grupos y horario semanal</div>
+        <div class="card-desc">Elegí un grupo y marcá en la grilla los días y franjas en que tiene clase. Ese horario define las horas dictadas de cada entrada y le da contexto a la IA.</div>
+        <div class="gpills" id="cfgGroupPills"></div>
+        <div id="cfgGroupEditor"></div>
+        <div class="acts" style="margin-top:.7rem">
+          <button class="btn btn-o btn-sm" onclick="addGroup()"><svg class="ic"><use href="#i-plus"/></svg> Agregar grupo</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Feriados ── -->
+    <div class="sub" id="sub-cfg-hol">
+      <div class="card">
+        <div class="card-title"><svg class="ic"><use href="#i-sun"/></svg> Feriados y días no lectivos</div>
+        <div class="card-desc">Los feriados nacionales vienen precargados. Podés agregar jornadas pedagógicas, paros, actividades institucionales u otros días no lectivos. Cuando una fecha coincide con un feriado, las funciones de redacción y planificación la marcan automáticamente como no dictada.</div>
+
+        <div class="hol-row">
+          <div class="fg f1"><label class="lbl">Fecha</label><input type="date" id="holDate"></div>
+          <div class="fg f1"><label class="lbl">Motivo</label><input type="text" id="holName" placeholder="Ej: Jornada pedagógica"></div>
+          <button class="btn btn-p btn-sm" onclick="addHol()"><svg class="ic"><use href="#i-plus"/></svg> Agregar</button>
+        </div>
+
+        <div class="acts" style="margin-top:.7rem">
+          <button class="btn btn-o btn-sm" onclick="resetHols()"><svg class="ic"><use href="#i-refresh"/></svg> Restaurar feriados por defecto</button>
+          <button class="btn btn-o btn-sm" onclick="clearCustomHols()"><svg class="ic"><use href="#i-trash"/></svg> Borrar personalizados</button>
+        </div>
+
+        <div id="holList" style="margin-top:1rem"></div>
+      </div>
+    </div>
+
+    <!-- ── IA ── -->
+    <div class="sub" id="sub-cfg-ai">
+      <div class="card">
+        <div class="card-title"><svg class="ic"><use href="#i-cpu"/></svg> Proveedores de inteligencia artificial</div>
+        <div class="card-desc">Configurá una o varias API de IA y elegí cuál usar. Las claves se guardan <b>solo en tu navegador</b>, nunca se suben a ningún servidor propio. Marcá el círculo del proveedor que quieras usar como activo.</div>
+        <div id="provList"></div>
+        <div class="info-box"><b>Consejo:</b> con la API de Anthropic (Claude), un mes de uso normal de esta herramienta cuesta centavos usando el modelo Haiku. Algunos proveedores pueden bloquear el uso directo desde el navegador (CORS); si "Probar conexión" falla con error de red, probá con otro proveedor o con un servicio compatible como OpenRouter.</div>
+      </div>
+    </div>
+
+    <!-- ── Datos ── -->
+    <div class="sub" id="sub-cfg-data">
+      <div class="card">
+        <div class="card-title"><svg class="ic"><use href="#i-db"/></svg> Importar y exportar configuración</div>
+        <div class="card-desc">Guardá tu configuración (horario, franjas, grupos, feriados) en un archivo JSON para usarla como base cada año: exportás a fin de año, y al año siguiente la importás y solo ajustás lo que cambió. Todo también queda guardado en el caché del navegador automáticamente.</div>
+
+        <div class="acts">
+          <button class="btn btn-p" onclick="exportCfg()"><svg class="ic"><use href="#i-download"/></svg> Exportar configuración (base anual)</button>
+          <button class="btn btn-o" onclick="exportBackup()"><svg class="ic"><use href="#i-download"/></svg> Respaldo completo (con entradas)</button>
+        </div>
+
+        <label class="file-upl" for="impFile" style="margin-top:.9rem">
+          <svg class="ic"><use href="#i-upload"/></svg>
+          <span class="lab">Importar archivo JSON (configuración o respaldo completo)</span>
+          <span class="fn" id="impFileN"></span>
+          <input type="file" id="impFile" accept=".json,application/json">
+        </label>
+
+        <div class="info-box" style="margin-top:.9rem"><b>Flujo anual sugerido:</b> 1) A fin de año, exportá la configuración. 2) Al empezar el año nuevo, importala. 3) En "Año y horario" ajustá el año, las fechas, los grupos nuevos y sus franjas. 4) En "Feriados" cargá los del año. Listo — todo lo demás queda pronto.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><svg class="ic"><use href="#i-alert"/></svg> Zona de riesgo</div>
+        <div class="danger-box">Estas acciones no se pueden deshacer. Hacé un respaldo antes.</div>
+        <div class="acts">
+          <button class="btn btn-o" onclick="clearEntries()"><svg class="ic"><use href="#i-trash"/></svg> Borrar todas las entradas</button>
+          <button class="btn btn-o" onclick="resetAll()"><svg class="ic"><use href="#i-refresh"/></svg> Restablecer configuración de fábrica</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL: EDITAR ENTRADA ═══ -->
+<div class="modal-bg" id="editModal">
+  <div class="modal">
+    <h3><svg class="ic"><use href="#i-edit"/></svg> Editar entrada</h3>
+    <div class="msub" id="meSub"></div>
+    <label class="lbl">Texto del desarrollo</label>
+    <textarea id="meText" style="min-height:80px"></textarea>
+    <label class="lbl" style="margin-top:.7rem">¿Qué querés cambiar o agregar? (para la IA)</label>
+    <input type="text" id="meDesc" placeholder="Ej: agregar que hicimos la práctica de laboratorio con sensores, más formal...">
+    <div class="chips">
+      <span class="chip" onclick="meChip('Mejorar la redacción manteniendo el contenido.')">Mejorar redacción</span>
+      <span class="chip" onclick="meChip('Hacer el texto más formal y técnico.')">Más formal</span>
+      <span class="chip" onclick="meChip('Ampliar con más detalle didáctico plausible según lo descrito.')">Ampliar</span>
+      <span class="chip" onclick="meChip('Resumir en una o dos frases concisas.')">Resumir</span>
+      <span class="chip" onclick="meChip('Corregir ortografía y gramática solamente.')">Corregir</span>
+    </div>
+    <div class="acts" style="margin-top:.9rem">
+      <button class="btn btn-f btn-sm" id="meAiBtn" onclick="meAplicarIA()"><svg class="ic"><use href="#i-sparkle"/></svg> Aplicar con IA</button>
+      <button class="btn btn-p btn-sm" onclick="meGuardar()"><svg class="ic"><use href="#i-save"/></svg> Guardar</button>
+      <button class="btn btn-o btn-sm" onclick="closeModal()">Cancelar</button>
     </div>
   </div>
 </div>
@@ -568,94 +927,222 @@ textarea { resize: vertical; min-height: 52px; line-height: 1.5; }
 
 <script>
 // ═══════════════════════════════════════════════
-// DATA
+// CONFIGURACIÓN (horario, franjas, grupos) — se
+// guarda en localStorage y se exporta/importa JSON
 // ═══════════════════════════════════════════════
-const GROUPS={
-  "CFQ 7°3":[{dow:3,h:2}],"CFQ 7°4":[{dow:5,h:2}],
-  "CFQ 8°1":[{dow:5,h:2}],"CFQ 8°2":[{dow:2,h:1},{dow:3,h:1}],
-  "CFQ 8°3":[{dow:1,h:2}],"CFQ 8°4":[{dow:1,h:1},{dow:4,h:1}],
-  "STEM 7°3":[{dow:2,h:2}],"STEM 7°4":[{dow:2,h:2}],
-  "STEM 8°1":[{dow:3,h:2}],"STEM 8°2":[{dow:2,h:2}],
-  "STEM 8°3":[{dow:3,h:2}],"STEM 8°4":[{dow:2,h:2}],
-  "F 9°2":[{dow:4,h:1},{dow:5,h:2}]
+const CFG_KEY='hca_cfg_v2';
+
+function defaultConfig(){
+  return {
+    version:2,
+    meta:{ year:2026, teacher:'Prof. Ferreira, Martín', school:'Colegio y Liceo HCA', yearStart:'2026-03-02', yearEnd:'2026-12-04' },
+    slots:[
+      {start:'07:45',end:'08:30'},{start:'08:30',end:'09:15'},{start:'09:35',end:'10:20'},
+      {start:'10:20',end:'11:05'},{start:'11:25',end:'12:10'},{start:'12:10',end:'12:55'},
+      {start:'13:30',end:'14:15'},{start:'14:15',end:'15:00'}
+    ],
+    levels:[
+      {id:'7',label:'7°',color:'#2ECC71'},
+      {id:'8',label:'8°',color:'#4A90D9'},
+      {id:'9',label:'9°',color:'#8E44AD'}
+    ],
+    materias:[
+      {id:'stem7',name:'STEM',clr:'#27ae60',level:'7',cfq:'cfq7'},
+      {id:'cfq7',name:'Cs. Físico-Químicas',clr:'#e74c3c',level:'7',cfq:null},
+      {id:'stem8',name:'STEM',clr:'#2980b9',level:'8',cfq:'cfq8'},
+      {id:'cfq8',name:'Cs. Físico-Químicas',clr:'#e67e22',level:'8',cfq:null},
+      {id:'f9',name:'Física',clr:'#8e44ad',level:'9',cfq:null}
+    ],
+    groups:[
+      {name:'CFQ 7°3',materia:'cfq7',sessions:[{dow:3,h:2,slots:[]}]},
+      {name:'CFQ 7°4',materia:'cfq7',sessions:[{dow:5,h:2,slots:[]}]},
+      {name:'CFQ 8°1',materia:'cfq8',sessions:[{dow:5,h:2,slots:[]}]},
+      {name:'CFQ 8°2',materia:'cfq8',sessions:[{dow:2,h:1,slots:[]},{dow:3,h:1,slots:[]}]},
+      {name:'CFQ 8°3',materia:'cfq8',sessions:[{dow:1,h:2,slots:[]}]},
+      {name:'CFQ 8°4',materia:'cfq8',sessions:[{dow:1,h:1,slots:[]},{dow:4,h:1,slots:[]}]},
+      {name:'STEM 7°3',materia:'stem7',sessions:[{dow:2,h:2,slots:[]}]},
+      {name:'STEM 7°4',materia:'stem7',sessions:[{dow:2,h:2,slots:[]}]},
+      {name:'STEM 8°1',materia:'stem8',sessions:[{dow:3,h:2,slots:[]}]},
+      {name:'STEM 8°2',materia:'stem8',sessions:[{dow:2,h:2,slots:[]}]},
+      {name:'STEM 8°3',materia:'stem8',sessions:[{dow:3,h:2,slots:[]}]},
+      {name:'STEM 8°4',materia:'stem8',sessions:[{dow:2,h:2,slots:[]}]},
+      {name:'F 9°2',materia:'f9',sessions:[{dow:4,h:1,slots:[]},{dow:5,h:2,slots:[]}]}
+    ]
+  };
+}
+
+let cfg=null;
+function loadCfg(){
+  try{
+    const r=localStorage.getItem(CFG_KEY);
+    if(r){ cfg=JSON.parse(r); fixupCfg(); return; }
+  }catch(e){ console.error(e); }
+  cfg=defaultConfig(); saveCfg();
+}
+function fixupCfg(){
+  const d=defaultConfig();
+  if(!cfg.meta) cfg.meta=d.meta;
+  if(!Array.isArray(cfg.slots)) cfg.slots=d.slots;
+  if(!Array.isArray(cfg.levels)) cfg.levels=d.levels;
+  if(!Array.isArray(cfg.materias)) cfg.materias=d.materias;
+  if(!Array.isArray(cfg.groups)) cfg.groups=d.groups;
+  for(const g of cfg.groups){ if(!Array.isArray(g.sessions)) g.sessions=[]; for(const s of g.sessions){ if(!Array.isArray(s.slots)) s.slots=[]; } }
+}
+function saveCfg(){ localStorage.setItem(CFG_KEY,JSON.stringify(cfg)); }
+
+// ── Accesores derivados de la configuración ──
+const DL={1:'Lun',2:'Mar',3:'Mié',4:'Jue',5:'Vie'};
+const DL_FULL={1:'Lunes',2:'Martes',3:'Miércoles',4:'Jueves',5:'Viernes'};
+
+function sessH(s){ return (s.slots&&s.slots.length)? s.slots.length : (s.h||0); }
+function sessTime(s){
+  if(!s.slots||!s.slots.length||!cfg.slots.length) return '';
+  const idx=[...s.slots].sort((a,b)=>a-b).filter(i=>cfg.slots[i]);
+  if(!idx.length) return '';
+  return cfg.slots[idx[0]].start+'–'+cfg.slots[idx[idx.length-1]].end;
+}
+function sessionsOf(gName){ const g=cfg.groups.find(x=>x.name===gName); return g?g.sessions:null; }
+function groupNames(){ return cfg.groups.map(g=>g.name); }
+function matById(id){ return cfg.materias.find(m=>m.id===id); }
+function shortG(name){ const p=name.trim().split(/\s+/); return p.length>1?p.slice(1).join(' '):name; }
+function groupDesc(g){
+  return g.sessions.map(s=>{
+    const t=sessTime(s);
+    return DL[s.dow]+' '+sessH(s)+'h'+(t?' ('+t+')':'');
+  }).join(' · ')||'sin horario';
+}
+function viewLevels(){
+  return cfg.levels.map(l=>({
+    id:l.id,label:l.label,color:l.color,
+    materias:cfg.materias.filter(m=>m.level===l.id).map(m=>{
+      const gs=cfg.groups.filter(g=>g.materia===m.id);
+      return {
+        id:m.id,name:m.name,clr:m.clr,cfq:m.cfq||null,
+        groups:gs.map(g=>g.name),
+        desc:gs.map(g=>shortG(g.name)+' '+g.sessions.map(s=>DL[s.dow]+' '+sessH(s)+'h').join('+')).join(' · ')
+      };
+    })
+  }));
+}
+function allMaterias(){ return viewLevels().flatMap(l=>l.materias); }
+function levelOfMat(matId){ const m=matById(matId); return m?cfg.levels.find(l=>l.id===m.level):null; }
+
+// ═══════════════════════════════════════════════
+// IA — MÚLTIPLES PROVEEDORES
+// ═══════════════════════════════════════════════
+const AI_KEY='hca_ai_v1';
+const PROVIDERS={
+  anthropic:{ label:'Claude (Anthropic)', keyHint:'sk-ant-...', defModel:'claude-haiku-4-5',
+    models:['claude-haiku-4-5','claude-sonnet-4-6','claude-sonnet-5','claude-opus-4-8'] },
+  openai:{ label:'ChatGPT (OpenAI)', keyHint:'sk-...', defModel:'gpt-4o-mini',
+    models:['gpt-4o-mini','gpt-4o','gpt-4.1-mini','gpt-4.1'] },
+  google:{ label:'Gemini (Google)', keyHint:'AIza...', defModel:'gemini-2.5-flash',
+    models:['gemini-2.5-flash','gemini-2.5-pro','gemini-2.0-flash'] },
+  custom:{ label:'Compatible con OpenAI (OpenRouter, DeepSeek, etc.)', keyHint:'clave del servicio', defModel:'',
+    models:['deepseek-chat','openrouter/auto'] }
 };
+let ai=null;
+function loadAI(){
+  try{ const r=localStorage.getItem(AI_KEY); if(r){ ai=JSON.parse(r); } }catch(e){}
+  if(!ai){
+    ai={ active:'anthropic', providers:{
+      anthropic:{key:'',model:PROVIDERS.anthropic.defModel},
+      openai:{key:'',model:PROVIDERS.openai.defModel},
+      google:{key:'',model:PROVIDERS.google.defModel},
+      custom:{key:'',model:'',base:'https://openrouter.ai/api/v1'}
+    }};
+    // migrar clave vieja de Claude si existía
+    const old=localStorage.getItem('hca_apikey');
+    if(old){ ai.providers.anthropic.key=old; localStorage.removeItem('hca_apikey'); }
+    saveAI();
+  }
+  for(const p of Object.keys(PROVIDERS)){
+    if(!ai.providers[p]) ai.providers[p]={key:'',model:PROVIDERS[p].defModel};
+  }
+  if(ai.providers.custom.base===undefined) ai.providers.custom.base='https://openrouter.ai/api/v1';
+}
+function saveAI(){ localStorage.setItem(AI_KEY,JSON.stringify(ai)); }
+function aiReady(){ const p=ai.providers[ai.active]; return !!(p&&p.key); }
+function aiLabel(){ return PROVIDERS[ai.active]?.label||ai.active; }
 
-// Organized by LEVEL
-const LEVELS=[
-  { id:"7", label:"7°", color:"var(--mint)", materias:[
-    {id:"stem7",name:"STEM",clr:"#27ae60",groups:["STEM 7°3","STEM 7°4"],cfq:"cfq7",
-     desc:"7°3 Ma 2h · 7°4 Ma 2h"},
-    {id:"cfq7",name:"Cs. Físico-Químicas",clr:"#e74c3c",groups:["CFQ 7°3","CFQ 7°4"],
-     desc:"7°3 Mi 2h · 7°4 Vi 2h"}
-  ]},
-  { id:"8", label:"8°", color:"var(--sky)", materias:[
-    {id:"stem8",name:"STEM",clr:"#2980b9",groups:["STEM 8°1","STEM 8°2","STEM 8°3","STEM 8°4"],cfq:"cfq8",
-     desc:"8°1 Mi 2h · 8°2 Ma 2h · 8°3 Mi 2h · 8°4 Ma 2h"},
-    {id:"cfq8",name:"Cs. Físico-Químicas",clr:"#e67e22",groups:["CFQ 8°1","CFQ 8°2","CFQ 8°3","CFQ 8°4"],
-     desc:"8°1 Vi 2h · 8°2 Ma+Mi 1h+1h · 8°3 Lu 2h · 8°4 Lu+Ju 1h+1h"}
-  ]},
-  { id:"9", label:"9°", color:"var(--plum)", materias:[
-    {id:"f9",name:"Física",clr:"#8e44ad",groups:["F 9°2"],
-     desc:"9°2 Ju 1h + Vi 2h"}
-  ]}
-];
+async function callAI(system,userMsg,maxTokens){
+  const provId=ai.active, p=ai.providers[provId];
+  if(!p||!p.key) throw new Error('Configurá la IA en Configuración → Inteligencia artificial');
+  const max=maxTokens||1500;
+  if(provId==='anthropic'){
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key':p.key,
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
+      },
+      body:JSON.stringify({ model:p.model||PROVIDERS.anthropic.defModel, max_tokens:max, system, messages:[{role:'user',content:userMsg}] })
+    });
+    if(!resp.ok){ const e=await resp.text(); throw new Error('API '+resp.status+': '+e.slice(0,140)); }
+    const res=await resp.json();
+    if(res.stop_reason==='refusal') throw new Error('El modelo rechazó la solicitud');
+    return (res.content||[]).map(c=>c.text||'').join('');
+  }
+  if(provId==='google'){
+    const model=p.model||PROVIDERS.google.defModel;
+    const resp=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+encodeURIComponent(model)+':generateContent',{
+      method:'POST',
+      headers:{ 'Content-Type':'application/json', 'x-goog-api-key':p.key },
+      body:JSON.stringify({
+        system_instruction:{parts:[{text:system}]},
+        contents:[{role:'user',parts:[{text:userMsg}]}],
+        generationConfig:{maxOutputTokens:max}
+      })
+    });
+    if(!resp.ok){ const e=await resp.text(); throw new Error('API '+resp.status+': '+e.slice(0,140)); }
+    const res=await resp.json();
+    const cand=res.candidates&&res.candidates[0];
+    if(!cand||!cand.content||!cand.content.parts) throw new Error('Respuesta vacía de Gemini');
+    return cand.content.parts.map(pt=>pt.text||'').join('');
+  }
+  // openai y compatibles (chat/completions)
+  const base=provId==='custom' ? (p.base||'').replace(/\/+$/,'') : 'https://api.openai.com/v1';
+  if(!base) throw new Error('Configurá la URL base del proveedor compatible');
+  const resp=await fetch(base+'/chat/completions',{
+    method:'POST',
+    headers:{ 'Content-Type':'application/json', 'Authorization':'Bearer '+p.key },
+    body:JSON.stringify({
+      model:p.model||PROVIDERS[provId].defModel,
+      max_tokens:max,
+      messages:[{role:'system',content:system},{role:'user',content:userMsg}]
+    })
+  });
+  if(!resp.ok){ const e=await resp.text(); throw new Error('API '+resp.status+': '+e.slice(0,140)); }
+  const res=await resp.json();
+  return res.choices?.[0]?.message?.content||'';
+}
 
-const ALL_MATERIAS = LEVELS.flatMap(l=>l.materias);
-const DL={1:"Lun",2:"Mar",3:"Mié",4:"Jue",5:"Vie"};
-const DL_FULL={1:"Lunes",2:"Martes",3:"Miércoles",4:"Jueves",5:"Viernes"};
-const AI_MODEL = "claude-haiku-4-5";
+function parseAIJson(txt){
+  const cleaned=txt.replace(/```json|```/gi,'').trim();
+  const a=cleaned.indexOf('{'), b=cleaned.lastIndexOf('}');
+  if(a<0||b<0) throw new Error('La IA no devolvió JSON');
+  return JSON.parse(cleaned.slice(a,b+1));
+}
 
-// ═══ FERIADOS LECTIVOS URUGUAY 2026 (precargados) ═══
-const DEFAULT_HOLIDAYS = [
-  {date:"2026-01-01",name:"Año Nuevo"},
-  {date:"2026-01-06",name:"Día de los Niños (Reyes)"},
-  {date:"2026-02-16",name:"Carnaval"},
-  {date:"2026-02-17",name:"Carnaval"},
-  {date:"2026-03-30",name:"Semana de Turismo"},
-  {date:"2026-03-31",name:"Semana de Turismo"},
-  {date:"2026-04-01",name:"Semana de Turismo"},
-  {date:"2026-04-02",name:"Jueves Santo"},
-  {date:"2026-04-03",name:"Viernes Santo"},
-  {date:"2026-05-01",name:"Día de los Trabajadores"},
-  {date:"2026-05-18",name:"Batalla de las Piedras"},
-  {date:"2026-06-19",name:"Natalicio de Artigas"},
-  {date:"2026-07-06",name:"Vacaciones de invierno"},
-  {date:"2026-07-07",name:"Vacaciones de invierno"},
-  {date:"2026-07-08",name:"Vacaciones de invierno"},
-  {date:"2026-07-09",name:"Vacaciones de invierno"},
-  {date:"2026-07-10",name:"Vacaciones de invierno"},
-  {date:"2026-07-13",name:"Vacaciones de invierno"},
-  {date:"2026-07-14",name:"Vacaciones de invierno"},
-  {date:"2026-07-15",name:"Vacaciones de invierno"},
-  {date:"2026-07-16",name:"Vacaciones de invierno"},
-  {date:"2026-07-17",name:"Vacaciones de invierno"},
-  {date:"2026-08-25",name:"Declaratoria de la Independencia"},
-  {date:"2026-09-28",name:"Vacaciones de primavera"},
-  {date:"2026-09-29",name:"Vacaciones de primavera"},
-  {date:"2026-09-30",name:"Vacaciones de primavera"},
-  {date:"2026-10-01",name:"Vacaciones de primavera"},
-  {date:"2026-10-02",name:"Vacaciones de primavera"},
-  {date:"2026-10-12",name:"Día de la Raza"},
-  {date:"2026-11-02",name:"Día de los Difuntos"},
-  {date:"2026-12-08",name:"Día de las Playas"},
-  {date:"2026-12-25",name:"Navidad"}
-];
+function refreshKeyBtn(){
+  const b=document.getElementById('keyBtn'),l=document.getElementById('keyLbl');
+  if(!b)return;
+  const has=aiReady();
+  b.classList.toggle('ok',has);
+  l.textContent=has?('IA: '+aiLabel().split(' ')[0]):'Conectar IA';
+}
 
-let data={},pending=[],weeks=[],curLevel="7",hfg="all";
+// ═══════════════════════════════════════════════
+// DATOS (entradas, feriados, planes)
+// ═══════════════════════════════════════════════
+let data={},pending=[],weeks=[],curLevel='7',hfg='all';
 let customHolidays=[], disabledDefaults=[];
 let plans={}, curPlanMat=null;
 
-// ═══ INIT ═══
-function init(){
-  loadD(); loadHols(); loadPlans();
-  setDates(); updW(); buildLevelTabs(); refreshKeyBtn();
-  setupPlanDefaults(); setupDailyDefaults(); buildDayGroupSel();
-  setupFileUploaders();
-}
 function loadD(){ try{const r=localStorage.getItem('hca_v8');if(r)data=JSON.parse(r);}catch(e){data={};} }
 function saveD(){ localStorage.setItem('hca_v8',JSON.stringify(data)); }
-
-// ═══ HOLIDAY STORAGE ═══
 function loadHols(){
   try{
     const r=localStorage.getItem('hca_hols_custom'); if(r) customHolidays=JSON.parse(r)||[];
@@ -666,6 +1153,43 @@ function saveHols(){
   localStorage.setItem('hca_hols_custom',JSON.stringify(customHolidays));
   localStorage.setItem('hca_hols_disabled',JSON.stringify(disabledDefaults));
 }
+function loadPlans(){ try{const r=localStorage.getItem('hca_plans'); if(r) plans=JSON.parse(r)||{};}catch(e){plans={};} }
+function savePlans(){ localStorage.setItem('hca_plans',JSON.stringify(plans)); }
+
+const DEFAULT_HOLIDAYS=[
+  {date:'2026-01-01',name:'Año Nuevo'},
+  {date:'2026-01-06',name:'Día de los Niños (Reyes)'},
+  {date:'2026-02-16',name:'Carnaval'},
+  {date:'2026-02-17',name:'Carnaval'},
+  {date:'2026-03-30',name:'Semana de Turismo'},
+  {date:'2026-03-31',name:'Semana de Turismo'},
+  {date:'2026-04-01',name:'Semana de Turismo'},
+  {date:'2026-04-02',name:'Jueves Santo'},
+  {date:'2026-04-03',name:'Viernes Santo'},
+  {date:'2026-05-01',name:'Día de los Trabajadores'},
+  {date:'2026-05-18',name:'Batalla de las Piedras'},
+  {date:'2026-06-19',name:'Natalicio de Artigas'},
+  {date:'2026-07-06',name:'Vacaciones de invierno'},
+  {date:'2026-07-07',name:'Vacaciones de invierno'},
+  {date:'2026-07-08',name:'Vacaciones de invierno'},
+  {date:'2026-07-09',name:'Vacaciones de invierno'},
+  {date:'2026-07-10',name:'Vacaciones de invierno'},
+  {date:'2026-07-13',name:'Vacaciones de invierno'},
+  {date:'2026-07-14',name:'Vacaciones de invierno'},
+  {date:'2026-07-15',name:'Vacaciones de invierno'},
+  {date:'2026-07-16',name:'Vacaciones de invierno'},
+  {date:'2026-07-17',name:'Vacaciones de invierno'},
+  {date:'2026-08-25',name:'Declaratoria de la Independencia'},
+  {date:'2026-09-28',name:'Vacaciones de primavera'},
+  {date:'2026-09-29',name:'Vacaciones de primavera'},
+  {date:'2026-09-30',name:'Vacaciones de primavera'},
+  {date:'2026-10-01',name:'Vacaciones de primavera'},
+  {date:'2026-10-02',name:'Vacaciones de primavera'},
+  {date:'2026-10-12',name:'Día de la Raza'},
+  {date:'2026-11-02',name:'Día de los Difuntos'},
+  {date:'2026-12-08',name:'Día de las Playas'},
+  {date:'2026-12-25',name:'Navidad'}
+];
 function allHolidays(){
   const def=DEFAULT_HOLIDAYS.filter(h=>!disabledDefaults.includes(h.date));
   return [...def,...customHolidays].sort((a,b)=>a.date.localeCompare(b.date));
@@ -676,63 +1200,105 @@ function holidayMap(){
 function isHoliday(dateStr){ return !!holidayMap()[dateStr]; }
 function holidayName(dateStr){ const hm=holidayMap()[dateStr]; return hm?hm.join(', '):''; }
 
-// ═══ PLAN STORAGE ═══
-function loadPlans(){ try{const r=localStorage.getItem('hca_plans'); if(r) plans=JSON.parse(r)||{};}catch(e){plans={};} }
-function savePlans(){ localStorage.setItem('hca_plans',JSON.stringify(plans)); }
-
-// ═══ API KEY ═══
-function getApiKey(){ return localStorage.getItem('hca_apikey')||''; }
-function setApiKey(){
-  const cur=getApiKey();
-  const v=prompt('API key de Claude (sk-ant-...)\n\nSe guarda solo en tu navegador. Dejá vacío para borrar.',cur);
-  if(v===null)return;
-  const t=v.trim();
-  if(!t){ localStorage.removeItem('hca_apikey'); showT('API key eliminada'); }
-  else if(!t.startsWith('sk-ant-')){ showT('Formato inválido (sk-ant-...)'); return; }
-  else { localStorage.setItem('hca_apikey',t); showT('API key guardada ✓'); }
-  refreshKeyBtn();
-}
-function refreshKeyBtn(){
-  const b=document.getElementById('keyBtn'),l=document.getElementById('keyLbl');
-  if(!b)return;
-  const has=!!getApiKey();
-  b.classList.toggle('ok',has);
-  l.textContent=has?'API conectada':'API key';
-}
-async function callClaude(system,userMsg,maxTokens){
-  const key=getApiKey();
-  if(!key) throw new Error('Falta API key');
-  const resp=await fetch("https://api.anthropic.com/v1/messages",{
-    method:"POST",
-    headers:{
-      "Content-Type":"application/json",
-      "x-api-key":key,
-      "anthropic-version":"2023-06-01",
-      "anthropic-dangerous-direct-browser-access":"true"
-    },
-    body:JSON.stringify({
-      model:AI_MODEL,max_tokens:maxTokens||1500,system,
-      messages:[{role:"user",content:userMsg}]
-    })
-  });
-  if(!resp.ok){ const e=await resp.text(); throw new Error('API '+resp.status+': '+e.slice(0,120)); }
-  const res=await resp.json();
-  return res.content.map(c=>c.text||'').join('');
-}
-
+// ═══════════════════════════════════════════════
+// NAVEGACIÓN
+// ═══════════════════════════════════════════════
 function swTab(n){
-  document.querySelectorAll('.nav-btn').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(t=>t.classList.toggle('active',t.dataset.tab===n));
   document.querySelectorAll('.pnl').forEach(p=>p.classList.remove('active'));
-  [...document.querySelectorAll('.nav-btn')].find(b=>b.onclick.toString().includes("'"+n+"'")).classList.add('active');
-  document.getElementById('pnl-'+n).classList.add('active');
+  const pnl=document.getElementById('pnl-'+n); if(pnl) pnl.classList.add('active');
+  if(n==='home'){rHome();}
   if(n==='history'){bHF();rH();}
   if(n==='export'){rExp();}
-  if(n==='holidays'){rHols();}
-  if(n==='plan'){rPlanMatPick();rPlanWeeks();}
-  if(n==='daily'){buildDayGroupSel();}
+  if(n==='write'){waRefreshGroups();updW();buildLevelTabs();}
+  if(n==='plan'){rPlanMatPick();rPlanWeeks();buildDayGroupSel();}
+  if(n==='config'){rCfgAll();}
+  window.scrollTo({top:0});
+}
+function swSub(prefix,id){
+  document.querySelectorAll('#pnl-'+prefix+' .seg button').forEach(b=>b.classList.toggle('active',b.dataset.sub===id));
+  document.querySelectorAll('#pnl-'+prefix+' .sub').forEach(s=>s.classList.toggle('active',s.id==='sub-'+id));
+}
+function swWriteSub(id){ swSub('write',id); }
+function swPlanSub(id){ swSub('plan',id); }
+function swCfgSub(id){ swSub('config',id); if(id==='cfg-hol')rHols(); if(id==='cfg-ai')rProviders(); if(id==='cfg-hor')rCfgHor(); }
+
+// ═══════════════════════════════════════════════
+// INICIO
+// ═══════════════════════════════════════════════
+function rHome(){
+  document.getElementById('heroName').textContent=(cfg.meta.teacher||'docente').replace(/^Prof\.?\s*/i,'');
+  document.getElementById('yearBadge').textContent=cfg.meta.year||'';
+  document.getElementById('hdrSub').textContent=(cfg.meta.teacher?cfg.meta.teacher+' — ':'')+(cfg.meta.school||'');
+
+  const nGroups=cfg.groups.length;
+  const nWithSlots=cfg.groups.filter(g=>g.sessions.some(s=>s.slots&&s.slots.length)).length;
+  const nEntries=Object.values(data).reduce((a,v)=>a+(v?v.length:0),0);
+  const horOk=nGroups>0&&cfg.slots.length>0;
+  const iaOk=aiReady();
+
+  const steps=[
+    { n:1, ic:'i-clock', t:'Configurá tu horario', done:horOk,
+      st: horOk ? (nGroups+' grupos · '+cfg.slots.length+' franjas'+(nWithSlots<nGroups?' · faltan franjas en '+(nGroups-nWithSlots)+' grupos':'')) : 'Sin configurar',
+      d:'Franjas horarias, niveles, materias y el horario semanal de cada grupo. Se hace una vez al año.',
+      go:()=>{swTab('config');swCfgSub('cfg-hor');} },
+    { n:2, ic:'i-cpu', t:'Conectá la IA', done:iaOk,
+      st: iaOk?('Activo: '+aiLabel()):'Opcional, pero recomendado',
+      d:'Configurá tu API de Claude, ChatGPT, Gemini u otra para que la app redacte y planifique por vos.',
+      go:()=>{swTab('config');swCfgSub('cfg-ai');} },
+    { n:3, ic:'i-edit', t:'Planificá y redactá', done:nEntries>0,
+      st: nEntries>0?(nEntries+' entradas guardadas'):'Todavía sin entradas',
+      d:'Contá qué pasó en cada clase y la IA lo redacta, o cargá semanas enteras. También podés planificar el año.',
+      go:()=>{swTab('write');} },
+    { n:4, ic:'i-download', t:'Exportá a SIGED', done:false,
+      st: nEntries>0?'Listo para exportar':'Primero guardá entradas',
+      d:'Descargá el CSV de cada grupo y cargalo automáticamente en SIGED con la extensión de Chrome.',
+      go:()=>{swTab('export');} }
+  ];
+  document.getElementById('homeSteps').innerHTML=steps.map(s=>
+    '<div class="step-card'+(s.done?' done':'')+'" onclick="homeGo('+s.n+')">'+
+    '<div class="step-num">'+(s.done?'✓':s.n)+'</div>'+
+    '<h3><svg class="ic"><use href="#'+s.ic+'"/></svg> '+s.t+'</h3>'+
+    '<p>'+s.d+'</p>'+
+    '<div class="step-status '+(s.done?'ok':'pend')+'">'+esc(s.st)+'</div>'+
+    '</div>'
+  ).join('');
+  window._homeSteps=steps;
+
+  // clases de hoy
+  const today=new Date(); const dow=today.getDay(); const ds=fI(today);
+  const el=document.getElementById('todayClasses');
+  if(isHoliday(ds)){
+    el.innerHTML='<div class="info-box">Hoy es feriado / día no lectivo: <b>'+esc(holidayName(ds))+'</b>. No hay clases para registrar.</div>';
+    return;
+  }
+  const rows=[];
+  for(const g of cfg.groups){
+    for(const s of g.sessions){
+      if(s.dow===dow){
+        const t=sessTime(s);
+        rows.push({g:g.name,h:sessH(s),t});
+      }
+    }
+  }
+  if(!rows.length){ el.innerHTML='<div class="empty" style="padding:1rem">Hoy no tenés clases según tu horario.</div>'; return; }
+  el.innerHTML='<div class="today-list">'+rows.map(r=>
+    '<div class="today-row"><span class="tg">'+esc(r.g)+'</span>'+
+    '<span class="tt">'+r.h+'h'+(r.t?' · '+r.t:'')+'</span>'+
+    '<button class="btn btn-f btn-sm" onclick="homeRedactar(\''+esc(r.g).replace(/'/g,"\\'")+'\')"><svg class="ic"><use href="#i-sparkle"/></svg> Redactar</button></div>'
+  ).join('')+'</div>';
+}
+function homeGo(n){ const s=(window._homeSteps||[])[n-1]; if(s) s.go(); }
+function homeRedactar(g){
+  swTab('write'); swWriteSub('write-ai');
+  document.getElementById('waGroup').value=g;
+  document.getElementById('waDate').value=fI(new Date());
+  waRefreshInfo();
 }
 
-// ═══ WEEKS ═══
+// ═══════════════════════════════════════════════
+// REDACTAR POR SEMANAS (carga masiva)
+// ═══════════════════════════════════════════════
 function setDates(){
   const now=new Date(),day=now.getDay(),diff=day===0?1:(day===1?0:-(day-1));
   const m=new Date(now);m.setDate(now.getDate()+diff);
@@ -759,12 +1325,12 @@ function updW(){
       const dd=new Date(d); dd.setDate(d.getDate()+i);
       const ds=fI(dd); if(isHoliday(ds)) hols.push({date:ds,dow:i+1,name:holidayName(ds)});
     }
-    weeks.push({mon:new Date(d),fri,label:`${fDS(d)}–${fDS(fri)}`,isCurrent,hols});
+    weeks.push({mon:new Date(d),fri,label:fDS(d)+'–'+fDS(fri),isCurrent,hols});
     d.setDate(d.getDate()+7);
   }
 
   pills.innerHTML=weeks.map(w=>
-    `<span class="week-pill${w.isCurrent?' current':''}" title="${w.hols.length?w.hols.map(h=>h.name).join(', '):''}">${w.label}${w.hols.length?' 🎉':''}</span>`
+    '<span class="week-pill'+(w.isCurrent?' current':'')+'" title="'+(w.hols.length?esc(w.hols.map(h=>h.name).join(', ')):'')+'">'+w.label+(w.hols.length?' ●':'')+'</span>'
   ).join('');
 
   document.getElementById('genActs').style.display=weeks.length?'':'none';
@@ -773,74 +1339,54 @@ function updW(){
 
 function wDate(mon,dow){ const d=new Date(mon);d.setDate(mon.getDate()+(dow-1));return d; }
 
-// ═══ LEVEL NAVIGATION ═══
 function buildLevelTabs(){
-  document.getElementById('levelTabs').innerHTML=LEVELS.map(l=>
-    `<button class="level-tab${l.id===curLevel?' active':''}" data-level="${l.id}" onclick="setLevel('${l.id}')">${l.label}</button>`
+  const lv=viewLevels();
+  if(!lv.find(l=>l.id===curLevel)&&lv.length) curLevel=lv[0].id;
+  document.getElementById('levelTabs').innerHTML=lv.map(l=>
+    '<button class="level-tab'+(l.id===curLevel?' active':'')+'" style="'+(l.id===curLevel?'background:'+l.color+';':'')+'" data-level="'+l.id+'" onclick="setLevel(\''+l.id+'\')">'+esc(l.label)+'</button>'
   ).join('');
   buildLevelContent();
 }
-
-function setLevel(id){
-  curLevel=id;
-  document.querySelectorAll('.level-tab').forEach(t=>{
-    t.classList.toggle('active',t.dataset.level===id);
-  });
-  buildLevelContent();
-}
+function setLevel(id){ curLevel=id; buildLevelTabs(); }
 
 function buildLevelContent(){
   const el=document.getElementById('levelContent');
   if(!weeks.length){el.innerHTML='<div class="empty">Seleccioná el período arriba.</div>';return;}
-
-  const level=LEVELS.find(l=>l.id===curLevel);
+  const level=viewLevels().find(l=>l.id===curLevel);
   if(!level){el.innerHTML='';return;}
 
   el.innerHTML=level.materias.map(m=>{
     const hasCfq=!!m.cfq;
     const wrows=weeks.map((w,wi)=>{
       const holInfo = w.hols.length
-        ? `<div style="font-size:.62rem;color:var(--fire2);margin-top:.15rem">🎉 ${w.hols.map(h=>DL[h.dow]+': '+h.name).join(' · ')}</div>`
+        ? '<div style="font-size:.62rem;color:var(--fire2);margin-top:.15rem">'+w.hols.map(h=>DL[h.dow]+': '+esc(h.name)).join(' · ')+'</div>'
         : '';
-      return `
-      <div class="wk-row">
-        <div class="wk-label">
-          <div class="wk-label-main">${w.label}</div>
-          <div class="wk-label-sub">Sem. ${wi+1}${w.isCurrent?' · actual':''}</div>
-          ${holInfo}
-        </div>
-        <div class="wk-input">
-          <textarea id="d_${m.id}_${wi}" placeholder="Contenido..."></textarea>
-        </div>
-        <div class="wk-nd">
-          <input type="checkbox" id="nd_${m.id}_${wi}" title="No dictada">
-          <label for="nd_${m.id}_${wi}">ND</label>
-        </div>
-      </div>`;
+      return '<div class="wk-row">'+
+        '<div class="wk-label"><div class="wk-label-main">'+w.label+'</div>'+
+        '<div class="wk-label-sub">Sem. '+(wi+1)+(w.isCurrent?' · actual':'')+'</div>'+holInfo+'</div>'+
+        '<div class="wk-input"><textarea id="d_'+m.id+'_'+wi+'" placeholder="Contenido..."></textarea></div>'+
+        '<div class="wk-nd"><input type="checkbox" id="nd_'+m.id+'_'+wi+'" title="No dictada"><label for="nd_'+m.id+'_'+wi+'">ND</label></div>'+
+        '</div>';
     }).join('');
 
-    return `<div class="mat-section open" id="ms_${m.id}">
-      <div class="mat-head" onclick="document.getElementById('ms_${m.id}').classList.toggle('open')">
-        <div class="mat-dot" style="background:${m.clr}"></div>
-        <span class="mat-name">${m.name}</span>
-        <span class="mat-info">${m.desc}</span>
-        <span class="mat-arrow">▼</span>
-      </div>
-      <div class="mat-body">
-        ${hasCfq?`<div class="mat-opts"><label class="mopt"><input type="checkbox" id="stcfq_${m.id}" checked> Incluir desarrollo en Cs. Físico-Químicas con prefijo "STEM -"</label></div>`:''}
-        ${wrows}
-      </div>
-    </div>`;
-  }).join('');
+    return '<div class="mat-section open" id="ms_'+m.id+'">'+
+      '<div class="mat-head" onclick="document.getElementById(\'ms_'+m.id+'\').classList.toggle(\'open\')">'+
+      '<div class="mat-dot" style="background:'+m.clr+'"></div>'+
+      '<span class="mat-name">'+esc(m.name)+'</span>'+
+      '<span class="mat-info">'+esc(m.desc)+'</span>'+
+      '<span class="mat-arrow"><svg class="ic sm"><use href="#i-chevron"/></svg></span></div>'+
+      '<div class="mat-body">'+
+      (hasCfq?'<div class="mat-opts"><label class="mopt"><input type="checkbox" id="stcfq_'+m.id+'" checked> Incluir desarrollo en Cs. Físico-Químicas con prefijo "STEM -"</label></div>':'')+
+      wrows+'</div></div>';
+  }).join('')||'<div class="empty">Este nivel no tiene materias. Agregalas en Configuración.</div>';
 }
 
-// ═══ GENERATE ═══
 async function generar(){
   if(!weeks.length){showT('Sin semanas');return;}
+  const MATS=allMaterias();
 
-  // Collect STEM→CFQ
   const stemCfq={};
-  for(const m of ALL_MATERIAS){
+  for(const m of MATS){
     if(!m.cfq)continue;
     const chk=document.getElementById('stcfq_'+m.id);
     if(!chk||!chk.checked)continue;
@@ -857,12 +1403,12 @@ async function generar(){
 
   document.getElementById('btnGen').disabled=true;
   document.getElementById('pvCard').style.display='';
-  document.getElementById('pvList').innerHTML=`<div class="ld-bar"><div class="spin"></div>Generando entradas...</div>`;
+  document.getElementById('pvList').innerHTML='<div class="ld-bar"><div class="spin"></div>Generando entradas...</div>';
 
   pending=[];
   const needsSplit=[];
 
-  for(const m of ALL_MATERIAS){
+  for(const m of MATS){
     for(let wi=0;wi<weeks.length;wi++){
       const ndEl=document.getElementById('nd_'+m.id+'_'+wi);
       if(!ndEl)continue;
@@ -871,39 +1417,36 @@ async function generar(){
       let dev=ta?ta.value.trim():'';
       const mon=weeks[wi].mon;
 
-      // Prepend STEM
       if(!nd && stemCfq[m.id] && stemCfq[m.id][wi]){
-        dev=dev?`STEM - ${stemCfq[m.id][wi]}. ${dev}`:`STEM - ${stemCfq[m.id][wi]}`;
+        dev=dev?('STEM - '+stemCfq[m.id][wi]+'. '+dev):('STEM - '+stemCfq[m.id][wi]);
       }
-
       if(!nd && !dev) continue;
 
       if(nd){
         for(const gN of m.groups){
-          for(const s of GROUPS[gN]){
+          for(const s of sessionsOf(gN)||[]){
             const dstr=fI(wDate(mon,s.dow));
             const hn=holidayName(dstr);
-            pending.push({g:gN,date:dstr,h:0,hnd:s.h,dev:hn?`No se dictó: ${hn}.`:'No se dictó clase.'});
+            pending.push({g:gN,date:dstr,h:0,hnd:sessH(s),dev:hn?('No se dictó: '+hn+'.'):'No se dictó clase.'});
           }
         }
         continue;
       }
 
       for(const gN of m.groups){
-        // Split out holiday sessions from regular ones
         const regular=[], holidaySess=[];
-        for(const s of GROUPS[gN]){
+        for(const s of sessionsOf(gN)||[]){
           const dstr=fI(wDate(mon,s.dow));
           if(isHoliday(dstr)) holidaySess.push({s,dstr,name:holidayName(dstr)});
           else regular.push(s);
         }
         for(const hs of holidaySess){
-          pending.push({g:gN,date:hs.dstr,h:0,hnd:hs.s.h,dev:`No se dictó: ${hs.name}.`});
+          pending.push({g:gN,date:hs.dstr,h:0,hnd:sessH(hs.s),dev:'No se dictó: '+hs.name+'.'});
         }
         if(!regular.length) continue;
         if(regular.length===1){
           const s=regular[0];
-          pending.push({g:gN,date:fI(wDate(mon,s.dow)),h:s.h,hnd:0,dev});
+          pending.push({g:gN,date:fI(wDate(mon,s.dow)),h:sessH(s),hnd:0,dev});
         } else {
           needsSplit.push({group:gN,course:m.name,dev,mon,sessions:regular});
         }
@@ -911,32 +1454,31 @@ async function generar(){
     }
   }
 
-  // AI split in batches (único lote → 1 sola llamada por defecto)
   if(needsSplit.length>0){
     const fallback=batch=>{
       for(const ns of batch){
-        for(const s of ns.sessions) pending.push({g:ns.group,date:fI(wDate(ns.mon,s.dow)),h:s.h,hnd:0,dev:ns.dev});
+        for(const s of ns.sessions) pending.push({g:ns.group,date:fI(wDate(ns.mon,s.dow)),h:sessH(s),hnd:0,dev:ns.dev});
       }
     };
-    if(!getApiKey()){
+    if(!aiReady()){
       fallback(needsSplit);
-      showT('Sin API key: se duplicó el contenido, editá manualmente');
+      showT('Sin IA configurada: se duplicó el contenido, editá manualmente');
     } else {
       const batches=[];
       for(let i=0;i<needsSplit.length;i+=15)batches.push(needsSplit.slice(i,i+15));
       for(const batch of batches){
         try{
           const prompt=batch.map((ns,i)=>
-            `[${i}] ${ns.group} (${ns.course}): ${ns.sessions.map(s=>`${DL[s.dow]} ${s.h}h`).join('+')} → "${ns.dev}"`
+            '['+i+'] '+ns.group+' ('+ns.course+'): '+ns.sessions.map(s=>DL[s.dow]+' '+sessH(s)+'h'+(sessTime(s)?' '+sessTime(s):'')).join('+')+' → "'+ns.dev+'"'
           ).join('\n');
-          const sys=`Distribuís contenido semanal entre sesiones. Proporcional a horas. Primera sesión=intro, más horas=práctica. Si empieza con "STEM - ...", eso va en la primera sesión. No inventes. SOLO JSON: {"splits":[{"idx":N,"sessions":[{"dow":N,"dev":"texto"},...]},...]}`;
-          const txt=await callClaude(sys,prompt,2000);
-          const parsed=JSON.parse(txt.replace(/```json|```/g,'').trim());
+          const sys='Distribuís contenido semanal entre sesiones de clase. Proporcional a horas. Primera sesión=introducción, más horas=práctica. Si empieza con "STEM - ...", eso va en la primera sesión. No inventes. SOLO JSON: {"splits":[{"idx":N,"sessions":[{"dow":N,"dev":"texto"},...]},...]}';
+          const txt=await callAI(sys,prompt,2000);
+          const parsed=parseAIJson(txt);
           for(const sp of parsed.splits){
             const ns=batch[sp.idx];if(!ns)continue;
             for(const sess of sp.sessions){
               const match=ns.sessions.find(s=>s.dow===sess.dow);if(!match)continue;
-              pending.push({g:ns.group,date:fI(wDate(ns.mon,sess.dow)),h:match.h,hnd:0,dev:sess.dev});
+              pending.push({g:ns.group,date:fI(wDate(ns.mon,sess.dow)),h:sessH(match),hnd:0,dev:sess.dev});
             }
           }
         }catch(e){
@@ -959,17 +1501,15 @@ function showPV(){
   pending.forEach((e,i)=>{if(!byG[e.g])byG[e.g]=[];byG[e.g].push({...e,i});});
   let html='';
   for(const g of Object.keys(byG).sort()){
-    html+=`<div class="pv-group">${g}<span class="cnt">${byG[g].length} entradas</span></div>`;
+    html+='<div class="pv-group">'+esc(g)+'<span class="cnt">'+byG[g].length+' entradas</span></div>';
     for(const e of byG[g]){
-      const[y,m,d]=e.date.split('-');
-      const hl=e.hnd>0?`<span style="color:var(--red)">${e.hnd}h nd</span>`:`${e.h}h`;
-      html+=`<div class="pv-row">
-        <div class="pv-date">${d}/${m}</div><div class="pv-hrs">${hl}</div>
-        <div class="pv-tw"><textarea id="pv${e.i}" onchange="pending[${e.i}].dev=this.value">${esc(e.dev)}</textarea></div>
-      </div>`;
+      const p=e.date.split('-');
+      const hl=e.hnd>0?'<span style="color:var(--red)">'+e.hnd+'h nd</span>':(e.h+'h');
+      html+='<div class="pv-row"><div class="pv-date">'+p[2]+'/'+p[1]+'</div><div class="pv-hrs">'+hl+'</div>'+
+        '<div class="pv-tw"><textarea id="pv'+e.i+'" onchange="pending['+e.i+'].dev=this.value">'+esc(e.dev)+'</textarea></div></div>';
     }
   }
-  el.innerHTML=html;
+  el.innerHTML=html||'<div class="empty">No se generó ninguna entrada.</div>';
 }
 
 function confirmar(){
@@ -983,22 +1523,22 @@ function confirmar(){
     n++;
   }
   saveD();cancelar();
-  // Clear all visible textareas
   document.querySelectorAll('[id^="d_"]').forEach(ta=>{if(ta.tagName==='TEXTAREA')ta.value='';});
   document.querySelectorAll('[id^="nd_"]').forEach(cb=>{if(cb.type==='checkbox')cb.checked=false;});
-  showT(`${n} entradas guardadas ✓`);
+  showT(n+' entradas guardadas');
 }
-
 function cancelar(){
   pending=[];document.getElementById('pvCard').style.display='none';document.getElementById('pvList').innerHTML='';
 }
 
-// ═══ HISTORY ═══
+// ═══════════════════════════════════════════════
+// HISTORIAL (+ edición con IA)
+// ═══════════════════════════════════════════════
 function bHF(){
   const el=document.getElementById('hF');
   const gs=Object.keys(data).filter(g=>data[g]&&data[g].length).sort();
-  let h=`<button class="fbtn ${hfg==='all'?'a':''}" onclick="sF('all')">Todos</button>`;
-  gs.forEach(g=>{h+=`<button class="fbtn ${hfg===g?'a':''}" onclick="sF('${g}')">${g}</button>`;});
+  let h='<button class="fbtn '+(hfg==='all'?'a':'')+'" onclick="sF(\'all\')">Todos</button>';
+  gs.forEach(g=>{h+='<button class="fbtn '+(hfg===g?'a':'')+'" onclick="sF(\''+esc(g).replace(/'/g,"\\'")+'\')">'+esc(g)+'</button>';});
   el.innerHTML=h;
 }
 function sF(g){hfg=g;bHF();rH();}
@@ -1010,23 +1550,66 @@ function rH(){
   let h='';
   for(const g of gs){
     if(!data[g]||!data[g].length)continue;
-    h+=`<div class="h-gh">${g}<span class="c">${data[g].length}</span></div>`;
+    const gq=esc(g).replace(/'/g,"\\'");
+    h+='<div class="h-gh">'+esc(g)+'<span class="c">'+data[g].length+'</span></div>';
     data[g].forEach((e,i)=>{
-      const[y,m,d]=e.date.split('-');
-      const hrs=e.hnd>0?`<span style="color:var(--red)">${e.hnd}h nd</span>`:`${e.h}h`;
-      h+=`<div class="h-er"><div class="h-ed">${d}/${m}/${y}</div><div class="h-eh">${hrs}</div><div class="h-et">${esc(e.dev)}</div><div class="h-ea"><button class="ib" onclick="dE('${g}',${i})">🗑️</button></div></div>`;
+      const p=e.date.split('-');
+      const hrs=e.hnd>0?'<span style="color:var(--red)">'+e.hnd+'h nd</span>':(e.h+'h');
+      h+='<div class="h-er"><div class="h-ed">'+p[2]+'/'+p[1]+'/'+p[0]+'</div><div class="h-eh">'+hrs+'</div>'+
+        '<div class="h-et">'+esc(e.dev)+'</div>'+
+        '<div class="h-ea">'+
+        '<button class="ib" title="Editar" onclick="openEdit(\''+gq+'\','+i+')"><svg class="ic"><use href="#i-edit"/></svg></button>'+
+        '<button class="ib" title="Eliminar" onclick="dE(\''+gq+'\','+i+')"><svg class="ic"><use href="#i-trash"/></svg></button>'+
+        '</div></div>';
     });
   }
   el.innerHTML=h;
 }
 function dE(g,i){if(!confirm('¿Eliminar?'))return;data[g].splice(i,1);if(!data[g].length)delete data[g];saveD();bHF();rH();showT('Eliminada');}
 
-// ═══ EXPORT ═══
+let meCtx=null;
+function openEdit(g,i){
+  const e=data[g]&&data[g][i]; if(!e)return;
+  meCtx={g,i};
+  const p=e.date.split('-');
+  document.getElementById('meSub').textContent=g+' — '+p[2]+'/'+p[1]+'/'+p[0]+' — '+(e.hnd>0?(e.hnd+'h no dictadas'):(e.h+'h dictadas'));
+  document.getElementById('meText').value=e.dev;
+  document.getElementById('meDesc').value='';
+  document.getElementById('editModal').classList.add('show');
+}
+function closeModal(){ document.getElementById('editModal').classList.remove('show'); meCtx=null; }
+function meChip(txt){ const d=document.getElementById('meDesc'); d.value=(d.value?d.value+' ':'')+txt; }
+function meGuardar(){
+  if(!meCtx)return;
+  const e=data[meCtx.g][meCtx.i]; if(!e)return;
+  e.dev=document.getElementById('meText').value.trim();
+  saveD(); closeModal(); rH(); showT('Entrada actualizada');
+}
+async function meAplicarIA(){
+  if(!meCtx)return;
+  if(!aiReady()){showT('Configurá la IA primero');return;}
+  const e=data[meCtx.g][meCtx.i]; if(!e)return;
+  const instr=document.getElementById('meDesc').value.trim();
+  if(!instr){showT('Escribí qué cambiar o elegí una sugerencia');return;}
+  const btn=document.getElementById('meAiBtn'); btn.disabled=true;
+  try{
+    const sys='Editás el texto de "desarrollo del curso" de una clase para el registro oficial SIGED (Uruguay). Redacción formal, impersonal ("Se trabajó...", "Se resolvieron..."), 1 a 3 frases. Aplicá la instrucción del docente sin inventar contenido que no esté implícito. Devolvé SOLO el texto final, sin comillas ni comentarios.';
+    const ctx='Grupo: '+meCtx.g+'\nFecha: '+e.date+'\nTexto actual: '+e.dev+'\n\nInstrucción del docente: '+instr;
+    const out=(await callAI(sys,ctx,600)).trim();
+    if(out) document.getElementById('meText').value=out;
+    showT('Sugerencia aplicada — revisá y guardá');
+  }catch(err){ console.error(err); showT('Error IA: '+err.message.slice(0,60)); }
+  btn.disabled=false;
+}
+
+// ═══════════════════════════════════════════════
+// EXPORTAR
+// ═══════════════════════════════════════════════
 function buildCSV(g){
   const hdr='Fecha;Horas dictadas;Horas no dictadas;Desarrollo';
   const lines=data[g].map(e=>{
-    const[y,m,d]=e.date.split('-');
-    return `${d}/${m}/${y};${e.h};${e.hnd||0};${e.dev.replace(/;/g,',').replace(/\n/g,' ')}`;
+    const p=e.date.split('-');
+    return p[2]+'/'+p[1]+'/'+p[0]+';'+e.h+';'+(e.hnd||0)+';'+e.dev.replace(/;/g,',').replace(/\n/g,' ');
   });
   return hdr+'\n'+lines.join('\n');
 }
@@ -1039,75 +1622,74 @@ function rExp(){
   for(const g of gs){
     const csv=buildCSV(g);
     const sl=g.replace(/[^a-zA-Z0-9]/g,'_');
-    h+=`<div class="egc"><h3>${g}<span style="display:flex;gap:.3rem;flex-wrap:wrap">
-      <button class="btn btn-f btn-sm" onclick="cT('x${sl}')">📋 Copiar</button>
-      <button class="btn btn-o btn-sm" onclick="dlC('${g}','x${sl}')">⬇ CSV</button>
-    </span></h3><textarea id="x${sl}" oninput="markCsvDirty('${sl}')">${esc(csv)}</textarea>
-    <div class="csv-tools">
-      <button class="btn btn-p btn-sm" id="sv_${sl}" onclick="saveCsvEdits('${g}','${sl}')">💾 Guardar cambios del CSV</button>
-      <button class="btn btn-o btn-sm" onclick="revertCsv('${g}','${sl}')">↺ Revertir</button>
-      <span id="dirty_${sl}" style="font-size:.7rem;color:var(--text3);align-self:center"></span>
-    </div>
-    <div class="ai-edit">
-      <input type="text" id="ai_${sl}" placeholder="Ej: mejorar redacción, agregar detalles de laboratorio, hacer más formal...">
-      <button class="btn btn-p btn-sm" id="aib_${sl}" onclick="aiEdit('${g}','${sl}')">✨ Editar con IA</button>
-    </div>
-    <div class="ai-hint">Podés editar el CSV directamente o con IA. Si editás a mano, apretá "Guardar cambios" para aplicarlo al historial.</div>
-    </div>`;
+    const gq=esc(g).replace(/'/g,"\\'");
+    h+='<div class="egc"><h3>'+esc(g)+'<span style="display:flex;gap:.3rem;flex-wrap:wrap">'+
+      '<button class="btn btn-f btn-sm" onclick="cT(\'x'+sl+'\')"><svg class="ic"><use href="#i-copy"/></svg> Copiar</button>'+
+      '<button class="btn btn-o btn-sm" onclick="dlC(\''+gq+'\',\'x'+sl+'\')"><svg class="ic"><use href="#i-download"/></svg> CSV</button>'+
+      '</span></h3><textarea id="x'+sl+'" oninput="markCsvDirty(\''+sl+'\')">'+esc(csv)+'</textarea>'+
+      '<div class="csv-tools">'+
+      '<button class="btn btn-p btn-sm" id="sv_'+sl+'" onclick="saveCsvEdits(\''+gq+'\',\''+sl+'\')"><svg class="ic"><use href="#i-save"/></svg> Guardar cambios del CSV</button>'+
+      '<button class="btn btn-o btn-sm" onclick="revertCsv(\''+gq+'\',\''+sl+'\')"><svg class="ic"><use href="#i-refresh"/></svg> Revertir</button>'+
+      '<span id="dirty_'+sl+'" style="font-size:.7rem;color:var(--text3)"></span></div>'+
+      '<div class="chips">'+
+      '<span class="chip" onclick="setAiInstr(\''+sl+'\',\'Mejorar la redacción de todos los desarrollos.\')">Mejorar redacción</span>'+
+      '<span class="chip" onclick="setAiInstr(\''+sl+'\',\'Hacer todos los textos más formales y técnicos.\')">Más formal</span>'+
+      '<span class="chip" onclick="setAiInstr(\''+sl+'\',\'Unificar el estilo de redacción de todas las filas.\')">Unificar estilo</span>'+
+      '<span class="chip" onclick="setAiInstr(\''+sl+'\',\'Resumir cada desarrollo en una frase concisa.\')">Resumir</span>'+
+      '</div>'+
+      '<div class="ai-edit">'+
+      '<input type="text" id="ai_'+sl+'" placeholder="Ej: mejorar redacción, agregar detalles de laboratorio, hacer más formal...">'+
+      '<button class="btn btn-p btn-sm" id="aib_'+sl+'" onclick="aiEdit(\''+gq+'\',\''+sl+'\')"><svg class="ic"><use href="#i-sparkle"/></svg> Editar con IA</button>'+
+      '</div>'+
+      '<div class="ai-hint">Podés editar el CSV directamente o con IA. Si editás a mano, apretá "Guardar cambios" para aplicarlo al historial.</div>'+
+      '</div>';
   }
   el.innerHTML=h;
 }
+function setAiInstr(sl,txt){ const i=document.getElementById('ai_'+sl); if(i) i.value=txt; }
 
 async function aiEdit(g,sl){
-  if(!getApiKey()){ showT('Configurá tu API key arriba ⚙️'); return; }
+  if(!aiReady()){ showT('Configurá la IA en Configuración'); return; }
   const inp=document.getElementById('ai_'+sl);
   const btn=document.getElementById('aib_'+sl);
   const instr=(inp.value||'').trim();
   if(!instr){ showT('Escribí una instrucción'); inp.focus(); return; }
   const csv=buildCSV(g);
-  btn.disabled=true; const orig=btn.textContent; btn.textContent='⏳ Editando...';
+  btn.disabled=true;
   try{
-    const sys=`Editás CSVs de desarrollo de clases. Formato EXACTO (separador ;):
-Fecha;Horas dictadas;Horas no dictadas;Desarrollo
-La Fecha (DD/MM/AAAA) y ambas columnas de horas NO se modifican NUNCA.
-Solo aplicás la instrucción del usuario a la columna Desarrollo de cada fila.
-NUNCA inventes contenido nuevo: trabajá sobre el texto existente.
-Si una fila dice "No se dictó..." dejala igual.
-Devolvé SOLO el CSV completo con el mismo número de filas, sin markdown, sin comentarios.`;
-    const userMsg=`Instrucción: ${instr}\n\nCSV a editar:\n${csv}`;
-    const out=await callClaude(sys,userMsg,Math.min(4000,csv.length*2+500));
+    const sys='Editás CSVs de desarrollo de clases. Formato EXACTO (separador ;):\nFecha;Horas dictadas;Horas no dictadas;Desarrollo\nLa Fecha (DD/MM/AAAA) y ambas columnas de horas NO se modifican NUNCA.\nSolo aplicás la instrucción del usuario a la columna Desarrollo de cada fila.\nNUNCA inventes contenido nuevo: trabajá sobre el texto existente.\nSi una fila dice "No se dictó..." dejala igual.\nDevolvé SOLO el CSV completo con el mismo número de filas, sin markdown, sin comentarios.';
+    const userMsg='Instrucción: '+instr+'\n\nCSV a editar:\n'+csv;
+    const out=await callAI(sys,userMsg,Math.min(4000,csv.length*2+500));
     const edited=out.replace(/```csv|```/gi,'').trim();
     const rows=edited.split('\n').map(r=>r.trim()).filter(r=>r);
-    // Remove header if returned
     if(rows[0]&&rows[0].toLowerCase().startsWith('fecha'))rows.shift();
     if(rows.length!==data[g].length){
-      if(!confirm(`La IA devolvió ${rows.length} filas (original: ${data[g].length}). ¿Aplicar igual?`)){
-        btn.disabled=false;btn.textContent=orig;return;
+      if(!confirm('La IA devolvió '+rows.length+' filas (original: '+data[g].length+'). ¿Aplicar igual?')){
+        btn.disabled=false;return;
       }
     }
     const newEntries=[];
     for(const ln of rows){
       const parts=ln.split(';');
       if(parts.length<4)continue;
-      const[fecha,hh,hnd,...rest]=parts;
-      const dev=rest.join(';').trim();
-      const[d,m,y]=fecha.split('/');
-      if(!d||!m||!y)continue;
-      newEntries.push({date:`${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`,h:parseInt(hh)||0,hnd:parseInt(hnd)||0,dev});
+      const fecha=parts[0],hh=parts[1],hnd=parts[2],dev=parts.slice(3).join(';').trim();
+      const dp=fecha.split('/');
+      if(dp.length!==3)continue;
+      newEntries.push({date:dp[2]+'-'+dp[1].padStart(2,'0')+'-'+dp[0].padStart(2,'0'),h:parseInt(hh)||0,hnd:parseInt(hnd)||0,dev});
     }
     if(!newEntries.length)throw new Error('Respuesta inválida');
     data[g]=newEntries.sort((a,b)=>a.date.localeCompare(b.date));
     saveD();
     inp.value='';
     rExp();
-    showT('CSV editado con IA ✓');
+    showT('CSV editado con IA');
   }catch(e){
     console.error(e);
     showT('Error: '+e.message.slice(0,60));
-    btn.disabled=false;btn.textContent=orig;
+    btn.disabled=false;
   }
 }
-function markCsvDirty(sl){ const d=document.getElementById('dirty_'+sl); if(d) d.textContent='● sin guardar'; d && (d.style.color='var(--fire)'); }
+function markCsvDirty(sl){ const d=document.getElementById('dirty_'+sl); if(d){ d.textContent='● sin guardar'; d.style.color='var(--fire)'; } }
 function revertCsv(g,sl){
   const ta=document.getElementById('x'+sl); if(!ta) return;
   ta.value=buildCSV(g);
@@ -1121,33 +1703,177 @@ function saveCsvEdits(g,sl){
   const newEntries=[];
   for(const ln of rows){
     const parts=ln.split(';');
-    if(parts.length<4){ showT(`Fila inválida: "${ln.slice(0,40)}..."`); return; }
-    const[fecha,hh,hnd,...rest]=parts;
-    const dev=rest.join(';').trim();
-    const[d,m,y]=fecha.split('/');
-    if(!d||!m||!y){ showT(`Fecha inválida: ${fecha}`); return; }
-    const date=`${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`;
+    if(parts.length<4){ showT('Fila inválida: "'+ln.slice(0,40)+'..."'); return; }
+    const fecha=parts[0],hh=parts[1],hnd=parts[2],dev=parts.slice(3).join(';').trim();
+    const dp=fecha.split('/');
+    if(dp.length!==3){ showT('Fecha inválida: '+fecha); return; }
+    const date=dp[2]+'-'+dp[1].padStart(2,'0')+'-'+dp[0].padStart(2,'0');
     const hn=parseInt(hh), hndn=parseInt(hnd);
-    if(isNaN(hn)||isNaN(hndn)){ showT(`Horas inválidas en ${fecha}`); return; }
+    if(isNaN(hn)||isNaN(hndn)){ showT('Horas inválidas en '+fecha); return; }
     newEntries.push({date,h:hn,hnd:hndn,dev});
   }
   if(!newEntries.length){ showT('Sin filas válidas'); return; }
   data[g]=newEntries.sort((a,b)=>a.date.localeCompare(b.date));
   saveD();
   const dd=document.getElementById('dirty_'+sl); if(dd){ dd.textContent='✓ guardado'; dd.style.color='var(--mint)'; }
-  rExp(); showT(`${newEntries.length} filas guardadas ✓`);
+  rExp(); showT(newEntries.length+' filas guardadas');
 }
-function cT(id){const t=document.getElementById(id);if(!t)return;navigator.clipboard.writeText(t.value).then(()=>showT('Copiado ✓')).catch(()=>{t.select();document.execCommand('copy');showT('Copiado ✓')});}
-function dlC(g,id){const t=document.getElementById(id);if(!t)return;const fn=`desarrollo_${g.replace(/[^a-zA-Z0-9]/g,'_')}.csv`;const b=new Blob(['\ufeff'+t.value],{type:'text/csv;charset=utf-8;'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=fn;a.click();showT('Descargado ✓');}
+function cT(id){const t=document.getElementById(id);if(!t)return;navigator.clipboard.writeText(t.value).then(()=>showT('Copiado')).catch(()=>{t.select();document.execCommand('copy');showT('Copiado')});}
+function cpText(id){cT(id);}
+function dlC(g,id){const t=document.getElementById(id);if(!t)return;const fn='desarrollo_'+g.replace(/[^a-zA-Z0-9]/g,'_')+'.csv';const b=new Blob(['﻿'+t.value],{type:'text/csv;charset=utf-8;'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=fn;a.click();showT('Descargado');}
 
 // ═══════════════════════════════════════════════
-// HOLIDAYS PANEL
+// REDACTAR CLASE POR CLASE (IA)
+// ═══════════════════════════════════════════════
+let waND=false;
+function waRefreshGroups(){
+  const el=document.getElementById('waGroup'); if(!el)return;
+  const prev=el.value;
+  el.innerHTML=groupNames().sort().map(g=>'<option value="'+esc(g)+'">'+esc(g)+'</option>').join('');
+  if(prev&&groupNames().includes(prev)) el.value=prev;
+  if(!document.getElementById('waDate').value) document.getElementById('waDate').value=fI(new Date());
+  waRefreshInfo();
+}
+function waSessionFor(g,dateStr){
+  const sess=sessionsOf(g); if(!sess) return null;
+  const dow=new Date(dateStr+'T12:00:00').getDay();
+  return sess.find(s=>s.dow===dow)||null;
+}
+function waRefreshInfo(){
+  const el=document.getElementById('waInfo'); if(!el)return;
+  const g=document.getElementById('waGroup').value;
+  const ds=document.getElementById('waDate').value;
+  if(!g||!ds){el.innerHTML='';return;}
+  const dow=new Date(ds+'T12:00:00').getDay();
+  const s=waSessionFor(g,ds);
+  const hol=isHoliday(ds)?holidayName(ds):null;
+  let html='';
+  if(hol){
+    html='<div class="warn-box">Esa fecha es feriado / día no lectivo: <b>'+esc(hol)+'</b>. La entrada se registrará como no dictada.</div>';
+  }
+  if(s){
+    const t=sessTime(s);
+    const mat=matById((cfg.groups.find(x=>x.name===g)||{}).materia);
+    html+='<div class="info-box"><b>'+esc(DL_FULL[dow]||'')+'</b> · '+sessH(s)+' hora'+(sessH(s)>1?'s':'')+(t?' · '+t:' · sin franja asignada (configurala en Configuración)')+(mat?' · '+esc(mat.name):'')+'</div>';
+  } else if(!hol){
+    const dn=DL_FULL[dow];
+    html+='<div class="warn-box">Según tu horario, <b>'+esc(g)+'</b> no tiene clase '+(dn?('los '+dn.toLowerCase()):'ese día (fin de semana)')+'. Podés guardar igual, pero revisá la fecha o el horario en Configuración.</div>';
+  }
+  el.innerHTML=html;
+}
+function waAddType(chip,txt){
+  if(txt==='ND'){
+    waND=!waND;
+    chip.classList.toggle('sel',waND);
+    return;
+  }
+  chip.classList.toggle('sel');
+  const d=document.getElementById('waDesc');
+  if(chip.classList.contains('sel')) d.value=(d.value?d.value+'\n':'')+txt;
+  else d.value=d.value.replace(txt,'').trim();
+}
+function waPrevEntries(g,dateStr){
+  const arr=(data[g]||[]).filter(e=>e.date<dateStr&&e.h>0).slice(-3);
+  return arr.map(e=>e.date+': '+e.dev).join('\n');
+}
+async function waSugerir(){
+  if(!aiReady()){showT('Configurá la IA primero');swTab('config');swCfgSub('cfg-ai');return;}
+  const desc=document.getElementById('waDesc').value.trim();
+  if(!desc){showT('Primero contá qué pasó en la clase');document.getElementById('waDesc').focus();return;}
+  const btn=document.getElementById('waSugBtn'); btn.disabled=true;
+  const box=document.getElementById('waSug');
+  box.innerHTML='<span style="font-size:.72rem;color:var(--text3)">Pensando sugerencias...</span>';
+  try{
+    const sys='Un docente describe informalmente lo que pasó en su clase. Proponé 3 enfoques distintos y breves (máx. 12 palabras cada uno) para redactar el "desarrollo del curso" oficial: qué destacar o qué estilo usar. SOLO JSON: {"sugerencias":["...","...","..."]}';
+    const txt=await callAI(sys,desc,400);
+    const parsed=parseAIJson(txt);
+    const sugs=(parsed.sugerencias||parsed.suggestions||[]).slice(0,4);
+    if(!sugs.length) throw new Error('sin sugerencias');
+    box.innerHTML=sugs.map(s=>
+      '<span class="chip ai" onclick="document.getElementById(\'waInstr\').value=this.textContent;document.querySelectorAll(\'#waSug .chip\').forEach(c=>c.classList.remove(\'sel\'));this.classList.add(\'sel\')">'+esc(s)+'</span>'
+    ).join('');
+  }catch(e){ console.error(e); box.innerHTML=''; showT('No se pudieron generar sugerencias: '+e.message.slice(0,50)); }
+  btn.disabled=false;
+}
+async function waRedactar(){
+  const g=document.getElementById('waGroup').value;
+  const ds=document.getElementById('waDate').value;
+  const desc=document.getElementById('waDesc').value.trim();
+  if(!g||!ds){showT('Elegí grupo y fecha');return;}
+  const hol=isHoliday(ds)?holidayName(ds):null;
+  const res=document.getElementById('waResult'), out=document.getElementById('waOut');
+  if(hol||waND){
+    out.value=hol?('No se dictó: '+hol+'.'):'No se dictó clase.';
+    res.style.display='';
+    return;
+  }
+  if(!desc){showT('Contá qué pasó en la clase');return;}
+  if(!aiReady()){
+    // sin IA: usar la descripción tal cual como base editable
+    out.value=desc;
+    res.style.display='';
+    showT('Sin IA configurada: se copió tu descripción para editar a mano');
+    return;
+  }
+  const btn=document.getElementById('waGenBtn'); btn.disabled=true;
+  const orig=btn.innerHTML; btn.innerHTML='<div class="spin" style="width:14px;height:14px;border-width:2px"></div> Redactando...';
+  try{
+    const s=waSessionFor(g,ds);
+    const dow=new Date(ds+'T12:00:00').getDay();
+    const mat=matById((cfg.groups.find(x=>x.name===g)||{}).materia);
+    const lvl=mat?cfg.levels.find(l=>l.id===mat.level):null;
+    const instr=document.getElementById('waInstr').value.trim();
+    const prev=waPrevEntries(g,ds);
+    const sys='Redactás la entrada de "Desarrollo del curso" del registro oficial SIGED (educación media, Uruguay) a partir de la descripción informal del docente.\nReglas:\n- Redacción formal e impersonal ("Se trabajó...", "Se resolvieron...", "Se realizó...").\n- 1 a 3 frases, concretas: contenidos, actividades, tipo de trabajo.\n- No inventes contenidos ni actividades que el docente no mencione.\n- No incluyas nombres de estudiantes.\n- No menciones fecha, grupo ni horas: solo el desarrollo.\n- Devolvé SOLO el texto, sin comillas ni comentarios.';
+    const ctx='GRUPO: '+g+(mat?' — '+mat.name:'')+(lvl?' ('+lvl.label+')':'')+
+      '\nCLASE: '+(DL_FULL[dow]||'')+' '+ds+(s?(' · '+sessH(s)+'h'+(sessTime(s)?' · '+sessTime(s):'')):'')+
+      (prev?('\n\nDESARROLLOS ANTERIORES (para dar continuidad, no repetir):\n'+prev):'')+
+      (instr?('\n\nINSTRUCCIÓN DE REDACCIÓN: '+instr):'')+
+      '\n\nDESCRIPCIÓN DEL DOCENTE:\n'+desc;
+    const txt=(await callAI(sys,ctx,600)).trim();
+    if(!txt) throw new Error('respuesta vacía');
+    out.value=txt;
+    res.style.display='';
+  }catch(e){ console.error(e); showT('Error IA: '+e.message.slice(0,60)); }
+  btn.disabled=false; btn.innerHTML=orig;
+}
+function waGuardar(){
+  const g=document.getElementById('waGroup').value;
+  const ds=document.getElementById('waDate').value;
+  const dev=document.getElementById('waOut').value.trim();
+  if(!g||!ds||!dev){showT('Faltan datos');return;}
+  const s=waSessionFor(g,ds);
+  const hrs=s?sessH(s):1;
+  const noDict=waND||isHoliday(ds)||/^no se dictó/i.test(dev);
+  const entry={date:ds,h:noDict?0:hrs,hnd:noDict?hrs:0,dev};
+  if(!data[g])data[g]=[];
+  const ex=data[g].find(x=>x.date===ds);
+  if(ex){
+    if(!confirm('Ya existe una entrada para '+g+' el '+ds+'. ¿Reemplazarla?'))return;
+    ex.h=entry.h;ex.hnd=entry.hnd;ex.dev=entry.dev;
+  } else data[g].push(entry);
+  data[g].sort((a,b)=>a.date.localeCompare(b.date));
+  saveD();
+  showT('Guardado en '+g+' ('+(noDict?(hrs+'h no dictadas'):(hrs+'h dictadas'))+')');
+  waLimpiar();
+}
+function waLimpiar(){
+  document.getElementById('waDesc').value='';
+  document.getElementById('waInstr').value='';
+  document.getElementById('waOut').value='';
+  document.getElementById('waResult').style.display='none';
+  document.getElementById('waSug').innerHTML='';
+  waND=false;
+  document.querySelectorAll('#waTypeChips .chip').forEach(c=>c.classList.remove('sel'));
+}
+
+// ═══════════════════════════════════════════════
+// FERIADOS
 // ═══════════════════════════════════════════════
 function rHols(){
   const el=document.getElementById('holList'); if(!el) return;
   const all=allHolidays();
   if(!all.length){ el.innerHTML='<div class="empty">Sin feriados cargados.</div>'; return; }
-  // Group by month
   const byMonth={};
   for(const h of all){
     const mk=h.date.slice(0,7);
@@ -1157,14 +1883,15 @@ function rHols(){
   const mNames=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
   let html='';
   for(const mk of Object.keys(byMonth).sort()){
-    const[yy,mm]=mk.split('-');
-    html+=`<div class="hol-mon"><h4>${mNames[parseInt(mm)-1]} ${yy}</h4><div class="hol-list">`;
+    const yy=mk.split('-')[0], mm=mk.split('-')[1];
+    html+='<div class="hol-mon"><h4>'+mNames[parseInt(mm)-1]+' '+yy+'</h4><div class="hol-list">';
     for(const h of byMonth[mk]){
-      const[y,m,d]=h.date.split('-');
+      const p=h.date.split('-');
       const isDef=DEFAULT_HOLIDAYS.some(x=>x.date===h.date && x.name===h.name);
-      html+=`<span class="hol-tag" title="${h.date}">${d}/${m} · ${esc(h.name)}<span class="x" onclick="removeHol('${h.date}','${esc(h.name).replace(/'/g,"\\'")}',${isDef})" title="${isDef?'Ocultar feriado por defecto':'Eliminar'}">✕</span></span>`;
+      html+='<span class="hol-tag" title="'+h.date+'">'+p[2]+'/'+p[1]+' · '+esc(h.name)+
+        '<span class="x" onclick="removeHol(\''+h.date+'\',\''+esc(h.name).replace(/'/g,"\\'")+'\','+isDef+')" title="'+(isDef?'Ocultar feriado por defecto':'Eliminar')+'">✕</span></span>';
     }
-    html+=`</div></div>`;
+    html+='</div></div>';
   }
   el.innerHTML=html;
 }
@@ -1174,7 +1901,7 @@ function addHol(){
   if(!date){ showT('Elegí una fecha'); return; }
   if(!name){ showT('Escribí un motivo'); return; }
   customHolidays.push({date,name});
-  saveHols(); dEl.value=''; nEl.value=''; rHols(); updW(); showT('Feriado agregado ✓');
+  saveHols(); dEl.value=''; nEl.value=''; rHols(); updW(); showT('Feriado agregado');
 }
 function removeHol(date,name,isDef){
   if(isDef){
@@ -1186,7 +1913,7 @@ function removeHol(date,name,isDef){
 }
 function resetHols(){
   if(!confirm('¿Restaurar todos los feriados por defecto? No borra los personalizados.')) return;
-  disabledDefaults=[]; saveHols(); rHols(); updW(); showT('Feriados restaurados ✓');
+  disabledDefaults=[]; saveHols(); rHols(); updW(); showT('Feriados restaurados');
 }
 function clearCustomHols(){
   if(!customHolidays.length){ showT('No hay personalizados'); return; }
@@ -1195,25 +1922,27 @@ function clearCustomHols(){
 }
 
 // ═══════════════════════════════════════════════
-// PLANNING PANEL
+// PLAN ANUAL
 // ═══════════════════════════════════════════════
 function setupPlanDefaults(){
-  const y=new Date().getFullYear();
   const pf=document.getElementById('planFrom'), pt=document.getElementById('planTo');
-  if(pf && !pf.value) pf.value=`${y}-03-02`;
-  if(pt && !pt.value) pt.value=`${y}-12-04`;
-  if(!curPlanMat && ALL_MATERIAS.length) curPlanMat=ALL_MATERIAS[0].id;
+  if(pf && !pf.value) pf.value=cfg.meta.yearStart||((cfg.meta.year||new Date().getFullYear())+'-03-02');
+  if(pt && !pt.value) pt.value=cfg.meta.yearEnd||((cfg.meta.year||new Date().getFullYear())+'-12-04');
+  const mats=allMaterias();
+  if((!curPlanMat||!mats.find(m=>m.id===curPlanMat)) && mats.length) curPlanMat=mats[0].id;
 }
 function rPlanMatPick(){
   const el=document.getElementById('planMatPick'); if(!el) return;
-  el.innerHTML=ALL_MATERIAS.map(m=>{
-    const lvl=LEVELS.find(l=>l.materias.some(mm=>mm.id===m.id));
-    const bg=curPlanMat===m.id?`background:${m.clr};`:'';
-    return `<button class="mp${curPlanMat===m.id?' active':''}" style="${bg}" onclick="selPlanMat('${m.id}')">${lvl.label} ${m.name}</button>`;
+  setupPlanDefaults();
+  const lv=viewLevels();
+  el.innerHTML=allMaterias().map(m=>{
+    const lvl=lv.find(l=>l.materias.some(mm=>mm.id===m.id));
+    const bg=curPlanMat===m.id?('background:'+m.clr+';'):'';
+    return '<button class="mp'+(curPlanMat===m.id?' active':'')+'" style="'+bg+'" onclick="selPlanMat(\''+m.id+'\')">'+esc(lvl?lvl.label:'')+' '+esc(m.name)+'</button>';
   }).join('');
   const cur=plans[curPlanMat];
-  const pr=document.getElementById('planProg'); if(pr) pr.value = cur?.program || '';
-  const fn=document.getElementById('planFileN'); if(fn) fn.textContent = cur?.fileName || '';
+  const pr=document.getElementById('planProg'); if(pr) pr.value = (cur&&cur.program)||'';
+  const fn=document.getElementById('planFileN'); if(fn) fn.textContent = (cur&&cur.fileName)||'';
   rPlanWeeks();
 }
 function selPlanMat(id){ curPlanMat=id; rPlanMatPick(); }
@@ -1226,7 +1955,7 @@ function rPlanWeeks(){
   vc.style.display='';
   const today=fI(new Date());
   el.innerHTML=cur.weeks.map((w,wi)=>{
-    const[y,m,d]=w.start.split('-');
+    const p=w.start.split('-');
     const end=new Date(w.start+'T12:00:00'); end.setDate(end.getDate()+4);
     const endS=fDS(end);
     const wkHols=[];
@@ -1236,14 +1965,13 @@ function rPlanWeeks(){
     }
     const isPast=w.start<today;
     const holClass = wkHols.length>=5 ? ' hol' : '';
-    return `<div class="plan-wk${w._sel?' sel':''}${holClass}">
-      <div class="plan-wk-chk"><input type="checkbox" ${w._sel?'checked':''} onchange="togPlanSel(${wi},this.checked)"></div>
-      <div class="plan-wk-date">${d}/${m}–${endS}<small>Sem. ${wi+1}${isPast?' · pasada':''}</small></div>
-      <div class="plan-wk-txt">
-        <textarea onchange="plans['${curPlanMat}'].weeks[${wi}].topic=this.value;savePlans()">${esc(w.topic||'')}</textarea>
-        ${wkHols.length?`<div class="plan-wk-meta">🎉 ${wkHols.join(' · ')}</div>`:''}
-      </div>
-    </div>`;
+    return '<div class="plan-wk'+(w._sel?' sel':'')+holClass+'">'+
+      '<div class="plan-wk-chk"><input type="checkbox" '+(w._sel?'checked':'')+' onchange="togPlanSel('+wi+',this.checked)"></div>'+
+      '<div class="plan-wk-date">'+p[2]+'/'+p[1]+'–'+endS+'<small>Sem. '+(wi+1)+(isPast?' · pasada':'')+'</small></div>'+
+      '<div class="plan-wk-txt">'+
+      '<textarea onchange="plans[\''+curPlanMat+'\'].weeks['+wi+'].topic=this.value;savePlans()">'+esc(w.topic||'')+'</textarea>'+
+      (wkHols.length?'<div class="plan-wk-meta">'+esc(wkHols.join(' · '))+'</div>':'')+
+      '</div></div>';
   }).join('');
 }
 function togPlanSel(wi,ck){ plans[curPlanMat].weeks[wi]._sel=ck; }
@@ -1262,13 +1990,12 @@ function planSelCurrent(){
 }
 function limpiarPlan(){
   if(!plans[curPlanMat]){ showT('Sin plan'); return; }
-  if(!confirm(`¿Borrar la planificación de ${curPlanMat}?`)) return;
+  if(!confirm('¿Borrar la planificación de esta materia?')) return;
   delete plans[curPlanMat]; savePlans(); rPlanMatPick(); showT('Plan borrado');
 }
 
 function mondaysBetween(fromS,toS){
   const fd=new Date(fromS+'T12:00:00'), td=new Date(toS+'T12:00:00');
-  // snap to Monday
   while(fd.getDay()!==1) fd.setDate(fd.getDate()+1);
   const out=[];
   const d=new Date(fd);
@@ -1278,12 +2005,12 @@ function mondaysBetween(fromS,toS){
 
 async function generarPlanAnual(){
   if(!curPlanMat){ showT('Elegí una materia'); return; }
-  const mat=ALL_MATERIAS.find(m=>m.id===curPlanMat);
+  const mat=allMaterias().find(m=>m.id===curPlanMat);
   const prog=(document.getElementById('planProg').value||'').trim();
   if(!prog){ showT('Pegá o subí el programa'); return; }
   const fromV=document.getElementById('planFrom').value, toV=document.getElementById('planTo').value;
   if(!fromV||!toV){ showT('Completá las fechas'); return; }
-  if(!getApiKey()){ showT('Configurá tu API key arriba'); return; }
+  if(!aiReady()){ showT('Configurá la IA primero'); return; }
 
   const mondays=mondaysBetween(fromV,toV);
   if(!mondays.length){ showT('Rango inválido'); return; }
@@ -1291,7 +2018,6 @@ async function generarPlanAnual(){
   const st=document.getElementById('planStatus');
   st.innerHTML='<div class="ld-bar"><div class="spin"></div>Generando planificación anual...</div>';
 
-  // Build list of weeks with their school holidays
   const wkInfo=mondays.map((ms,i)=>{
     const mon=new Date(ms+'T12:00:00');
     const hols=[];
@@ -1300,36 +2026,29 @@ async function generarPlanAnual(){
       const ds=fI(dd); if(isHoliday(ds)) hols.push(DL[j+1]+' '+holidayName(ds));
     }
     const fri=new Date(mon); fri.setDate(mon.getDate()+4);
-    return { i:i+1, ms, label:`${fDS(mon)}–${fDS(fri)}`, hols };
+    return { i:i+1, ms, label:fDS(mon)+'–'+fDS(fri), hols };
   });
-  const wkText=wkInfo.map(w=>`Sem. ${w.i} (${w.label})${w.hols.length?' 🎉 '+w.hols.join(' / '):''}`).join('\n');
+  const wkText=wkInfo.map(w=>'Sem. '+w.i+' ('+w.label+')'+(w.hols.length?' [FERIADOS: '+w.hols.join(' / ')+']':'')).join('\n');
 
   try{
-    const sys=`Sos asistente pedagógico. Distribuís el programa de una materia en semanas. Reglas:
-- Devolvés SOLO JSON, sin markdown: {"weeks":[{"i":1,"topic":"..."},...]}
-- Una entrada por cada semana provista (mismo número de semanas).
-- Si la semana es íntegramente feriado/vacaciones, "topic" = "" (vacío).
-- Si la semana tiene algún feriado parcial, ajustás la carga.
-- El "topic" es una línea breve (1–2 frases) con el tema principal y sub-temas clave.
-- Reservá semanas para evaluaciones, repasos, laboratorios según se mencione en el programa.
-- Respetás el orden lógico pedagógico.`;
-    const userMsg=`Materia: ${mat.name}\nCurso nivel: ${LEVELS.find(l=>l.materias.some(mm=>mm.id===mat.id)).label}\n\nSEMANAS DISPONIBLES:\n${wkText}\n\nPROGRAMA / CONTENIDOS:\n${prog}`;
-    const txt=await callClaude(sys,userMsg,3500);
-    const cleaned=txt.replace(/```json|```/g,'').trim();
-    const parsed=JSON.parse(cleaned);
+    const lvl=levelOfMat(mat.id);
+    const sys='Sos asistente pedagógico. Distribuís el programa de una materia en semanas. Reglas:\n- Devolvés SOLO JSON, sin markdown: {"weeks":[{"i":1,"topic":"..."},...]}\n- Una entrada por cada semana provista (mismo número de semanas).\n- Si la semana es íntegramente feriado/vacaciones, "topic" = "" (vacío).\n- Si la semana tiene algún feriado parcial, ajustás la carga.\n- El "topic" es una línea breve (1–2 frases) con el tema principal y sub-temas clave.\n- Reservá semanas para evaluaciones, repasos, laboratorios según se mencione en el programa.\n- Respetás el orden lógico pedagógico.';
+    const userMsg='Materia: '+mat.name+'\nCurso nivel: '+(lvl?lvl.label:'')+'\n\nSEMANAS DISPONIBLES:\n'+wkText+'\n\nPROGRAMA / CONTENIDOS:\n'+prog;
+    const txt=await callAI(sys,userMsg,3500);
+    const parsed=parseAIJson(txt);
     const weeksOut=(parsed.weeks||[]).slice(0,mondays.length);
     const planWeeks=mondays.map((ms,i)=>{
       const w=weeksOut.find(x=>x.i===i+1) || weeksOut[i] || {topic:''};
       return { start:ms, topic:w.topic||'', _sel:false };
     });
-    plans[curPlanMat]={ program:prog, fileName:plans[curPlanMat]?.fileName||'', weeks:planWeeks, updated:Date.now() };
+    plans[curPlanMat]={ program:prog, fileName:(plans[curPlanMat]&&plans[curPlanMat].fileName)||'', weeks:planWeeks, updated:Date.now() };
     savePlans();
-    st.innerHTML=`<div class="info-box">✓ Plan generado con <b>${planWeeks.length}</b> semanas. Editá abajo.</div>`;
+    st.innerHTML='<div class="info-box">Plan generado con <b>'+planWeeks.length+'</b> semanas. Editá abajo.</div>';
     rPlanWeeks();
-    showT('Plan generado ✓');
+    showT('Plan generado');
   }catch(e){
     console.error(e);
-    st.innerHTML=`<div class="warn-box">Error: ${esc(e.message||'desconocido')}. Probá reducir el rango o simplificar el programa.</div>`;
+    st.innerHTML='<div class="warn-box">Error: '+esc(e.message||'desconocido')+'. Probá reducir el rango o simplificar el programa.</div>';
     showT('IA falló');
   }
 }
@@ -1339,17 +2058,14 @@ function planAplicarACargar(){
   const sel=cur.weeks.filter(w=>w._sel);
   if(!sel.length){ showT('Seleccioná al menos una semana'); return; }
   const starts=sel.map(w=>w.start).sort();
-  const from=starts[0], to=starts[starts.length-1];
-  document.getElementById('dFrom').value=from;
-  document.getElementById('dTo').value=to;
-  // Switch to the level of the selected materia
-  const mat=ALL_MATERIAS.find(m=>m.id===curPlanMat);
-  const lvl=LEVELS.find(l=>l.materias.some(mm=>mm.id===mat.id));
-  curLevel=lvl.id;
-  swTab('write');
+  document.getElementById('dFrom').value=starts[0];
+  document.getElementById('dTo').value=starts[starts.length-1];
+  const mat=allMaterias().find(m=>m.id===curPlanMat);
+  const lvl=levelOfMat(mat.id);
+  if(lvl) curLevel=lvl.id;
+  swTab('write'); swWriteSub('write-week');
   buildLevelTabs();
   updW();
-  // After render, fill the textareas for this materia
   setTimeout(()=>{
     for(const w of sel){
       const wi=weeks.findIndex(x=>fI(x.mon)===w.start);
@@ -1357,7 +2073,7 @@ function planAplicarACargar(){
       const ta=document.getElementById('d_'+mat.id+'_'+wi);
       if(ta) ta.value = w.topic || '';
     }
-    showT(`${sel.length} semanas volcadas a Cargar ✓`);
+    showT(sel.length+' semanas volcadas');
   },80);
 }
 
@@ -1365,27 +2081,26 @@ async function planGenerarDesarrollo(){
   const cur=plans[curPlanMat]; if(!cur) return;
   const sel=cur.weeks.filter(w=>w._sel);
   if(!sel.length){ showT('Seleccioná al menos una semana'); return; }
-  const mat=ALL_MATERIAS.find(m=>m.id===curPlanMat);
+  const mat=allMaterias().find(m=>m.id===curPlanMat);
   const starts=sel.map(w=>w.start).sort();
   const from=starts[0], to=starts[starts.length-1];
-  // Build topic text
-  const topics=sel.map((w,i)=>{
-    const[y,m,d]=w.start.split('-');
-    return `Sem. ${d}/${m} → ${w.topic||'(sin tema)'}`;
+  const topics=sel.map(w=>{
+    const p=w.start.split('-');
+    return 'Sem. '+p[2]+'/'+p[1]+' → '+(w.topic||'(sin tema)');
   }).join('\n');
 
-  // For each group in the materia, generate day-by-day via AI
+  pending=[];
   for(const gN of mat.groups){
     await generarDiaADiaCore(gN,from,to,topics,false);
   }
-  showPV();
-  swTab('write');
+  swTab('write'); swWriteSub('write-week');
   document.getElementById('pvCard').style.display='';
-  showT('Desarrollo día a día generado ✓');
+  showPV();
+  showT('Desarrollo día a día generado');
 }
 
 // ═══════════════════════════════════════════════
-// DAILY (DÍA A DÍA)
+// DÍA A DÍA
 // ═══════════════════════════════════════════════
 function setupDailyDefaults(){
   const today=new Date();
@@ -1399,7 +2114,7 @@ function setupDailyDefaults(){
 function buildDayGroupSel(){
   const el=document.getElementById('dayGroup'); if(!el) return;
   const prev=el.value;
-  el.innerHTML=Object.keys(GROUPS).sort().map(g=>`<option value="${g}">${g}</option>`).join('');
+  el.innerHTML=groupNames().sort().map(g=>'<option value="'+esc(g)+'">'+esc(g)+'</option>').join('');
   if(prev) el.value=prev;
 }
 
@@ -1409,19 +2124,19 @@ async function generarDiaADia(){
   const topics=(document.getElementById('dayTopics').value||'').trim();
   if(!from||!to){ showT('Elegí el rango'); return; }
   if(!topics){ showT('Escribí o subí los temas'); return; }
-  if(!getApiKey()){ showT('Configurá tu API key'); return; }
+  if(!aiReady()){ showT('Configurá la IA primero'); return; }
   document.getElementById('dayPreview').innerHTML='<div class="ld-bar"><div class="spin"></div>Generando desarrollo día a día...</div>';
   await generarDiaADiaCore(g,from,to,topics,true);
-  showPV();
-  swTab('write');
+  document.getElementById('dayPreview').innerHTML='';
+  swTab('write'); swWriteSub('write-week');
   document.getElementById('pvCard').style.display='';
-  showT('Desarrollo generado ✓');
+  showPV();
+  showT('Desarrollo generado');
 }
 
 async function generarDiaADiaCore(g,from,to,topics,clearPending){
   if(clearPending) pending=[];
-  const sessions=GROUPS[g]; if(!sessions){ showT('Grupo no encontrado'); return; }
-  // Build list of class sessions in range
+  const sessions=sessionsOf(g); if(!sessions){ showT('Grupo no encontrado'); return; }
   const fd=new Date(from+'T12:00:00'), td=new Date(to+'T12:00:00');
   const all=[];
   const cur=new Date(fd);
@@ -1430,32 +2145,23 @@ async function generarDiaADiaCore(g,from,to,topics,clearPending){
     const ses=sessions.find(s=>s.dow===dow);
     if(ses){
       const ds=fI(cur);
-      all.push({date:ds,h:ses.h,holiday:isHoliday(ds)?holidayName(ds):null});
+      all.push({date:ds,h:sessH(ses),t:sessTime(ses),holiday:isHoliday(ds)?holidayName(ds):null});
     }
     cur.setDate(cur.getDate()+1);
   }
   if(!all.length){ showT('Sin clases en el rango'); return; }
-  // Build prompt
-  const classList=all.map((c,i)=>`[${i}] ${c.date} (${DL_FULL[new Date(c.date+'T12:00:00').getDay()]}) ${c.h}h${c.holiday?' 🎉 '+c.holiday:''}`).join('\n');
+  const classList=all.map((c,i)=>'['+i+'] '+c.date+' ('+DL_FULL[new Date(c.date+'T12:00:00').getDay()]+') '+c.h+'h'+(c.t?' '+c.t:'')+(c.holiday?' [FERIADO: '+c.holiday+']':'')).join('\n');
   try{
-    const sys=`Sos asistente pedagógico. Te dan una lista de clases (fecha, día, horas) y temas a trabajar. Distribuís los temas proporcionalmente a las horas disponibles, en orden pedagógico.
-Reglas:
-- Devolvés SOLO JSON: {"entries":[{"i":0,"dev":"..."},...]}
-- Una entrada por cada índice provisto.
-- Si la clase tiene marca 🎉 (feriado), dev = "No se dictó: <motivo feriado>".
-- Dev debe ser 1-2 frases claras: qué se hace ese día, con algún detalle concreto (actividad, tipo de ejercicio, evaluación, laboratorio).
-- No repitas exactamente el mismo texto en clases seguidas: da progresión.
-- No inventes temas fuera de los dados.`;
-    const userMsg=`GRUPO: ${g}\n\nCLASES:\n${classList}\n\nTEMAS / PLANIFICACIÓN:\n${topics}`;
-    const txt=await callClaude(sys,userMsg,4000);
-    const cleaned=txt.replace(/```json|```/g,'').trim();
-    const parsed=JSON.parse(cleaned);
+    const sys='Sos asistente pedagógico. Te dan una lista de clases (fecha, día, horas) y temas a trabajar. Distribuís los temas proporcionalmente a las horas disponibles, en orden pedagógico.\nReglas:\n- Devolvés SOLO JSON: {"entries":[{"i":0,"dev":"..."},...]}\n- Una entrada por cada índice provisto.\n- Si la clase tiene marca [FERIADO], dev = "No se dictó: <motivo>."\n- Dev debe ser 1-2 frases claras: qué se hace ese día, con algún detalle concreto (actividad, tipo de ejercicio, evaluación, laboratorio).\n- No repitas exactamente el mismo texto en clases seguidas: da progresión.\n- No inventes temas fuera de los dados.';
+    const userMsg='GRUPO: '+g+'\n\nCLASES:\n'+classList+'\n\nTEMAS / PLANIFICACIÓN:\n'+topics;
+    const txt=await callAI(sys,userMsg,4000);
+    const parsed=parseAIJson(txt);
     const entries=parsed.entries||[];
     for(let i=0;i<all.length;i++){
       const c=all[i];
       const e=entries.find(x=>x.i===i) || entries[i] || {dev:''};
       if(c.holiday){
-        pending.push({g,date:c.date,h:0,hnd:c.h,dev:e.dev || `No se dictó: ${c.holiday}.`});
+        pending.push({g,date:c.date,h:0,hnd:c.h,dev:e.dev || ('No se dictó: '+c.holiday+'.')});
       } else {
         pending.push({g,date:c.date,h:c.h,hnd:0,dev:e.dev || (topics.slice(0,80))});
       }
@@ -1463,9 +2169,8 @@ Reglas:
     pending.sort((a,b)=>a.g.localeCompare(b.g)||a.date.localeCompare(b.date));
   }catch(e){
     console.error(e);
-    // Fallback: one entry per class with topics
     for(const c of all){
-      if(c.holiday) pending.push({g,date:c.date,h:0,hnd:c.h,dev:`No se dictó: ${c.holiday}.`});
+      if(c.holiday) pending.push({g,date:c.date,h:0,hnd:c.h,dev:'No se dictó: '+c.holiday+'.'});
       else pending.push({g,date:c.date,h:c.h,hnd:0,dev:topics.slice(0,100)});
     }
     showT('IA falló: '+(e.message||'').slice(0,40));
@@ -1473,7 +2178,336 @@ Reglas:
 }
 
 // ═══════════════════════════════════════════════
-// FILE UPLOADERS
+// CONFIGURACIÓN — AÑO Y HORARIO
+// ═══════════════════════════════════════════════
+let curCfgGroup=null;
+
+function rCfgAll(){ rCfgHor(); rProviders(); rHols(); }
+function rCfgHor(){
+  document.getElementById('cfgYear').value=cfg.meta.year||'';
+  document.getElementById('cfgTeacher').value=cfg.meta.teacher||'';
+  document.getElementById('cfgSchool').value=cfg.meta.school||'';
+  document.getElementById('cfgYearStart').value=cfg.meta.yearStart||'';
+  document.getElementById('cfgYearEnd').value=cfg.meta.yearEnd||'';
+  rSlots(); rCfgLevels(); rCfgGroups();
+}
+function cfgMetaChanged(){
+  cfg.meta.year=parseInt(document.getElementById('cfgYear').value)||cfg.meta.year;
+  cfg.meta.teacher=document.getElementById('cfgTeacher').value.trim();
+  cfg.meta.school=document.getElementById('cfgSchool').value.trim();
+  cfg.meta.yearStart=document.getElementById('cfgYearStart').value;
+  cfg.meta.yearEnd=document.getElementById('cfgYearEnd').value;
+  saveCfg(); rHome(); showT('Guardado');
+}
+
+// ── Franjas ──
+function rSlots(){
+  const t=document.getElementById('slotsTbl'); if(!t)return;
+  let h='<tr><th style="width:40px">#</th><th>Inicio</th><th>Fin</th><th style="width:40px"></th></tr>';
+  cfg.slots.forEach((s,i)=>{
+    h+='<tr><td class="num">'+(i+1)+'</td>'+
+      '<td><input type="time" value="'+s.start+'" onchange="updSlot('+i+',\'start\',this.value)"></td>'+
+      '<td><input type="time" value="'+s.end+'" onchange="updSlot('+i+',\'end\',this.value)"></td>'+
+      '<td><button class="ib" title="Eliminar franja" onclick="delSlot('+i+')"><svg class="ic"><use href="#i-trash"/></svg></button></td></tr>';
+  });
+  t.innerHTML=h;
+}
+function updSlot(i,k,v){ if(cfg.slots[i]){ cfg.slots[i][k]=v; saveCfg(); rCfgGroups(); } }
+function addSlot(){
+  const last=cfg.slots[cfg.slots.length-1];
+  let start='08:00', end='08:45';
+  if(last){
+    start=last.end;
+    const parts=last.end.split(':').map(Number);
+    const dur=(()=>{const a=last.start.split(':').map(Number);return (parts[0]*60+parts[1])-(a[0]*60+a[1]);})()||45;
+    const endMin=parts[0]*60+parts[1]+dur;
+    end=String(Math.floor(endMin/60)%24).padStart(2,'0')+':'+String(endMin%60).padStart(2,'0');
+  }
+  cfg.slots.push({start,end}); saveCfg(); rSlots(); rCfgGroups();
+}
+function delSlot(i){
+  if(!confirm('¿Eliminar la franja '+(i+1)+'? Se quitará de los horarios de los grupos.'))return;
+  cfg.slots.splice(i,1);
+  for(const g of cfg.groups) for(const s of g.sessions){
+    s.slots=(s.slots||[]).filter(x=>x!==i).map(x=>x>i?x-1:x);
+  }
+  cleanEmptySessions(); saveCfg(); rSlots(); rCfgGroups();
+}
+function cleanEmptySessions(){
+  for(const g of cfg.groups){
+    g.sessions=g.sessions.filter(s=>(s.slots&&s.slots.length)||(s.h&&(!s.slots||!s.slots.length)));
+  }
+}
+
+// ── Niveles y materias ──
+function rCfgLevels(){
+  const el=document.getElementById('cfgLevels'); if(!el)return;
+  el.innerHTML=cfg.levels.map((l,li)=>{
+    const mats=cfg.materias.filter(m=>m.level===l.id);
+    return '<div class="lvl-block">'+
+      '<div class="lvl-head">'+
+      '<span class="tag" style="font-size:.62rem;color:var(--text3);font-weight:700">NIVEL</span>'+
+      '<input type="text" value="'+esc(l.label)+'" onchange="cfg.levels['+li+'].label=this.value;saveCfg();buildLevelTabs()">'+
+      '<input type="color" value="'+l.color+'" onchange="cfg.levels['+li+'].color=this.value;saveCfg()" title="Color del nivel">'+
+      '<button class="ib" title="Eliminar nivel" onclick="delLevel('+li+')"><svg class="ic"><use href="#i-trash"/></svg></button>'+
+      '</div>'+
+      mats.map(m=>{
+        const mi=cfg.materias.indexOf(m);
+        const others=cfg.materias.filter(x=>x.level===l.id&&x.id!==m.id);
+        return '<div class="mat-row">'+
+          '<span class="mat-dot" style="background:'+m.clr+'"></span>'+
+          '<input type="text" value="'+esc(m.name)+'" onchange="cfg.materias['+mi+'].name=this.value;saveCfg()">'+
+          '<input type="color" value="'+m.clr+'" onchange="cfg.materias['+mi+'].clr=this.value;saveCfg()" title="Color de la materia">'+
+          '<span class="tag">Prefijo STEM →</span>'+
+          '<select onchange="cfg.materias['+mi+'].cfq=this.value||null;saveCfg()">'+
+          '<option value="">(ninguno)</option>'+
+          others.map(o=>'<option value="'+o.id+'"'+(m.cfq===o.id?' selected':'')+'>'+esc(o.name)+'</option>').join('')+
+          '</select>'+
+          '<button class="ib" title="Eliminar materia" onclick="delMateria('+mi+')"><svg class="ic"><use href="#i-trash"/></svg></button>'+
+          '</div>';
+      }).join('')+
+      '<button class="btn btn-o btn-sm" onclick="addMateria(\''+l.id+'\')"><svg class="ic"><use href="#i-plus"/></svg> Agregar materia a '+esc(l.label)+'</button>'+
+      '</div>';
+  }).join('')||'<div class="empty">Sin niveles. Agregá uno.</div>';
+}
+function newId(p){ return p+'_'+Math.random().toString(36).slice(2,8); }
+function addLevel(){
+  const label=prompt('Nombre del nivel (ej: 1° Bach):'); if(!label)return;
+  cfg.levels.push({id:newId('lv'),label:label.trim(),color:'#4A90D9'});
+  saveCfg(); rCfgLevels(); buildLevelTabs();
+}
+function delLevel(li){
+  const l=cfg.levels[li];
+  if(cfg.materias.some(m=>m.level===l.id)){ showT('Primero eliminá o mové las materias de este nivel'); return; }
+  if(!confirm('¿Eliminar el nivel '+l.label+'?'))return;
+  cfg.levels.splice(li,1); saveCfg(); rCfgLevels(); buildLevelTabs();
+}
+function addMateria(levelId){
+  const name=prompt('Nombre de la materia:'); if(!name)return;
+  cfg.materias.push({id:newId('mat'),name:name.trim(),clr:'#E8553A',level:levelId,cfq:null});
+  saveCfg(); rCfgLevels();
+}
+function delMateria(mi){
+  const m=cfg.materias[mi];
+  if(cfg.groups.some(g=>g.materia===m.id)){ showT('Primero eliminá o reasigná los grupos de esta materia'); return; }
+  if(!confirm('¿Eliminar la materia '+m.name+'?'))return;
+  for(const x of cfg.materias) if(x.cfq===m.id) x.cfq=null;
+  cfg.materias.splice(mi,1); saveCfg(); rCfgLevels();
+}
+
+// ── Grupos y grilla semanal ──
+function rCfgGroups(){
+  const pills=document.getElementById('cfgGroupPills'); if(!pills)return;
+  if(!curCfgGroup||!cfg.groups.find(g=>g.name===curCfgGroup)){
+    curCfgGroup=cfg.groups.length?cfg.groups[0].name:null;
+  }
+  pills.innerHTML=cfg.groups.map(g=>
+    '<span class="gp'+(g.name===curCfgGroup?' active':'')+'" onclick="selCfgGroup(\''+esc(g.name).replace(/'/g,"\\'")+'\')">'+esc(g.name)+'</span>'
+  ).join('')||'<span style="font-size:.8rem;color:var(--text3)">Sin grupos todavía.</span>';
+  rGroupEditor();
+}
+function selCfgGroup(name){ curCfgGroup=name; rCfgGroups(); }
+function rGroupEditor(){
+  const el=document.getElementById('cfgGroupEditor'); if(!el)return;
+  const g=cfg.groups.find(x=>x.name===curCfgGroup);
+  if(!g){ el.innerHTML=''; return; }
+  const gi=cfg.groups.indexOf(g);
+
+  let head='<div class="row" style="margin-top:.6rem">'+
+    '<div class="fg f1"><label class="lbl">Nombre del grupo</label><input type="text" value="'+esc(g.name)+'" onchange="renameGroup('+gi+',this.value)"></div>'+
+    '<div class="fg f1"><label class="lbl">Materia</label><select onchange="cfg.groups['+gi+'].materia=this.value;saveCfg();rCfgGroups()">'+
+    cfg.materias.map(m=>{
+      const lvl=cfg.levels.find(l=>l.id===m.level);
+      return '<option value="'+m.id+'"'+(g.materia===m.id?' selected':'')+'>'+esc((lvl?lvl.label+' ':'')+m.name)+'</option>';
+    }).join('')+
+    '</select></div>'+
+    '<div class="fg" style="justify-content:flex-end"><button class="btn btn-o btn-sm" onclick="delGroup('+gi+')"><svg class="ic"><use href="#i-trash"/></svg> Eliminar grupo</button></div>'+
+    '</div>';
+
+  if(!cfg.slots.length){
+    el.innerHTML=head+'<div class="warn-box">Primero definí las franjas horarias arriba.</div>';
+    return;
+  }
+
+  let grid='<div class="grid-wrap"><table class="slot-grid"><tr><th class="fr">Franja</th>';
+  for(let d=1;d<=5;d++) grid+='<th>'+DL[d]+'</th>';
+  grid+='</tr>';
+  cfg.slots.forEach((sl,si)=>{
+    grid+='<tr><td class="fr">'+(si+1)+'ª<small>'+sl.start+'–'+sl.end+'</small></td>';
+    for(let d=1;d<=5;d++){
+      const sess=g.sessions.find(s=>s.dow===d);
+      const on=sess&&sess.slots&&sess.slots.includes(si);
+      grid+='<td><div class="gcell'+(on?' on':'')+'" title="'+DL[d]+' '+(si+1)+'ª hora" onclick="togCell('+gi+','+d+','+si+')"></div></td>';
+    }
+    grid+='</tr>';
+  });
+  grid+='</table></div>';
+
+  // sesiones heredadas sin franja asignada
+  const legacy=g.sessions.filter(s=>(!s.slots||!s.slots.length)&&s.h);
+  let legacyHtml='';
+  if(legacy.length){
+    legacyHtml='<div class="legacy-note">Horas sin franja asignada: '+legacy.map(s=>DL[s.dow]+' '+s.h+'h').join(' · ')+' — hacé clic en la grilla para asignarles franja (así la IA conoce los horarios reales).</div>';
+  }
+  const resumen='<div class="info-box" style="margin-top:.7rem"><b>Horario actual:</b> '+esc(groupDesc(g))+'</div>';
+  el.innerHTML=head+grid+legacyHtml+resumen;
+}
+function togCell(gi,dow,si){
+  const g=cfg.groups[gi]; if(!g)return;
+  let sess=g.sessions.find(s=>s.dow===dow);
+  if(!sess){ sess={dow,h:0,slots:[]}; g.sessions.push(sess); }
+  if(!Array.isArray(sess.slots)) sess.slots=[];
+  const idx=sess.slots.indexOf(si);
+  if(idx>=0) sess.slots.splice(idx,1);
+  else { sess.slots.push(si); sess.h=0; } // al asignar franjas, las horas salen de las franjas
+  if(!sess.slots.length&&!sess.h){ g.sessions=g.sessions.filter(s=>s!==sess); }
+  g.sessions.sort((a,b)=>a.dow-b.dow);
+  saveCfg(); rGroupEditor(); rHome();
+}
+function renameGroup(gi,newName){
+  newName=(newName||'').trim();
+  const g=cfg.groups[gi]; if(!g||!newName)return;
+  const old=g.name;
+  if(newName===old)return;
+  if(cfg.groups.some((x,i)=>i!==gi&&x.name===newName)){ showT('Ya existe un grupo con ese nombre'); rCfgGroups(); return; }
+  g.name=newName;
+  if(data[old]){ data[newName]=data[old]; delete data[old]; saveD(); }
+  if(curCfgGroup===old) curCfgGroup=newName;
+  saveCfg(); rCfgGroups(); showT('Grupo renombrado (el historial se movió con él)');
+}
+function addGroup(){
+  if(!cfg.materias.length){ showT('Primero creá una materia'); return; }
+  const name=prompt('Nombre del grupo (ej: CFQ 7°3):'); if(!name)return;
+  const n=name.trim();
+  if(cfg.groups.some(g=>g.name===n)){ showT('Ya existe ese grupo'); return; }
+  cfg.groups.push({name:n,materia:cfg.materias[0].id,sessions:[]});
+  curCfgGroup=n;
+  saveCfg(); rCfgGroups();
+}
+function delGroup(gi){
+  const g=cfg.groups[gi]; if(!g)return;
+  const hasData=data[g.name]&&data[g.name].length;
+  if(!confirm('¿Eliminar el grupo '+g.name+'?'+(hasData?' Sus '+data[g.name].length+' entradas del historial NO se borran.':'')))return;
+  cfg.groups.splice(gi,1);
+  curCfgGroup=null;
+  saveCfg(); rCfgGroups(); rHome();
+}
+
+// ═══════════════════════════════════════════════
+// CONFIGURACIÓN — PROVEEDORES DE IA
+// ═══════════════════════════════════════════════
+function rProviders(){
+  const el=document.getElementById('provList'); if(!el)return;
+  el.innerHTML=Object.keys(PROVIDERS).map(pid=>{
+    const meta=PROVIDERS[pid], p=ai.providers[pid];
+    const active=ai.active===pid;
+    return '<div class="prov-card'+(active?' active':'')+'" id="pc_'+pid+'">'+
+      '<div class="prov-head">'+
+      '<input type="radio" name="provAct" '+(active?'checked':'')+' onchange="setActiveProv(\''+pid+'\')" title="Usar este proveedor">'+
+      '<h3>'+esc(meta.label)+'</h3>'+
+      '<span class="prov-badge">'+(active?'Activo':'Disponible')+'</span>'+
+      '</div>'+
+      '<div class="row" style="margin-bottom:.4rem">'+
+      '<div class="fg f1"><label class="lbl">API key</label><div class="keyrow">'+
+      '<input type="password" id="pk_'+pid+'" value="'+esc(p.key||'')+'" placeholder="'+esc(meta.keyHint)+'" onchange="updProv(\''+pid+'\',\'key\',this.value)">'+
+      '<button class="ib" title="Mostrar/ocultar" onclick="togglePw(\'pk_'+pid+'\')"><svg class="ic"><use href="#i-eye"/></svg></button>'+
+      '</div></div>'+
+      '<div class="fg f1"><label class="lbl">Modelo</label>'+
+      '<input type="text" list="ml_'+pid+'" id="pm_'+pid+'" value="'+esc(p.model||'')+'" placeholder="'+esc(meta.defModel||'nombre del modelo')+'" onchange="updProv(\''+pid+'\',\'model\',this.value)">'+
+      '<datalist id="ml_'+pid+'">'+meta.models.map(m=>'<option value="'+m+'">').join('')+'</datalist>'+
+      '</div></div>'+
+      (pid==='custom'
+        ? '<div class="fg" style="margin-bottom:.4rem"><label class="lbl">URL base (compatible OpenAI)</label>'+
+          '<input type="text" id="pb_custom" value="'+esc(p.base||'')+'" placeholder="https://openrouter.ai/api/v1" onchange="updProv(\'custom\',\'base\',this.value)"></div>'
+        : '')+
+      '<div class="acts"><button class="btn btn-o btn-sm" onclick="testProv(\''+pid+'\')"><svg class="ic"><use href="#i-zap"/></svg> Probar conexión</button></div>'+
+      '<div class="prov-status" id="ps_'+pid+'"></div>'+
+      '</div>';
+  }).join('');
+}
+function togglePw(id){ const i=document.getElementById(id); if(i) i.type=i.type==='password'?'text':'password'; }
+function updProv(pid,k,v){ ai.providers[pid][k]=v.trim(); saveAI(); refreshKeyBtn(); }
+function setActiveProv(pid){ ai.active=pid; saveAI(); refreshKeyBtn(); rProviders(); rHome(); showT('Proveedor activo: '+PROVIDERS[pid].label); }
+async function testProv(pid){
+  const st=document.getElementById('ps_'+pid);
+  const prev=ai.active;
+  if(!ai.providers[pid].key){ st.className='prov-status err'; st.textContent='Falta la API key'; return; }
+  st.className='prov-status'; st.textContent='Probando...';
+  ai.active=pid;
+  try{
+    const out=await callAI('Respondé únicamente con la palabra OK.','ping',10);
+    st.className='prov-status ok'; st.textContent='Conexión correcta ('+(out||'').trim().slice(0,20)+')';
+  }catch(e){
+    st.className='prov-status err'; st.textContent='Error: '+e.message.slice(0,110);
+  }
+  ai.active=prev; saveAI();
+}
+
+// ═══════════════════════════════════════════════
+// CONFIGURACIÓN — DATOS (JSON import/export)
+// ═══════════════════════════════════════════════
+function dlJSON(obj,fn){
+  const b=new Blob([JSON.stringify(obj,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=fn; a.click();
+}
+function cfgPayload(){
+  return {
+    app:'siged-desarrollo', type:'config', version:2, exported:new Date().toISOString(),
+    meta:cfg.meta, slots:cfg.slots, levels:cfg.levels, materias:cfg.materias, groups:cfg.groups,
+    holidays:{custom:customHolidays, disabledDefaults:disabledDefaults}
+  };
+}
+function exportCfg(){
+  dlJSON(cfgPayload(),'horario_base_'+(cfg.meta.year||'')+'.json');
+  showT('Configuración exportada — guardala para el año próximo');
+}
+function exportBackup(){
+  const p=cfgPayload(); p.type='backup'; p.entries=data; p.plans=plans;
+  dlJSON(p,'respaldo_completo_'+(cfg.meta.year||'')+'.json');
+  showT('Respaldo completo exportado');
+}
+async function importJSON(file){
+  try{
+    const txt=await file.text();
+    const p=JSON.parse(txt);
+    if(!p||(p.app&&p.app!=='siged-desarrollo')) { if(!confirm('El archivo no parece de esta app. ¿Importar igual?')) return; }
+    const isBackup=p.type==='backup'||!!p.entries;
+    if(!confirm('Vas a importar '+(isBackup?'un RESPALDO COMPLETO (configuración + entradas)':'una CONFIGURACIÓN (horario, grupos, feriados)')+'. Esto reemplaza lo actual. ¿Continuar?')) return;
+    if(p.meta) cfg.meta=p.meta;
+    if(Array.isArray(p.slots)) cfg.slots=p.slots;
+    if(Array.isArray(p.levels)) cfg.levels=p.levels;
+    if(Array.isArray(p.materias)) cfg.materias=p.materias;
+    if(Array.isArray(p.groups)) cfg.groups=p.groups;
+    fixupCfg(); saveCfg();
+    if(p.holidays){
+      customHolidays=p.holidays.custom||[];
+      disabledDefaults=p.holidays.disabledDefaults||[];
+      saveHols();
+    }
+    if(isBackup){
+      if(p.entries){ data=p.entries; saveD(); }
+      if(p.plans){ plans=p.plans; savePlans(); }
+    }
+    curCfgGroup=null; curPlanMat=null;
+    rCfgAll(); rHome(); buildLevelTabs(); waRefreshGroups(); buildDayGroupSel();
+    showT('Importado correctamente');
+  }catch(e){ console.error(e); showT('Error al importar: '+e.message.slice(0,60)); }
+}
+function clearEntries(){
+  if(!confirm('¿Borrar TODAS las entradas del historial? La configuración se mantiene.'))return;
+  if(!confirm('Última confirmación: se borran todas las entradas de todos los grupos.'))return;
+  data={}; saveD(); rHome(); showT('Entradas borradas');
+}
+function resetAll(){
+  if(!confirm('¿Restablecer la configuración de fábrica? Se pierde tu horario, franjas y grupos (las entradas del historial se mantienen).'))return;
+  cfg=defaultConfig(); saveCfg();
+  curCfgGroup=null; curPlanMat=null;
+  rCfgAll(); rHome(); buildLevelTabs(); waRefreshGroups(); buildDayGroupSel();
+  showT('Configuración restablecida');
+}
+
+// ═══════════════════════════════════════════════
+// ARCHIVOS ADJUNTOS (plan / día a día / importar)
 // ═══════════════════════════════════════════════
 function setupFileUploaders(){
   const pf=document.getElementById('planFile');
@@ -1483,7 +2517,7 @@ function setupFileUploaders(){
     document.getElementById('planProg').value=txt;
     document.getElementById('planFileN').textContent=f.name;
     if(plans[curPlanMat]) plans[curPlanMat].fileName=f.name;
-    showT('Archivo cargado ✓');
+    showT('Archivo cargado');
   });
   const df=document.getElementById('dayFile');
   if(df) df.addEventListener('change',async(ev)=>{
@@ -1491,7 +2525,14 @@ function setupFileUploaders(){
     const txt=await f.text();
     document.getElementById('dayTopics').value=txt;
     document.getElementById('dayFileN').textContent=f.name;
-    showT('Archivo cargado ✓');
+    showT('Archivo cargado');
+  });
+  const imf=document.getElementById('impFile');
+  if(imf) imf.addEventListener('change',async(ev)=>{
+    const f=ev.target.files[0]; if(!f) return;
+    document.getElementById('impFileN').textContent=f.name;
+    await importJSON(f);
+    ev.target.value='';
   });
 }
 
@@ -1499,9 +2540,23 @@ function setupFileUploaders(){
 function fI(d){return d.toISOString().split('T')[0]}
 function fD(d){return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear()}
 function fDS(d){return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')}
-function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+function esc(s){const d=document.createElement('div');d.textContent=s==null?'':s;return d.innerHTML}
 function showT(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500)}
 
+// cerrar modal con clic afuera o Escape
+document.addEventListener('click',e=>{ if(e.target.id==='editModal') closeModal(); });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
+
+// ═══ INIT ═══
+function init(){
+  loadCfg(); loadAI(); loadD(); loadHols(); loadPlans();
+  setDates(); refreshKeyBtn();
+  waRefreshGroups();
+  updW(); buildLevelTabs();
+  setupPlanDefaults(); setupDailyDefaults(); buildDayGroupSel();
+  setupFileUploaders();
+  rHome();
+}
 document.addEventListener('DOMContentLoaded',init);
 </script>
 </body>
