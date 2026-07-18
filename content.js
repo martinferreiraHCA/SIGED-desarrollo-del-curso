@@ -11,6 +11,19 @@
   let shouldStop = false;
   let isProcessing = false;
 
+  // Los IDs de GeneXus llevan un prefijo de componente (ej. W00450001) que puede
+  // variar entre instalaciones de SIGED. Si el ID exacto no existe, se busca por sufijo.
+  function gxEl(id) {
+    let el = document.getElementById(id);
+    if (el) return el;
+    const suf = id.replace(/^W\d+/, '');
+    if (suf && suf !== id) {
+      el = document.querySelector('[id$="' + suf + '"]');
+      if (el) return el;
+    }
+    return null;
+  }
+
   // === MESSAGE LISTENER ===
   chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
@@ -73,8 +86,8 @@
 
     // Check for Nuevo button + any desarrollo-related content
     const nuevoBtn = document.querySelector('img[alt="Nuevo"][src*="btn_nuevo"]') ||
-                     document.getElementById('W00500001IMGNUEVO');
-    const hasFechaField = document.getElementById('W00450001vFECVAL1_0001');
+                     gxEl('W00500001IMGNUEVO');
+    const hasFechaField = gxEl('W00450001vFECVAL1_0001');
 
     if (hasFechaField) {
       result.pageType = 'desarrolloForm';
@@ -163,7 +176,7 @@
 
   // === ENSURE WE'RE ON THE FORM ===
   async function ensureOnForm() {
-    const dateField = document.getElementById('W00450001vFECVAL1_0001');
+    const dateField = gxEl('W00450001vFECVAL1_0001');
     if (dateField && isVisible(dateField)) {
       // Already on form - still make sure CKEditor is ready
       await waitForCKEditorReady('W00450001vTXTVAL1_0004', 5000);
@@ -201,8 +214,9 @@
     if (typeof CKEDITOR === 'undefined' || !CKEDITOR.instances) return null;
     // Most common: editor name matches textarea id
     if (CKEDITOR.instances[textareaId]) return CKEDITOR.instances[textareaId];
-    const ta = document.getElementById(textareaId);
+    const ta = gxEl(textareaId);
     if (!ta) return null;
+    if (ta.id !== textareaId && CKEDITOR.instances[ta.id]) return CKEDITOR.instances[ta.id];
     for (const name in CKEDITOR.instances) {
       const ed = CKEDITOR.instances[name];
       try {
@@ -219,6 +233,7 @@
     // Try multiple selectors
     const selectors = [
       '#W00500001IMGNUEVO',
+      '[id$="IMGNUEVO"]',
       'img[alt="Nuevo"]',
       'img[src*="btn_nuevo"]'
     ];
@@ -236,16 +251,16 @@
   // === FILL FORM ===
   async function fillForm(rec) {
     // Date
-    const dateField = document.getElementById('W00450001vFECVAL1_0001');
+    const dateField = gxEl('W00450001vFECVAL1_0001');
     if (!dateField) throw new Error('Campo de fecha no encontrado');
     setGXValue(dateField, rec.fecha);
 
     // Horas dictadas
-    const hDict = document.getElementById('W00450001vENTVAL1_0002');
+    const hDict = gxEl('W00450001vENTVAL1_0002');
     if (hDict) setGXValue(hDict, String(rec.dictadas));
 
     // Horas no dictadas
-    const hNoDict = document.getElementById('W00450001vENTVAL1_0003');
+    const hNoDict = gxEl('W00450001vENTVAL1_0003');
     if (hNoDict) setGXValue(hNoDict, String(rec.noDictadas));
 
     // Desarrollo text (CKEditor)
@@ -269,8 +284,8 @@
 
   async function setDesarrolloText(text) {
     const htmlText = '<p>' + escHtml(text) + '</p>';
-    const textareaId = 'W00450001vTXTVAL1_0004';
-    const textarea = document.getElementById(textareaId);
+    const textarea = gxEl('W00450001vTXTVAL1_0004');
+    const textareaId = textarea ? textarea.id : 'W00450001vTXTVAL1_0004';
 
     // Method 1: CKEditor API (most reliable) - find the editor bound to our textarea
     let editor = findEditorForTextarea(textareaId);
@@ -355,7 +370,7 @@
 
   // === GUARDAR ===
   function clickGuardar() {
-    const btn = document.getElementById('W00450001BTNGUARDAR');
+    const btn = gxEl('W00450001BTNGUARDAR');
     if (btn && isVisible(btn)) {
       btn.click();
       console.log('📘 Clic en Guardar');
@@ -375,14 +390,14 @@
 
     while (Date.now() - start < timeout) {
       // Check if the form disappeared (went back to list view)
-      const dateField = document.getElementById('W00450001vFECVAL1_0001');
+      const dateField = gxEl('W00450001vFECVAL1_0001');
       if (!dateField || !isVisible(dateField)) {
         console.log('📘 Guardado: formulario cerrado');
         return;
       }
 
-      // Check for error messages
-      const errViewer = document.querySelector('[data-gx-id="W00450001gxErrorViewer"]');
+      // Check for error messages (el prefijo del data-gx-id varía por instalación)
+      const errViewer = document.querySelector('[data-gx-id$="gxErrorViewer"]');
       if (errViewer && errViewer.textContent.trim()) {
         const msg = errViewer.textContent.trim();
         console.log('📘 Mensaje post-guardado:', msg);
@@ -419,7 +434,7 @@
     return new Promise((resolve, reject) => {
       const start = Date.now();
       const check = () => {
-        const el = document.getElementById(id);
+        const el = gxEl(id);
         if (el && isVisible(el)) { resolve(el); return; }
         if (Date.now() - start > timeout) { reject(new Error(`Timeout: elemento "${id}" no apareció`)); return; }
         setTimeout(check, 250);
@@ -436,10 +451,12 @@
 
   function progress(current, total, status, message) {
     try {
-      chrome.runtime.sendMessage({
+      // El popup puede estar cerrado: la promesa rechazada se ignora en silencio
+      const p = chrome.runtime.sendMessage({
         action: 'progressUpdate',
         current, total, status, message
       });
+      if (p && typeof p.catch === 'function') p.catch(() => {});
     } catch (e) {
       console.log('📘', message);
     }
@@ -447,7 +464,8 @@
 
   function notify(action, data = {}) {
     try {
-      chrome.runtime.sendMessage({ action, ...data });
+      const p = chrome.runtime.sendMessage({ action, ...data });
+      if (p && typeof p.catch === 'function') p.catch(() => {});
     } catch (e) {
       console.log('📘 Notify:', action, data);
     }
