@@ -11,6 +11,8 @@ Dos herramientas que trabajan juntas:
 
 Abrila directamente en el navegador (doble clic o GitHub Pages). Todo se guarda automáticamente en el caché del navegador (localStorage); no se envía nada a servidores propios.
 
+La app arranca **vacía**: cada docente crea desde cero su año lectivo, franjas, materias, grupos y horario. Si venías usando una versión anterior con entradas guardadas, tu horario histórico se migra solo.
+
 ### Configuración anual (una vez por año)
 
 En **Configuración → Año y horario**:
@@ -114,7 +116,7 @@ El archivo tiene **4 columnas** separadas por punto y coma:
 ### Paso 1: Ir a SIGED
 Ingresá a SIGED y navegá hasta la sección **"Desarrollo del curso"** de la libreta que querés completar:
 
-1. Entrá a `candersen.siged.com.uy`
+1. Entrá al SIGED de tu institución (ej: `tucolegio.siged.com.uy`)
 2. Andá a **Libreta @** → **Mis Libretas**
 3. Seleccioná la libreta (ej: 7-EBI 3 - CS FÍSICO-QUÍMICA)
 4. Hacé clic en **"Desarrollo del curso"**
@@ -187,6 +189,19 @@ siged-desarrollo/
 ├── ejemplo_desarrollo.csv   → CSV de ejemplo
 └── README.md                → Esta guía
 ```
+
+---
+
+## 📦 Publicar la extensión en el Chrome Web Store
+
+Checklist para publicar (una sola vez):
+
+1. **Cuenta de desarrollador**: registrate en [chrome.google.com/webstore/devconsole](https://chrome.google.com/webstore/devconsole) (pago único de USD 5).
+2. **Paquete ZIP**: incluí **solo** los archivos de la extensión: `manifest.json`, `popup.html`, `popup.js`, `content.js`, `icon16.png`, `icon48.png`, `icon128.png`. No incluyas `index.html`, `README.md` ni los CSV.
+3. **Ficha de la tienda**: nombre, descripción en español, categoría *Productividad* o *Educación*, y al menos una captura de pantalla de 1280×800 (el popup sobre SIGED).
+4. **Declaración de privacidad**: en "Privacy practices" declarar que **no se recolecta ningún dato** — el CSV se procesa localmente y nada sale del navegador. Conviene enlazar una política de privacidad simple (puede ser una página del repositorio en GitHub Pages que diga exactamente eso).
+5. **Justificación de permisos**: `activeTab` y `scripting` para inyectar la automatización al hacer clic en el ícono; permiso de host `*://*.siged.com.uy/*` porque la extensión solo funciona sobre SIGED; el propósito único es completar automáticamente el formulario "Desarrollo del curso" a partir de un CSV del propio docente.
+6. La revisión suele demorar unos días por el permiso de host. Cada actualización posterior requiere subir un ZIP con `version` incrementada en `manifest.json`.
 
 ---
 

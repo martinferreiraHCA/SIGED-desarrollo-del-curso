@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Desarrollo del Curso — HCA</title>
+<title>Desarrollo del Curso — SIGED</title>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -543,7 +543,7 @@ textarea { resize: vertical; min-height: 52px; line-height: 1.5; }
   <div class="header-inner">
     <div>
       <h1>Desarrollo <span>del Curso</span></h1>
-      <div class="header-sub" id="hdrSub">Colegio y Liceo HCA</div>
+      <div class="header-sub" id="hdrSub">Asistente para el desarrollo del curso en SIGED</div>
     </div>
     <div class="hdr-act">
       <span class="year-badge" id="yearBadge">2026</span>
@@ -991,9 +991,11 @@ textarea { resize: vertical; min-height: 52px; line-height: 1.5; }
 const CFG_KEY='hca_cfg_v2';
 
 function defaultConfig(){
+  // Configuración de fábrica: vacía, para que cada docente arme la suya desde cero.
+  const y=new Date().getFullYear();
   return {
     version:2,
-    meta:{ year:2026, teacher:'Prof. Ferreira, Martín', school:'Colegio y Liceo HCA', yearStart:'2026-03-02', yearEnd:'2026-12-04' },
+    meta:{ year:y, teacher:'', school:'', yearStart:y+'-03-01', yearEnd:y+'-12-15' },
     slots:[
       {start:'07:45',end:'08:30'},{start:'08:30',end:'09:15'},{start:'09:35',end:'10:20'},
       {start:'10:20',end:'11:05'},{start:'11:25',end:'12:10'},{start:'12:10',end:'12:55'},
@@ -1004,29 +1006,39 @@ function defaultConfig(){
       {id:'8',label:'8°',color:'#4A90D9'},
       {id:'9',label:'9°',color:'#8E44AD'}
     ],
-    materias:[
-      {id:'stem7',name:'STEM',clr:'#27ae60',level:'7',cfq:'cfq7'},
-      {id:'cfq7',name:'Cs. Físico-Químicas',clr:'#e74c3c',level:'7',cfq:null},
-      {id:'stem8',name:'STEM',clr:'#2980b9',level:'8',cfq:'cfq8'},
-      {id:'cfq8',name:'Cs. Físico-Químicas',clr:'#e67e22',level:'8',cfq:null},
-      {id:'f9',name:'Física',clr:'#8e44ad',level:'9',cfq:null}
-    ],
-    groups:[
-      {name:'CFQ 7°3',materia:'cfq7',sessions:[{dow:3,h:2,slots:[]}]},
-      {name:'CFQ 7°4',materia:'cfq7',sessions:[{dow:5,h:2,slots:[]}]},
-      {name:'CFQ 8°1',materia:'cfq8',sessions:[{dow:5,h:2,slots:[]}]},
-      {name:'CFQ 8°2',materia:'cfq8',sessions:[{dow:2,h:1,slots:[]},{dow:3,h:1,slots:[]}]},
-      {name:'CFQ 8°3',materia:'cfq8',sessions:[{dow:1,h:2,slots:[]}]},
-      {name:'CFQ 8°4',materia:'cfq8',sessions:[{dow:1,h:1,slots:[]},{dow:4,h:1,slots:[]}]},
-      {name:'STEM 7°3',materia:'stem7',sessions:[{dow:2,h:2,slots:[]}]},
-      {name:'STEM 7°4',materia:'stem7',sessions:[{dow:2,h:2,slots:[]}]},
-      {name:'STEM 8°1',materia:'stem8',sessions:[{dow:3,h:2,slots:[]}]},
-      {name:'STEM 8°2',materia:'stem8',sessions:[{dow:2,h:2,slots:[]}]},
-      {name:'STEM 8°3',materia:'stem8',sessions:[{dow:3,h:2,slots:[]}]},
-      {name:'STEM 8°4',materia:'stem8',sessions:[{dow:2,h:2,slots:[]}]},
-      {name:'F 9°2',materia:'f9',sessions:[{dow:4,h:1,slots:[]},{dow:5,h:2,slots:[]}]}
-    ]
+    materias:[],
+    groups:[]
   };
+}
+
+// Horario que venía integrado en versiones anteriores de la app: solo se usa
+// para no romperle el flujo a quien ya tenía entradas guardadas de esos grupos.
+function legacyConfig(){
+  const c=defaultConfig();
+  c.meta={ year:2026, teacher:'Prof. Ferreira, Martín', school:'Colegio y Liceo HCA', yearStart:'2026-03-02', yearEnd:'2026-12-04' };
+  c.materias=[
+    {id:'stem7',name:'STEM',clr:'#27ae60',level:'7',cfq:'cfq7'},
+    {id:'cfq7',name:'Cs. Físico-Químicas',clr:'#e74c3c',level:'7',cfq:null},
+    {id:'stem8',name:'STEM',clr:'#2980b9',level:'8',cfq:'cfq8'},
+    {id:'cfq8',name:'Cs. Físico-Químicas',clr:'#e67e22',level:'8',cfq:null},
+    {id:'f9',name:'Física',clr:'#8e44ad',level:'9',cfq:null}
+  ];
+  c.groups=[
+    {name:'CFQ 7°3',materia:'cfq7',sessions:[{dow:3,h:2,slots:[]}]},
+    {name:'CFQ 7°4',materia:'cfq7',sessions:[{dow:5,h:2,slots:[]}]},
+    {name:'CFQ 8°1',materia:'cfq8',sessions:[{dow:5,h:2,slots:[]}]},
+    {name:'CFQ 8°2',materia:'cfq8',sessions:[{dow:2,h:1,slots:[]},{dow:3,h:1,slots:[]}]},
+    {name:'CFQ 8°3',materia:'cfq8',sessions:[{dow:1,h:2,slots:[]}]},
+    {name:'CFQ 8°4',materia:'cfq8',sessions:[{dow:1,h:1,slots:[]},{dow:4,h:1,slots:[]}]},
+    {name:'STEM 7°3',materia:'stem7',sessions:[{dow:2,h:2,slots:[]}]},
+    {name:'STEM 7°4',materia:'stem7',sessions:[{dow:2,h:2,slots:[]}]},
+    {name:'STEM 8°1',materia:'stem8',sessions:[{dow:3,h:2,slots:[]}]},
+    {name:'STEM 8°2',materia:'stem8',sessions:[{dow:2,h:2,slots:[]}]},
+    {name:'STEM 8°3',materia:'stem8',sessions:[{dow:3,h:2,slots:[]}]},
+    {name:'STEM 8°4',materia:'stem8',sessions:[{dow:2,h:2,slots:[]}]},
+    {name:'F 9°2',materia:'f9',sessions:[{dow:4,h:1,slots:[]},{dow:5,h:2,slots:[]}]}
+  ];
+  return c;
 }
 
 let cfg=null;
@@ -1035,7 +1047,12 @@ function loadCfg(){
     const r=localStorage.getItem(CFG_KEY);
     if(r){ cfg=JSON.parse(r); fixupCfg(); return; }
   }catch(e){ console.error(e); }
-  cfg=defaultConfig(); saveCfg();
+  // Sin configuración guardada: si hay entradas de la versión vieja de la app,
+  // cargamos el horario histórico para que coincidan; si no, arranque desde cero.
+  let hasOldData=false;
+  try{ const d=JSON.parse(localStorage.getItem('hca_v8')||'{}'); hasOldData=Object.keys(d).length>0; }catch(e){}
+  cfg=hasOldData?legacyConfig():defaultConfig();
+  saveCfg();
 }
 function fixupCfg(){
   const d=defaultConfig();
@@ -1287,7 +1304,8 @@ function swCfgSub(id){ swSub('config',id); if(id==='cfg-hol')rHols(); if(id==='c
 function rHome(){
   document.getElementById('heroName').textContent=(cfg.meta.teacher||'docente').replace(/^Prof\.?\s*/i,'');
   document.getElementById('yearBadge').textContent=cfg.meta.year||'';
-  document.getElementById('hdrSub').textContent=(cfg.meta.teacher?cfg.meta.teacher+' — ':'')+(cfg.meta.school||'');
+  const sub=(cfg.meta.teacher?cfg.meta.teacher+' — ':'')+(cfg.meta.school||'');
+  document.getElementById('hdrSub').textContent=sub||'Asistente para el desarrollo del curso en SIGED';
 
   const nGroups=cfg.groups.length;
   const nWithSlots=cfg.groups.filter(g=>g.sessions.some(s=>s.slots&&s.slots.length)).length;
@@ -1326,6 +1344,10 @@ function rHome(){
   // clases de hoy
   const today=new Date(); const dow=today.getDay(); const ds=fI(today);
   const el=document.getElementById('todayClasses');
+  if(!cfg.groups.length){
+    el.innerHTML='<div class="info-box">Bienvenido/a. Para empezar, andá a <b>Configuración → Año y horario</b> y creá tus materias, grupos y su horario semanal. Después todo lo demás sale solo.</div>';
+    return;
+  }
   if(isHoliday(ds)){
     el.innerHTML='<div class="info-box">Hoy es feriado / día no lectivo: <b>'+esc(holidayName(ds))+'</b>. No hay clases para registrar.</div>';
     return;
@@ -1793,6 +1815,11 @@ function waRefreshGroups(){
   el.innerHTML=groupNames().sort().map(g=>'<option value="'+esc(g)+'">'+esc(g)+'</option>').join('');
   if(prev&&groupNames().includes(prev)) el.value=prev;
   if(!document.getElementById('waDate').value) document.getElementById('waDate').value=fI(new Date());
+  if(!groupNames().length){
+    const inf=document.getElementById('waInfo');
+    if(inf) inf.innerHTML='<div class="warn-box">Todavía no hay grupos configurados. Andá a <b>Configuración → Año y horario</b> para crear tus materias y grupos.</div>';
+    return;
+  }
   waRefreshInfo();
 }
 function waSessionFor(g,dateStr){
@@ -2129,7 +2156,7 @@ function rPlanMatPick(){
     const lvl=lv.find(l=>l.materias.some(mm=>mm.id===m.id));
     const bg=curPlanMat===m.id?('background:'+m.clr+';'):'';
     return '<button class="mp'+(curPlanMat===m.id?' active':'')+'" style="'+bg+'" onclick="selPlanMat(\''+m.id+'\')">'+esc(lvl?lvl.label:'')+' '+esc(m.name)+'</button>';
-  }).join('');
+  }).join('')||'<span style="font-size:.78rem;color:var(--text3)">Sin materias configuradas: crealas en Configuración → Año y horario.</span>';
   const cur=plans[curPlanMat];
   const pr=document.getElementById('planProg'); if(pr) pr.value = (cur&&cur.program)||'';
   const fn=document.getElementById('planFileN'); if(fn) fn.textContent = (cur&&cur.fileName)||'';
