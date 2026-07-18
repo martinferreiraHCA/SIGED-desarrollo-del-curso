@@ -1,4 +1,48 @@
-# 📘 SIGED — Desarrollo del Curso (Extensión para Chrome)
+# SIGED — Desarrollo del Curso
+
+Dos herramientas que trabajan juntas:
+
+1. **App web (`index.html`)** — donde planificás, redactás y organizás el desarrollo del curso.
+2. **Extensión de Chrome** — que carga automáticamente en SIGED el CSV que exporta la app.
+
+---
+
+## La app web (`index.html`)
+
+Abrila directamente en el navegador (doble clic o GitHub Pages). Todo se guarda automáticamente en el caché del navegador (localStorage); no se envía nada a servidores propios.
+
+### Configuración anual (una vez por año)
+
+En **Configuración → Año y horario**:
+
+- **Año lectivo**: año, docente, institución y fechas de inicio/fin de clases.
+- **Franjas horarias**: las horas de clase del día (1 franja = 1 hora), con hora de inicio y fin.
+- **Niveles y materias**: organizadas por nivel (7°, 8°, 9°...), con color propio y vínculo opcional "Prefijo STEM" entre materias.
+- **Grupos y horario semanal**: cada grupo se asigna a sus franjas en una grilla Lunes–Viernes. Ese horario define las horas dictadas y le da contexto a la IA.
+
+En **Configuración → Datos y respaldo** podés **exportar la configuración a un archivo JSON** para usarla como base el año siguiente: la importás, ajustás año/grupos/feriados y listo. También hay un respaldo completo (configuración + entradas).
+
+### Redactar con IA
+
+- **Clase por clase**: elegís grupo y fecha, contás con tus palabras qué pasó en la clase, y la IA lo redacta en formato formal para SIGED usando el horario configurado (día, horas, franja, materia y las entradas anteriores para dar continuidad). Incluye chips de tipo de clase y sugerencias de enfoque generadas por IA a partir de tu descripción.
+- **Por semanas**: carga masiva de contenido semanal por materia, con reparto automático entre las sesiones del grupo.
+- **Planificar**: planificación anual con IA a partir del programa, y desarrollo día a día por rango de fechas.
+- **Historial**: cada entrada se puede editar a mano o con IA (mejorar redacción, formalizar, ampliar, resumir).
+
+### Proveedores de IA
+
+En **Configuración → Inteligencia artificial** podés configurar una o varias API y elegir cuál usar:
+
+- **Claude (Anthropic)** — recomendado; con el modelo Haiku el uso mensual cuesta centavos.
+- **ChatGPT (OpenAI)**
+- **Gemini (Google)**
+- **Compatibles con OpenAI** (OpenRouter, DeepSeek, etc.) con URL base configurable.
+
+Las claves se guardan **solo en tu navegador**. Cada proveedor tiene botón "Probar conexión".
+
+---
+
+# Extensión para Chrome
 
 Extensión de Chrome que **completa automáticamente** la sección "Desarrollo del Curso" en SIGED, a partir de un archivo CSV.
 
