@@ -587,6 +587,7 @@ textarea { resize: vertical; min-height: 52px; line-height: 1.5; }
     <div class="seg">
       <button class="active" data-sub="write-ai" onclick="swWriteSub('write-ai')"><svg class="ic"><use href="#i-sparkle"/></svg> Clase por clase</button>
       <button data-sub="write-week" onclick="swWriteSub('write-week')"><svg class="ic"><use href="#i-calendar"/></svg> Por semanas</button>
+      <button data-sub="write-prompt" onclick="swWriteSub('write-prompt')"><svg class="ic"><use href="#i-msg"/></svg> Prompt para otra IA</button>
     </div>
 
     <!-- ── Clase por clase (IA) ── -->
@@ -665,6 +666,63 @@ textarea { resize: vertical; min-height: 52px; line-height: 1.5; }
         <div class="card-title"><svg class="ic"><use href="#i-eye"/></svg> Vista previa</div>
         <div class="card-desc">Revisá y editá cada entrada antes de guardar.</div>
         <div id="pvList"></div>
+        <div class="acts" style="margin-top:1rem">
+          <button class="btn btn-f" onclick="confirmar()"><svg class="ic"><use href="#i-check"/></svg> Guardar todo</button>
+          <button class="btn btn-o" onclick="cancelar()">Cancelar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Prompt para otra IA ── -->
+    <div class="sub" id="sub-write-prompt">
+      <div class="card">
+        <div class="card-title"><svg class="ic"><use href="#i-msg"/></svg> 1 · Generá el prompt del período</div>
+        <div class="card-desc">¿Preferís usar el chat gratuito de ChatGPT, Claude o Gemini en vez de una API? Elegí los grupos y el período: la app arma un prompt completo con tu horario, los feriados y el formato de respuesta exacto. Lo copiás, lo pegás en la IA que quieras, y su respuesta la traés de vuelta en el paso 2.</div>
+
+        <label class="lbl">Grupos a incluir</label>
+        <div class="chips" id="xpGroups"></div>
+
+        <div class="row" style="margin-top:.5rem">
+          <div class="fg wd"><label class="lbl">Desde</label><input type="date" id="xpFrom"></div>
+          <div class="fg wd"><label class="lbl">Hasta</label><input type="date" id="xpTo"></div>
+        </div>
+
+        <label class="lbl">Temas del período / lo que se trabajó</label>
+        <textarea id="xpTopics" placeholder="Ej: Unidad 2 — MRUV: repaso de MRU, aceleración, gráficas v–t, ecuaciones, caída libre, laboratorio con micro:bit, prueba escrita al cierre. O contá con tus palabras lo que efectivamente hiciste en esas semanas." style="min-height:90px"></textarea>
+
+        <label class="lbl" style="margin-top:.6rem">Indicaciones extra (opcional)</label>
+        <input type="text" id="xpExtra" placeholder="Ej: destacar el trabajo en equipos, mencionar la ficha 4, estilo bien conciso...">
+
+        <label class="mopt" style="margin-top:.6rem"><input type="checkbox" id="xpPrev" checked> Incluir los últimos desarrollos de cada grupo como contexto de continuidad</label>
+
+        <div class="acts" style="margin-top:.8rem">
+          <button class="btn btn-f" onclick="xpGenerar()"><svg class="ic"><use href="#i-zap"/></svg> Generar prompt</button>
+        </div>
+
+        <div id="xpOut" style="display:none;margin-top:1rem">
+          <label class="lbl">Prompt listo para copiar</label>
+          <textarea id="xpPrompt" style="min-height:160px;font-family:'Courier New',monospace;font-size:.76rem"></textarea>
+          <div class="acts" style="margin-top:.5rem">
+            <button class="btn btn-p" onclick="cT('xpPrompt')"><svg class="ic"><use href="#i-copy"/></svg> Copiar prompt</button>
+          </div>
+          <div class="ai-hint">Pegalo en ChatGPT, Claude, Gemini o la IA que uses. Cuando te devuelva el resultado, copialo entero y pegalo en el paso 2.</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><svg class="ic"><use href="#i-upload"/></svg> 2 · Pegá la respuesta de la IA</div>
+        <div class="card-desc">Pegá acá la respuesta tal cual te la devolvió la IA (con los bloques "=== GRUPO: ... ==="). La app la convierte en entradas, te muestra la vista previa editable y las guarda en el historial, listas para exportar a SIGED.</div>
+        <textarea id="xpResp" placeholder="=== GRUPO: CFQ 7°3 ===&#10;Fecha;Horas dictadas;Horas no dictadas;Desarrollo&#10;05/03/2026;2;0;Se trabajó..." style="min-height:140px;font-family:'Courier New',monospace;font-size:.76rem"></textarea>
+        <div class="acts" style="margin-top:.7rem">
+          <button class="btn btn-f" onclick="xpProcesar()"><svg class="ic"><use href="#i-check"/></svg> Procesar respuesta</button>
+          <button class="btn btn-o" onclick="document.getElementById('xpResp').value=''">Limpiar</button>
+        </div>
+      </div>
+
+      <div class="card" id="xpPvCard" style="display:none">
+        <div class="card-title"><svg class="ic"><use href="#i-eye"/></svg> Vista previa</div>
+        <div class="card-desc">Revisá y editá cada entrada antes de guardar en el historial.</div>
+        <div id="xpPvList"></div>
         <div class="acts" style="margin-top:1rem">
           <button class="btn btn-f" onclick="confirmar()"><svg class="ic"><use href="#i-check"/></svg> Guardar todo</button>
           <button class="btn btn-o" onclick="cancelar()">Cancelar</button>
@@ -1210,7 +1268,7 @@ function swTab(n){
   if(n==='home'){rHome();}
   if(n==='history'){bHF();rH();}
   if(n==='export'){rExp();}
-  if(n==='write'){waRefreshGroups();updW();buildLevelTabs();}
+  if(n==='write'){waRefreshGroups();updW();buildLevelTabs();xpRenderGroups();}
   if(n==='plan'){rPlanMatPick();rPlanWeeks();buildDayGroupSel();}
   if(n==='config'){rCfgAll();}
   window.scrollTo({top:0});
@@ -1495,8 +1553,8 @@ async function generar(){
   document.getElementById('btnGen').disabled=false;
 }
 
-function showPV(){
-  const el=document.getElementById('pvList');
+function showPV(listId){
+  const el=document.getElementById(listId||'pvList');
   const byG={};
   pending.forEach((e,i)=>{if(!byG[e.g])byG[e.g]=[];byG[e.g].push({...e,i});});
   let html='';
@@ -1528,7 +1586,10 @@ function confirmar(){
   showT(n+' entradas guardadas');
 }
 function cancelar(){
-  pending=[];document.getElementById('pvCard').style.display='none';document.getElementById('pvList').innerHTML='';
+  pending=[];
+  document.getElementById('pvCard').style.display='none';document.getElementById('pvList').innerHTML='';
+  const x=document.getElementById('xpPvCard');
+  if(x){ x.style.display='none'; document.getElementById('xpPvList').innerHTML=''; }
 }
 
 // ═══════════════════════════════════════════════
@@ -1865,6 +1926,135 @@ function waLimpiar(){
   document.getElementById('waSug').innerHTML='';
   waND=false;
   document.querySelectorAll('#waTypeChips .chip').forEach(c=>c.classList.remove('sel'));
+}
+
+// ═══════════════════════════════════════════════
+// PROMPT PARA OTRA IA (redactar un período afuera
+// y pegar la respuesta en formato fijo)
+// ═══════════════════════════════════════════════
+let xpSel=new Set();
+function fmtDMY(iso){ const p=iso.split('-'); return p[2]+'/'+p[1]+'/'+p[0]; }
+
+function xpRenderGroups(){
+  const el=document.getElementById('xpGroups'); if(!el)return;
+  xpSel=new Set([...xpSel].filter(g=>groupNames().includes(g)));
+  el.innerHTML=groupNames().sort().map(g=>
+    '<span class="chip'+(xpSel.has(g)?' sel':'')+'" onclick="xpTogGroup(\''+esc(g).replace(/'/g,"\\'")+'\',this)">'+esc(g)+'</span>'
+  ).join('')||'<span style="font-size:.78rem;color:var(--text3)">Sin grupos: configuralos primero.</span>';
+  const f=document.getElementById('xpFrom'), t=document.getElementById('xpTo');
+  if(f&&!f.value){ const d=new Date(); d.setDate(d.getDate()-28); f.value=fI(d); }
+  if(t&&!t.value) t.value=fI(new Date());
+}
+function xpTogGroup(g,chip){
+  if(xpSel.has(g)) xpSel.delete(g); else xpSel.add(g);
+  chip.classList.toggle('sel',xpSel.has(g));
+}
+function xpClassesFor(g,from,to){
+  const sessions=sessionsOf(g)||[];
+  const out=[];
+  const cur=new Date(from+'T12:00:00'), td=new Date(to+'T12:00:00');
+  while(cur<=td){
+    const dow=cur.getDay();
+    const ses=sessions.find(s=>s.dow===dow);
+    if(ses){
+      const ds=fI(cur);
+      out.push({date:ds,h:sessH(ses),t:sessTime(ses),holiday:isHoliday(ds)?holidayName(ds):null});
+    }
+    cur.setDate(cur.getDate()+1);
+  }
+  return out;
+}
+function xpGenerar(){
+  const from=document.getElementById('xpFrom').value, to=document.getElementById('xpTo').value;
+  const topics=(document.getElementById('xpTopics').value||'').trim();
+  const extra=(document.getElementById('xpExtra').value||'').trim();
+  const withPrev=document.getElementById('xpPrev').checked;
+  if(!xpSel.size){ showT('Elegí al menos un grupo'); return; }
+  if(!from||!to||from>to){ showT('Revisá el rango de fechas'); return; }
+  if(!topics){ showT('Escribí los temas o lo trabajado en el período'); return; }
+
+  let clases='', vacios=[], primero=null;
+  for(const g of [...xpSel].sort()){
+    const cl=xpClassesFor(g,from,to);
+    if(!cl.length){ vacios.push(g); continue; }
+    if(!primero) primero=g;
+    const grp=cfg.groups.find(x=>x.name===g);
+    const mat=grp?matById(grp.materia):null;
+    const lvl=mat?cfg.levels.find(l=>l.id===mat.level):null;
+    clases+='\nGRUPO: '+g+(mat?(' — '+mat.name+(lvl?' ('+lvl.label+')':'')):'')+'\n';
+    clases+=cl.map(c=>'- '+fmtDMY(c.date)+' ('+DL_FULL[new Date(c.date+'T12:00:00').getDay()].toLowerCase()+') · '+c.h+'h'+(c.t?' · '+c.t:'')+(c.holiday?' · FERIADO: '+c.holiday:'')).join('\n')+'\n';
+    if(withPrev){
+      const prev=(data[g]||[]).filter(e=>e.date<from&&e.h>0).slice(-3);
+      if(prev.length) clases+='Últimos desarrollos ya registrados de este grupo (para dar continuidad, no repetir):\n'+prev.map(e=>'· '+fmtDMY(e.date)+': '+e.dev).join('\n')+'\n';
+    }
+  }
+  if(vacios.length) showT('Sin clases en el rango: '+vacios.join(', '));
+  if(!clases){ return; }
+
+  const ejemplo='=== GRUPO: '+primero+' ===\n'+
+    'Fecha;Horas dictadas;Horas no dictadas;Desarrollo\n'+
+    '05/03/2026;2;0;Se trabajó la definición de aceleración. Se resolvieron ejercicios de aplicación en equipos.\n'+
+    '12/03/2026;0;2;No se dictó: Jornada pedagógica.';
+
+  const prompt=
+'Sos asistente de un docente de educación media de Uruguay. Redactá las entradas de "Desarrollo del curso" del registro oficial SIGED para las clases listadas al final.\n\n'+
+'REGLAS DE REDACCIÓN:\n'+
+'- Redacción formal e impersonal ("Se trabajó...", "Se resolvieron...", "Se realizó...").\n'+
+'- 1 a 3 frases por clase, concretas: contenidos, actividades, tipo de trabajo.\n'+
+'- Distribuí los temas del período entre las clases en orden pedagógico, proporcional a las horas de cada clase.\n'+
+'- Dale progresión: no repitas el mismo texto en clases seguidas.\n'+
+'- No inventes contenidos que no estén en los temas dados.\n'+
+'- No incluyas nombres de estudiantes.\n'+
+'- Si la clase está marcada como FERIADO: el Desarrollo es exactamente "No se dictó: <motivo>.", con Horas dictadas = 0 y Horas no dictadas = las horas de esa clase.\n'+
+'- Para el resto: Horas dictadas = las horas indicadas de la clase y Horas no dictadas = 0.\n\n'+
+'FORMATO DE RESPUESTA (OBLIGATORIO — sin explicaciones, sin markdown, sin ``` ni texto extra antes o después):\n'+
+'- Un bloque por grupo, que empieza con la línea "=== GRUPO: <nombre exacto del grupo> ===".\n'+
+'- Después la línea de encabezado "Fecha;Horas dictadas;Horas no dictadas;Desarrollo".\n'+
+'- Una línea por clase: Fecha en DD/MM/AAAA y separador punto y coma (;). No uses ";" dentro del texto del Desarrollo.\n'+
+'- Incluí TODAS las clases listadas de cada grupo, en orden de fecha.\n\n'+
+'EJEMPLO DEL FORMATO:\n'+ejemplo+'\n\n'+
+'TEMAS / PLANIFICACIÓN DEL PERÍODO:\n'+topics+'\n'+
+(extra?('\nINDICACIONES ADICIONALES DEL DOCENTE:\n'+extra+'\n'):'')+
+'\nCLASES A REDACTAR (período '+fmtDMY(from)+' a '+fmtDMY(to)+'):\n'+clases;
+
+  document.getElementById('xpPrompt').value=prompt;
+  document.getElementById('xpOut').style.display='';
+  showT('Prompt generado — copialo y pegalo en tu IA');
+}
+function xpProcesar(){
+  const raw=(document.getElementById('xpResp').value||'').trim();
+  if(!raw){ showT('Pegá primero la respuesta de la IA'); return; }
+  const names=groupNames();
+  const byLower={}; names.forEach(n=>byLower[n.toLowerCase()]=n);
+  let cur=(xpSel.size===1)?[...xpSel][0]:null;
+  const entries=[]; let skipped=0;
+  for(let ln of raw.split(/\r?\n/)){
+    ln=ln.trim();
+    if(!ln||/^```/.test(ln)) continue;
+    const gm=ln.match(/^[=\s]*GRUPO\s*:\s*(.+?)[=\s]*$/i);
+    if(gm){ const cand=gm[1].trim(); cur=byLower[cand.toLowerCase()]||cand; continue; }
+    if(/^fecha\s*;/i.test(ln)) continue;
+    if(ln.indexOf(';')<0) continue;
+    const parts=ln.split(';');
+    if(parts.length<4){ skipped++; continue; }
+    const dp=parts[0].trim().split('/');
+    if(dp.length!==3||dp[2].length!==4){ skipped++; continue; }
+    const h=parseInt(parts[1]), hnd=parseInt(parts[2]);
+    if(isNaN(h)||isNaN(hnd)){ skipped++; continue; }
+    const dev=parts.slice(3).join(';').trim();
+    if(!dev||!cur){ skipped++; continue; }
+    entries.push({g:byLower[cur.toLowerCase()]||cur,date:dp[2]+'-'+dp[1].padStart(2,'0')+'-'+dp[0].padStart(2,'0'),h,hnd,dev});
+  }
+  if(!entries.length){ showT('No se encontraron filas válidas. Revisá que la respuesta respete el formato del prompt.'); return; }
+  const unknown=[...new Set(entries.filter(e=>!names.includes(e.g)).map(e=>e.g))];
+  pending=entries.sort((a,b)=>a.g.localeCompare(b.g)||a.date.localeCompare(b.date));
+  showPV('xpPvList');
+  document.getElementById('xpPvCard').style.display='';
+  let msg=entries.length+' entradas leídas';
+  if(skipped) msg+=' · '+skipped+' líneas ignoradas';
+  if(unknown.length) msg+=' · atención, grupos no configurados: '+unknown.join(', ');
+  showT(msg);
+  document.getElementById('xpPvCard').scrollIntoView({behavior:'smooth'});
 }
 
 // ═══════════════════════════════════════════════
@@ -2551,7 +2741,7 @@ document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
 function init(){
   loadCfg(); loadAI(); loadD(); loadHols(); loadPlans();
   setDates(); refreshKeyBtn();
-  waRefreshGroups();
+  waRefreshGroups(); xpRenderGroups();
   updW(); buildLevelTabs();
   setupPlanDefaults(); setupDailyDefaults(); buildDayGroupSel();
   setupFileUploaders();
