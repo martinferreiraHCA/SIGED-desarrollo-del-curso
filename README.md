@@ -26,6 +26,7 @@ En **Configuración → Datos y respaldo** podés **exportar la configuración a
 
 - **Clase por clase**: elegís grupo y fecha, contás con tus palabras qué pasó en la clase, y la IA lo redacta en formato formal para SIGED usando el horario configurado (día, horas, franja, materia y las entradas anteriores para dar continuidad). Incluye chips de tipo de clase y sugerencias de enfoque generadas por IA a partir de tu descripción.
 - **Por semanas**: carga masiva de contenido semanal por materia, con reparto automático entre las sesiones del grupo.
+- **Prompt para otra IA** (sin API): elegís grupos y período, y la app genera un prompt completo —con tu horario, feriados, últimos desarrollos y el formato de respuesta exacto— para pegar en el chat gratuito de ChatGPT, Claude o Gemini. La respuesta la pegás de vuelta en la app, que la convierte en entradas (vista previa editable) y las guarda en el historial listas para exportar.
 - **Planificar**: planificación anual con IA a partir del programa, y desarrollo día a día por rango de fechas.
 - **Historial**: cada entrada se puede editar a mano o con IA (mejorar redacción, formalizar, ampliar, resumir).
 
