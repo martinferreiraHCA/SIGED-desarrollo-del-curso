@@ -162,6 +162,17 @@
       font-size: 10.5px; color: #94a3b8; margin-top: 8px; line-height: 1.4;
     }
 
+    /* LINK APP WEB */
+    .webapp-link {
+      display: flex; align-items: center; gap: 8px;
+      margin-top: 12px; padding: 10px 12px;
+      background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px;
+      font-size: 12px; font-weight: 500; color: #1e40af;
+      text-decoration: none; transition: all 0.2s;
+    }
+    .webapp-link:hover { background: #dbeafe; border-color: #93c5fd; }
+    .webapp-link .arrow { margin-left: auto; color: #60a5fa; }
+
     /* CONFIG */
     .field label {
       display: block; font-size: 11.5px; color: #64748b;
@@ -360,6 +371,11 @@
             Fecha: DD/MM/AAAA. Podés crearlo en Excel → Guardar como CSV.
           </p>
         </div>
+        <a class="webapp-link" href="https://martinferreirahca.github.io/SIGED-desarrollo-del-curso/" target="_blank" rel="noopener">
+          <span>💡</span>
+          <span>¿Todavía no tenés el CSV? <strong>Generalo con la app web</strong>: planificá, redactá con IA y exportá listo para cargar acá.</span>
+          <span class="arrow">→</span>
+        </a>
       </div>
 
       <div class="card" id="cardConfig" style="display:none;">
@@ -407,7 +423,7 @@
   </div>
 
   <div class="footer">
-    Desarrollo del Curso v1.2 — <a href="https://fisicasimple.com" target="_blank">Física Simple</a>
+    Desarrollo del Curso v1.2 — <a href="https://martinferreirahca.github.io/SIGED-desarrollo-del-curso/" target="_blank" rel="noopener">App web</a> — <a href="https://fisicasimple.com" target="_blank" rel="noopener">Física Simple</a>
   </div>
 
   <script src="popup.js"></script>

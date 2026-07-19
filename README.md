@@ -9,7 +9,9 @@ Dos herramientas que trabajan juntas:
 
 ## La app web (`index.html`)
 
-Abrila directamente en el navegador (doble clic o GitHub Pages). Todo se guarda automáticamente en el caché del navegador (localStorage); no se envía nada a servidores propios.
+**App publicada:** [martinferreirahca.github.io/SIGED-desarrollo-del-curso](https://martinferreirahca.github.io/SIGED-desarrollo-del-curso/)
+
+También podés abrir `index.html` directamente en el navegador. Todo se guarda automáticamente en el caché del navegador (localStorage); no se envía nada a servidores propios.
 
 La app arranca **vacía**: cada docente crea desde cero su año lectivo, franjas, materias, grupos y horario. Si venías usando una versión anterior con entradas guardadas, tu horario histórico se migra solo.
 
