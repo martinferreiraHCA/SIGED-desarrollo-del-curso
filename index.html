@@ -897,15 +897,24 @@ textarea { resize: vertical; min-height: 52px; line-height: 1.5; }
     <div class="sub" id="sub-cfg-hol">
       <div class="card">
         <div class="card-title"><svg class="ic"><use href="#i-sun"/></svg> Feriados y días no lectivos</div>
-        <div class="card-desc">Los feriados nacionales vienen precargados. Podés agregar jornadas pedagógicas, paros, actividades institucionales u otros días no lectivos. Cuando una fecha coincide con un feriado, las funciones de redacción y planificación la marcan automáticamente como no dictada.</div>
+        <div class="card-desc">Los feriados nacionales vienen precargados. Podés agregar un día suelto o un <b>período completo</b> (vacaciones, semana de turismo) con Desde/Hasta — solo se cargan los días hábiles. Los períodos se muestran agrupados: para cambiar las fechas de uno, eliminalo con su ✕ y volvé a cargarlo con el rango nuevo. Cuando una fecha coincide con un feriado, la redacción y la planificación la marcan automáticamente como no dictada.</div>
 
         <div class="hol-row">
-          <div class="fg f1"><label class="lbl">Fecha</label><input type="date" id="holDate"></div>
-          <div class="fg f1"><label class="lbl">Motivo</label><input type="text" id="holName" placeholder="Ej: Jornada pedagógica"></div>
+          <div class="fg wd"><label class="lbl">Desde</label><input type="date" id="holDate"></div>
+          <div class="fg wd"><label class="lbl">Hasta (opcional)</label><input type="date" id="holDateTo"></div>
+          <div class="fg f1"><label class="lbl">Motivo</label><input type="text" id="holName" placeholder="Ej: Vacaciones de julio, jornada pedagógica..."></div>
           <button class="btn btn-p btn-sm" onclick="addHol()"><svg class="ic"><use href="#i-plus"/></svg> Agregar</button>
         </div>
 
+        <label class="file-upl" for="holCsvFile" style="margin-top:.9rem">
+          <svg class="ic"><use href="#i-upload"/></svg>
+          <span class="lab">Importar feriados desde CSV — formato: <code>Fecha;Motivo</code> o <code>Desde;Hasta;Motivo</code> (fechas DD/MM/AAAA)</span>
+          <span class="fn" id="holCsvN"></span>
+          <input type="file" id="holCsvFile" accept=".csv,.txt,text/csv">
+        </label>
+
         <div class="acts" style="margin-top:.7rem">
+          <button class="btn btn-o btn-sm" onclick="exportHolCsv()"><svg class="ic"><use href="#i-download"/></svg> Exportar CSV</button>
           <button class="btn btn-o btn-sm" onclick="resetHols()"><svg class="ic"><use href="#i-refresh"/></svg> Restaurar feriados por defecto</button>
           <button class="btn btn-o btn-sm" onclick="clearCustomHols()"><svg class="ic"><use href="#i-trash"/></svg> Borrar personalizados</button>
         </div>
@@ -2089,44 +2098,134 @@ function xpProcesar(){
 // ═══════════════════════════════════════════════
 function rHols(){
   const el=document.getElementById('holList'); if(!el) return;
-  const all=allHolidays();
+  const all=allHolidays().map(h=>({date:h.date,name:h.name,isDef:DEFAULT_HOLIDAYS.some(x=>x.date===h.date&&x.name===h.name)}));
   if(!all.length){ el.innerHTML='<div class="empty">Sin feriados cargados.</div>'; return; }
-  const byMonth={};
-  for(const h of all){
-    const mk=h.date.slice(0,7);
-    if(!byMonth[mk])byMonth[mk]=[];
-    byMonth[mk].push(h);
+
+  // Agrupar corridas consecutivas del mismo feriado (mismo nombre y origen,
+  // salteando fines de semana) para mostrar períodos largos como un solo bloque.
+  const runs=[];
+  let i=0;
+  while(i<all.length){
+    const run=[all[i]];
+    while(i+1<all.length){
+      const a=all[i], b=all[i+1];
+      const gap=(new Date(b.date+'T12:00:00')-new Date(a.date+'T12:00:00'))/86400000;
+      if(b.name===a.name && b.isDef===a.isDef && gap<=3){ run.push(b); i++; } else break;
+    }
+    i++;
+    runs.push(run);
   }
+
   const mNames=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  const byMonth={};
+  for(const run of runs){
+    const mk=run[0].date.slice(0,7);
+    if(!byMonth[mk])byMonth[mk]=[];
+    byMonth[mk].push(run);
+  }
   let html='';
   for(const mk of Object.keys(byMonth).sort()){
     const yy=mk.split('-')[0], mm=mk.split('-')[1];
     html+='<div class="hol-mon"><h4>'+mNames[parseInt(mm)-1]+' '+yy+'</h4><div class="hol-list">';
-    for(const h of byMonth[mk]){
-      const p=h.date.split('-');
-      const isDef=DEFAULT_HOLIDAYS.some(x=>x.date===h.date && x.name===h.name);
-      html+='<span class="hol-tag" title="'+h.date+'">'+p[2]+'/'+p[1]+' · '+esc(h.name)+
-        '<span class="x" onclick="removeHol(\''+h.date+'\',\''+esc(h.name).replace(/'/g,"\\'")+'\','+isDef+')" title="'+(isDef?'Ocultar feriado por defecto':'Eliminar')+'">✕</span></span>';
+    for(const run of byMonth[mk]){
+      const first=run[0], last=run[run.length-1];
+      const fp=first.date.split('-'), lp=last.date.split('-');
+      const label=run.length===1 ? (fp[2]+'/'+fp[1]) : (fp[2]+'/'+fp[1]+'–'+lp[2]+'/'+lp[1]);
+      const dates=run.map(r=>r.date).join(',');
+      html+='<span class="hol-tag" title="'+(run.length>1?(run.length+' días hábiles'):first.date)+'">'+label+' · '+esc(first.name)+(run.length>1?(' ('+run.length+' días)'):'')+
+        '<span class="x" onclick="removeHolRun(\''+dates+'\',\''+esc(first.name).replace(/'/g,"\\'")+'\','+first.isDef+')" title="'+(first.isDef?'Ocultar feriado por defecto':'Eliminar período completo')+'">✕</span></span>';
     }
     html+='</div></div>';
   }
   el.innerHTML=html;
 }
 function addHol(){
-  const dEl=document.getElementById('holDate'), nEl=document.getElementById('holName');
-  const date=dEl.value, name=(nEl.value||'').trim();
-  if(!date){ showT('Elegí una fecha'); return; }
+  const dEl=document.getElementById('holDate'), tEl=document.getElementById('holDateTo'), nEl=document.getElementById('holName');
+  const from=dEl.value, to=tEl.value||from, name=(nEl.value||'').trim();
+  if(!from){ showT('Elegí una fecha'); return; }
   if(!name){ showT('Escribí un motivo'); return; }
-  customHolidays.push({date,name});
-  saveHols(); dEl.value=''; nEl.value=''; rHols(); updW(); showT('Feriado agregado');
+  if(to<from){ showT('"Hasta" debe ser igual o posterior a "Desde"'); return; }
+  const days=(new Date(to+'T12:00:00')-new Date(from+'T12:00:00'))/86400000;
+  if(days>180){ showT('Rango demasiado largo (máximo 6 meses)'); return; }
+  const n=addHolRange(from,to,name);
+  if(!n){ showT('Ese rango no agrega días nuevos (¿cae en fin de semana o ya existe?)'); return; }
+  customHolidays.sort((a,b)=>a.date.localeCompare(b.date));
+  saveHols(); dEl.value=''; tEl.value=''; nEl.value=''; rHols(); updW();
+  showT(n===1?'Feriado agregado':'Período agregado: '+n+' días hábiles');
 }
-function removeHol(date,name,isDef){
-  if(isDef){
-    disabledDefaults.push(date); saveHols(); rHols(); updW(); showT('Feriado ocultado');
-  } else {
-    customHolidays=customHolidays.filter(h=>!(h.date===date && h.name===name));
-    saveHols(); rHols(); updW(); showT('Eliminado');
+// Agrega los días hábiles (lun-vie) del rango como feriados; devuelve cuántos sumó
+function addHolRange(from,to,name){
+  let n=0;
+  const cur=new Date(from+'T12:00:00'), end=new Date(to+'T12:00:00');
+  let guard=0;
+  while(cur<=end && guard<200){
+    const dow=cur.getDay();
+    if(dow>=1&&dow<=5){
+      const ds=fI(cur);
+      const dup=customHolidays.some(h=>h.date===ds&&h.name===name)||
+                DEFAULT_HOLIDAYS.some(h=>h.date===ds&&h.name===name&&!disabledDefaults.includes(ds));
+      if(!dup){ customHolidays.push({date:ds,name}); n++; }
+    }
+    cur.setDate(cur.getDate()+1); guard++;
   }
+  return n;
+}
+function removeHolRun(datesCsv,name,isDef){
+  const dates=datesCsv.split(',');
+  if(isDef){
+    for(const d of dates) if(!disabledDefaults.includes(d)) disabledDefaults.push(d);
+    saveHols(); rHols(); updW();
+    showT(dates.length>1?('Feriados ocultados ('+dates.length+' días)'):'Feriado ocultado');
+  } else {
+    customHolidays=customHolidays.filter(h=>!(dates.includes(h.date)&&h.name===name));
+    saveHols(); rHols(); updW();
+    showT(dates.length>1?('Período eliminado ('+dates.length+' días)'):'Eliminado');
+  }
+}
+// ── CSV de feriados ──
+function parseDateFlex(s){
+  s=(s||'').trim();
+  let m=s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+  if(m) return m[3]+'-'+m[2].padStart(2,'0')+'-'+m[1].padStart(2,'0');
+  m=s.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/);
+  if(m) return m[1]+'-'+m[2].padStart(2,'0')+'-'+m[3].padStart(2,'0');
+  return null;
+}
+function importHolCsv(text){
+  const lines=text.split(/\r?\n/).map(l=>l.replace(/^﻿/,'').trim()).filter(l=>l);
+  let added=0, bad=0;
+  for(const ln of lines){
+    const sep=ln.includes(';')?';':',';
+    const parts=ln.split(sep).map(p=>p.trim().replace(/^["']|["']$/g,''));
+    if(/^fecha|^desde/i.test(parts[0])) continue; // encabezado
+    const from=parseDateFlex(parts[0]);
+    if(!from){ bad++; continue; }
+    let to=from, name='';
+    if(parts.length>=3 && parseDateFlex(parts[1])){
+      to=parseDateFlex(parts[1]);
+      name=parts.slice(2).join(sep).trim();
+    } else {
+      name=parts.slice(1).join(sep).trim();
+    }
+    if(!name){ bad++; continue; }
+    const a=from<=to?from:to, b=from<=to?to:from;
+    added+=addHolRange(a,b,name);
+  }
+  customHolidays.sort((x,y)=>x.date.localeCompare(y.date));
+  saveHols(); rHols(); updW();
+  if(added) showT('Importados '+added+' días'+(bad?(' · '+bad+' líneas ignoradas'):''));
+  else showT('No se importó nada. Formato esperado: Fecha;Motivo o Desde;Hasta;Motivo');
+}
+function exportHolCsv(){
+  const rows=allHolidays().map(h=>{
+    const p=h.date.split('-');
+    return p[2]+'/'+p[1]+'/'+p[0]+';'+h.name.replace(/;/g,',');
+  });
+  if(!rows.length){ showT('Sin feriados para exportar'); return; }
+  const b=new Blob(['﻿Fecha;Motivo\n'+rows.join('\n')],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(b);
+  a.download='feriados_'+(cfg.meta.year||'')+'.csv'; a.click();
+  showT('Feriados exportados');
 }
 function resetHols(){
   if(!confirm('¿Restaurar todos los feriados por defecto? No borra los personalizados.')) return;
@@ -2749,6 +2848,13 @@ function setupFileUploaders(){
     const f=ev.target.files[0]; if(!f) return;
     document.getElementById('impFileN').textContent=f.name;
     await importJSON(f);
+    ev.target.value='';
+  });
+  const hf=document.getElementById('holCsvFile');
+  if(hf) hf.addEventListener('change',async(ev)=>{
+    const f=ev.target.files[0]; if(!f) return;
+    document.getElementById('holCsvN').textContent=f.name;
+    importHolCsv(await f.text());
     ev.target.value='';
   });
 }

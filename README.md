@@ -21,6 +21,7 @@ En **Configuración → Año y horario**:
 - **Franjas horarias**: las horas de clase del día (1 franja = 1 hora), con hora de inicio y fin.
 - **Niveles y materias**: organizadas por nivel (7°, 8°, 9°...), con color propio y vínculo opcional "Prefijo STEM" entre materias.
 - **Grupos y horario semanal**: cada grupo se asigna a sus franjas en una grilla Lunes–Viernes. Ese horario define las horas dictadas y le da contexto a la IA.
+- **Feriados**: se cargan sueltos o por período (Desde/Hasta, solo días hábiles); los períodos largos se ven agrupados en un solo bloque y se eliminan de una. También se pueden importar/exportar como CSV (`Fecha;Motivo` o `Desde;Hasta;Motivo`).
 
 En **Configuración → Datos y respaldo** podés **exportar la configuración a un archivo JSON** para usarla como base el año siguiente: la importás, ajustás año/grupos/feriados y listo. También hay un respaldo completo (configuración + entradas).
 
