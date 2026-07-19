@@ -11,6 +11,20 @@
   let shouldStop = false;
   let isProcessing = false;
 
+  // Estado del proceso: vive acá (la página) porque el popup se cierra al
+  // hacer clic afuera. Al reabrirse, el popup pide 'getState' y restaura
+  // la barra de progreso y el log completo.
+  let runState = { running: false, finished: false, stopped: false, current: 0, total: 0, success: 0, errors: 0, logs: [] };
+
+  function logState(message, status) {
+    runState.logs.push({
+      time: new Date().toLocaleTimeString('es-UY', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+      text: message,
+      type: status
+    });
+    if (runState.logs.length > 300) runState.logs.shift();
+  }
+
   // Los IDs de GeneXus llevan un prefijo de componente (ej. W00450001) que puede
   // variar entre instalaciones de SIGED. Si el ID exacto no existe, se busca por sufijo.
   function gxEl(id) {
@@ -30,6 +44,11 @@
     if (msg.action === 'detectPage') {
       const result = analyzePage();
       sendResponse(result);
+      return true;
+    }
+
+    if (msg.action === 'getState') {
+      sendResponse(runState);
       return true;
     }
 
@@ -129,10 +148,14 @@
     let errors = 0;
     const total = records.length;
 
+    runState = { running: true, finished: false, stopped: false, current: 0, total, success: 0, errors: 0, logs: [] };
     progress(0, total, 'info', `Iniciando carga de ${total} registros...`);
 
     for (let i = 0; i < total; i++) {
       if (shouldStop) {
+        runState.running = false;
+        runState.stopped = true;
+        logState('Proceso detenido por el usuario', 'info');
         notify('processStopped');
         isProcessing = false;
         return;
@@ -159,10 +182,12 @@
         await sleep(delay);
 
         success++;
+        runState.success = success;
         progress(i + 1, total, 'ok', `[${i+1}/${total}] ✅ Guardado: ${rec.fecha} — ${rec.desarrollo.substring(0, 40)}...`);
 
       } catch (err) {
         errors++;
+        runState.errors = errors;
         progress(i + 1, total, 'error', `[${i+1}/${total}] ❌ Error: ${err.message}`);
         console.error('📘 Error en registro', i + 1, err);
         // Wait and try to recover
@@ -170,6 +195,9 @@
       }
     }
 
+    runState.running = false;
+    runState.finished = true;
+    logState(`Completado: ${success}/${total} registros cargados` + (errors ? ` · ${errors} con error` : ''), errors ? 'error' : 'ok');
     notify('processComplete', { total, success, errors });
     isProcessing = false;
   }
@@ -450,6 +478,9 @@
   }
 
   function progress(current, total, status, message) {
+    runState.current = current;
+    runState.total = total;
+    logState(message, status);
     try {
       // El popup puede estar cerrado: la promesa rechazada se ignora en silencio
       const p = chrome.runtime.sendMessage({
