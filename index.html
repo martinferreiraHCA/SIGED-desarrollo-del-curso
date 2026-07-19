@@ -626,6 +626,7 @@ textarea { resize: vertical; min-height: 52px; line-height: 1.5; }
 
         <div class="acts" style="margin-top:.9rem">
           <button class="btn btn-f" id="waGenBtn" onclick="waRedactar()"><svg class="ic"><use href="#i-zap"/></svg> Redactar con IA</button>
+          <button class="btn btn-o" onclick="waPromptExterno()"><svg class="ic"><use href="#i-msg"/></svg> Prompt para IA externa</button>
           <button class="btn btn-o" onclick="waLimpiar()">Limpiar</button>
         </div>
 
@@ -762,10 +763,19 @@ textarea { resize: vertical; min-height: 52px; line-height: 1.5; }
 
         <div class="acts" style="margin-top:.7rem">
           <button class="btn btn-f" onclick="generarPlanAnual()"><svg class="ic"><use href="#i-zap"/></svg> Sugerir planificación anual con IA</button>
+          <button class="btn btn-o" onclick="planPromptExterno()"><svg class="ic"><use href="#i-msg"/></svg> Prompt para IA externa</button>
           <button class="btn btn-o" onclick="limpiarPlan()"><svg class="ic"><use href="#i-trash"/></svg> Limpiar plan de esta materia</button>
         </div>
 
         <div id="planStatus"></div>
+
+        <div id="planExtArea" style="display:none;margin-top:1rem">
+          <label class="lbl">Pegá acá la respuesta de la IA externa (una línea por semana: "1: tema")</label>
+          <textarea id="planExtResp" placeholder="1: Presentación del curso. Cinemática: posición y desplazamiento.&#10;2: MRU, ecuación horaria y gráficas.&#10;3:&#10;4: MRUV, aceleración..." style="min-height:110px;font-family:'Courier New',monospace;font-size:.76rem"></textarea>
+          <div class="acts" style="margin-top:.5rem">
+            <button class="btn btn-f btn-sm" onclick="planProcesarExterno()"><svg class="ic"><use href="#i-check"/></svg> Procesar respuesta</button>
+          </div>
+        </div>
       </div>
 
       <div class="card" id="planViewCard" style="display:none">
@@ -812,6 +822,7 @@ textarea { resize: vertical; min-height: 52px; line-height: 1.5; }
 
         <div class="acts" style="margin-top:.7rem">
           <button class="btn btn-f" onclick="generarDiaADia()"><svg class="ic"><use href="#i-zap"/></svg> Generar desarrollo día a día</button>
+          <button class="btn btn-o" onclick="dayUsarPromptExterno()"><svg class="ic"><use href="#i-msg"/></svg> Sin API: usar prompt externo</button>
           <button class="btn btn-o" onclick="document.getElementById('dayTopics').value=''">Limpiar</button>
         </div>
 
@@ -998,8 +1009,22 @@ textarea { resize: vertical; min-height: 52px; line-height: 1.5; }
     </div>
     <div class="acts" style="margin-top:.9rem">
       <button class="btn btn-f btn-sm" id="meAiBtn" onclick="meAplicarIA()"><svg class="ic"><use href="#i-sparkle"/></svg> Aplicar con IA</button>
+      <button class="btn btn-o btn-sm" onclick="mePromptExterno()"><svg class="ic"><use href="#i-msg"/></svg> Prompt externo</button>
       <button class="btn btn-p btn-sm" onclick="meGuardar()"><svg class="ic"><use href="#i-save"/></svg> Guardar</button>
       <button class="btn btn-o btn-sm" onclick="closeModal()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL: PROMPT PARA IA EXTERNA (genérico) ═══ -->
+<div class="modal-bg" id="promptModal">
+  <div class="modal">
+    <h3><svg class="ic"><use href="#i-msg"/></svg> Prompt para IA externa</h3>
+    <div class="msub" id="pmHint"></div>
+    <textarea id="pmText" style="min-height:200px;font-family:'Courier New',monospace;font-size:.76rem"></textarea>
+    <div class="acts" style="margin-top:.9rem">
+      <button class="btn btn-p btn-sm" onclick="cT('pmText')"><svg class="ic"><use href="#i-copy"/></svg> Copiar prompt</button>
+      <button class="btn btn-o btn-sm" onclick="closePromptModal()">Cerrar</button>
     </div>
   </div>
 </div>
@@ -1694,6 +1719,21 @@ function meGuardar(){
   e.dev=document.getElementById('meText').value.trim();
   saveD(); closeModal(); rH(); showT('Entrada actualizada');
 }
+const ME_SYS='Editás el texto de "desarrollo del curso" de una clase para el registro oficial SIGED (Uruguay). Redacción formal, impersonal ("Se trabajó...", "Se resolvieron..."), 1 a 3 frases. Aplicá la instrucción del docente sin inventar contenido que no esté implícito. Devolvé SOLO el texto final, sin comillas ni comentarios.';
+function meBuildCtx(){
+  const e=data[meCtx.g][meCtx.i];
+  const txt=document.getElementById('meText').value.trim()||e.dev;
+  const instr=document.getElementById('meDesc').value.trim();
+  return 'Grupo: '+meCtx.g+'\nFecha: '+e.date+'\nTexto actual: '+txt+'\n\nInstrucción del docente: '+instr;
+}
+function mePromptExterno(){
+  if(!meCtx)return;
+  const e=data[meCtx.g]&&data[meCtx.g][meCtx.i]; if(!e)return;
+  const instr=document.getElementById('meDesc').value.trim();
+  if(!instr){showT('Escribí qué cambiar o elegí una sugerencia');return;}
+  openPromptModal(ME_SYS+'\n\n'+meBuildCtx(),
+    'Copialo y pegalo en tu IA. El texto que devuelva, pegalo en el cuadro "Texto del desarrollo" y apretá Guardar.');
+}
 async function meAplicarIA(){
   if(!meCtx)return;
   if(!aiReady()){showT('Configurá la IA primero');return;}
@@ -1702,9 +1742,7 @@ async function meAplicarIA(){
   if(!instr){showT('Escribí qué cambiar o elegí una sugerencia');return;}
   const btn=document.getElementById('meAiBtn'); btn.disabled=true;
   try{
-    const sys='Editás el texto de "desarrollo del curso" de una clase para el registro oficial SIGED (Uruguay). Redacción formal, impersonal ("Se trabajó...", "Se resolvieron..."), 1 a 3 frases. Aplicá la instrucción del docente sin inventar contenido que no esté implícito. Devolvé SOLO el texto final, sin comillas ni comentarios.';
-    const ctx='Grupo: '+meCtx.g+'\nFecha: '+e.date+'\nTexto actual: '+e.dev+'\n\nInstrucción del docente: '+instr;
-    const out=(await callAI(sys,ctx,600)).trim();
+    const out=(await callAI(ME_SYS,meBuildCtx(),600)).trim();
     if(out) document.getElementById('meText').value=out;
     showT('Sugerencia aplicada — revisá y guardá');
   }catch(err){ console.error(err); showT('Error IA: '+err.message.slice(0,60)); }
@@ -1797,13 +1835,22 @@ function rExp(){
       '<div class="ai-edit">'+
       '<input type="text" id="ai_'+sl+'" placeholder="Ej: mejorar redacción, agregar detalles de laboratorio, hacer más formal...">'+
       '<button class="btn btn-p btn-sm" id="aib_'+sl+'" onclick="aiEdit(\''+gq+'\',\''+sl+'\')"><svg class="ic"><use href="#i-sparkle"/></svg> Editar con IA</button>'+
+      '<button class="btn btn-o btn-sm" onclick="expPromptExterno(\''+gq+'\',\''+sl+'\')"><svg class="ic"><use href="#i-msg"/></svg> Prompt externo</button>'+
       '</div>'+
-      '<div class="ai-hint">Podés editar el CSV directamente o con IA. Si editás a mano, apretá "Guardar cambios" para aplicarlo al historial.</div>'+
+      '<div class="ai-hint">Podés editar el CSV a mano, con tu API de IA, o con "Prompt externo" (copiás el prompt, lo pegás en cualquier IA y traés el CSV de vuelta al cuadro). Al terminar, apretá "Guardar cambios".</div>'+
       '</div>';
   }
   el.innerHTML=h;
 }
 function setAiInstr(sl,txt){ const i=document.getElementById('ai_'+sl); if(i) i.value=txt; }
+const CSV_SYS='Editás CSVs de desarrollo de clases. Formato EXACTO (separador ;):\nFecha;Horas dictadas;Horas no dictadas;Desarrollo\nLa Fecha (DD/MM/AAAA) y ambas columnas de horas NO se modifican NUNCA.\nSolo aplicás la instrucción del usuario a la columna Desarrollo de cada fila.\nNUNCA inventes contenido nuevo: trabajá sobre el texto existente.\nSi una fila dice "No se dictó..." dejala igual.\nDevolvé SOLO el CSV completo con el mismo número de filas, sin markdown, sin comentarios.';
+function expPromptExterno(g,sl){
+  const inp=document.getElementById('ai_'+sl);
+  const instr=(inp&&inp.value.trim())||'Mejorar la redacción de todos los desarrollos manteniendo el contenido.';
+  const csv=buildCSV(g);
+  openPromptModal(CSV_SYS+'\n\nInstrucción: '+instr+'\n\nCSV a editar:\n'+csv,
+    'Copialo y pegalo en tu IA. El CSV que devuelva, pegalo en el cuadro de texto de '+g+' y apretá "Guardar cambios del CSV".');
+}
 
 async function aiEdit(g,sl){
   if(!aiReady()){ showT('Configurá la IA en Configuración'); return; }
@@ -1814,9 +1861,8 @@ async function aiEdit(g,sl){
   const csv=buildCSV(g);
   btn.disabled=true;
   try{
-    const sys='Editás CSVs de desarrollo de clases. Formato EXACTO (separador ;):\nFecha;Horas dictadas;Horas no dictadas;Desarrollo\nLa Fecha (DD/MM/AAAA) y ambas columnas de horas NO se modifican NUNCA.\nSolo aplicás la instrucción del usuario a la columna Desarrollo de cada fila.\nNUNCA inventes contenido nuevo: trabajá sobre el texto existente.\nSi una fila dice "No se dictó..." dejala igual.\nDevolvé SOLO el CSV completo con el mismo número de filas, sin markdown, sin comentarios.';
     const userMsg='Instrucción: '+instr+'\n\nCSV a editar:\n'+csv;
-    const out=await callAI(sys,userMsg,Math.min(4000,csv.length*2+500));
+    const out=await callAI(CSV_SYS,userMsg,Math.min(4000,csv.length*2+500));
     const edited=out.replace(/```csv|```/gi,'').trim();
     const rows=edited.split('\n').map(r=>r.trim()).filter(r=>r);
     if(rows[0]&&rows[0].toLowerCase().startsWith('fecha'))rows.shift();
@@ -1937,6 +1983,37 @@ function waPrevEntries(g,dateStr){
   const arr=(data[g]||[]).filter(e=>e.date<dateStr&&e.h>0).slice(-3);
   return arr.map(e=>e.date+': '+e.dev).join('\n');
 }
+const WA_SYS='Redactás la entrada de "Desarrollo del curso" del registro oficial SIGED (educación media, Uruguay) a partir de la descripción informal del docente.\nReglas:\n- Redacción formal e impersonal ("Se trabajó...", "Se resolvieron...", "Se realizó...").\n- 1 a 3 frases, concretas: contenidos, actividades, tipo de trabajo.\n- No inventes contenidos ni actividades que el docente no mencione.\n- No incluyas nombres de estudiantes.\n- No menciones fecha, grupo ni horas: solo el desarrollo.\n- Devolvé SOLO el texto, sin comillas ni comentarios.';
+function waBuildCtx(g,ds,desc){
+  const s=waSessionFor(g,ds);
+  const dow=new Date(ds+'T12:00:00').getDay();
+  const mat=matById((cfg.groups.find(x=>x.name===g)||{}).materia);
+  const lvl=mat?cfg.levels.find(l=>l.id===mat.level):null;
+  const instr=document.getElementById('waInstr').value.trim();
+  const prev=waPrevEntries(g,ds);
+  return 'GRUPO: '+g+(mat?' — '+mat.name:'')+(lvl?' ('+lvl.label+')':'')+
+    '\nCLASE: '+(DL_FULL[dow]||'')+' '+ds+(s?(' · '+sessH(s)+'h'+(sessTime(s)?' · '+sessTime(s):'')):'')+
+    (prev?('\n\nDESARROLLOS ANTERIORES (para dar continuidad, no repetir):\n'+prev):'')+
+    (instr?('\n\nINSTRUCCIÓN DE REDACCIÓN: '+instr):'')+
+    '\n\nDESCRIPCIÓN DEL DOCENTE:\n'+desc;
+}
+function waPromptExterno(){
+  const g=document.getElementById('waGroup').value;
+  const ds=document.getElementById('waDate').value;
+  if(!g||!ds){showT('Elegí grupo y fecha');return;}
+  const hol=isHoliday(ds)?holidayName(ds):null;
+  if(hol||waND){
+    document.getElementById('waOut').value=hol?('No se dictó: '+hol+'.'):'No se dictó clase.';
+    document.getElementById('waResult').style.display='';
+    showT('Es día no dictado: no hace falta IA, ya quedó el texto listo');
+    return;
+  }
+  const desc=document.getElementById('waDesc').value.trim();
+  if(!desc){showT('Contá qué pasó en la clase');return;}
+  document.getElementById('waResult').style.display='';
+  openPromptModal(WA_SYS+'\n\n'+waBuildCtx(g,ds,desc),
+    'Copialo y pegalo en ChatGPT, Claude o Gemini. La respuesta pegala en el cuadro "Desarrollo redactado (editable)" y apretá Guardar en historial.');
+}
 async function waSugerir(){
   if(!aiReady()){showT('Configurá la IA primero');swTab('config');swCfgSub('cfg-ai');return;}
   const desc=document.getElementById('waDesc').value.trim();
@@ -1979,19 +2056,7 @@ async function waRedactar(){
   const btn=document.getElementById('waGenBtn'); btn.disabled=true;
   const orig=btn.innerHTML; btn.innerHTML='<div class="spin" style="width:14px;height:14px;border-width:2px"></div> Redactando...';
   try{
-    const s=waSessionFor(g,ds);
-    const dow=new Date(ds+'T12:00:00').getDay();
-    const mat=matById((cfg.groups.find(x=>x.name===g)||{}).materia);
-    const lvl=mat?cfg.levels.find(l=>l.id===mat.level):null;
-    const instr=document.getElementById('waInstr').value.trim();
-    const prev=waPrevEntries(g,ds);
-    const sys='Redactás la entrada de "Desarrollo del curso" del registro oficial SIGED (educación media, Uruguay) a partir de la descripción informal del docente.\nReglas:\n- Redacción formal e impersonal ("Se trabajó...", "Se resolvieron...", "Se realizó...").\n- 1 a 3 frases, concretas: contenidos, actividades, tipo de trabajo.\n- No inventes contenidos ni actividades que el docente no mencione.\n- No incluyas nombres de estudiantes.\n- No menciones fecha, grupo ni horas: solo el desarrollo.\n- Devolvé SOLO el texto, sin comillas ni comentarios.';
-    const ctx='GRUPO: '+g+(mat?' — '+mat.name:'')+(lvl?' ('+lvl.label+')':'')+
-      '\nCLASE: '+(DL_FULL[dow]||'')+' '+ds+(s?(' · '+sessH(s)+'h'+(sessTime(s)?' · '+sessTime(s):'')):'')+
-      (prev?('\n\nDESARROLLOS ANTERIORES (para dar continuidad, no repetir):\n'+prev):'')+
-      (instr?('\n\nINSTRUCCIÓN DE REDACCIÓN: '+instr):'')+
-      '\n\nDESCRIPCIÓN DEL DOCENTE:\n'+desc;
-    const txt=(await callAI(sys,ctx,600)).trim();
+    const txt=(await callAI(WA_SYS,waBuildCtx(g,ds,desc),600)).trim();
     if(!txt) throw new Error('respuesta vacía');
     out.value=txt;
     res.style.display='';
@@ -2382,6 +2447,70 @@ function mondaysBetween(fromS,toS){
   while(d<=td){ out.push(fI(d)); d.setDate(d.getDate()+7); }
   return out;
 }
+function planWkText(mondays){
+  return mondays.map((ms,i)=>{
+    const mon=new Date(ms+'T12:00:00');
+    const hols=[];
+    for(let j=0;j<5;j++){
+      const dd=new Date(mon); dd.setDate(mon.getDate()+j);
+      const ds=fI(dd); if(isHoliday(ds)) hols.push(DL[j+1]+' '+holidayName(ds));
+    }
+    const fri=new Date(mon); fri.setDate(mon.getDate()+4);
+    return 'Sem. '+(i+1)+' ('+fDS(mon)+'–'+fDS(fri)+')'+(hols.length?' [FERIADOS: '+hols.join(' / ')+']':'');
+  }).join('\n');
+}
+let planExtCtx=null;
+function planPromptExterno(){
+  if(!curPlanMat){ showT('Elegí una materia'); return; }
+  const mat=allMaterias().find(m=>m.id===curPlanMat);
+  const prog=(document.getElementById('planProg').value||'').trim();
+  if(!prog){ showT('Pegá o subí el programa'); return; }
+  const fromV=document.getElementById('planFrom').value, toV=document.getElementById('planTo').value;
+  if(!fromV||!toV){ showT('Completá las fechas'); return; }
+  const mondays=mondaysBetween(fromV,toV);
+  if(!mondays.length){ showT('Rango inválido'); return; }
+  const lvl=levelOfMat(mat.id);
+  const prompt=
+'Sos asistente pedagógico. Distribuí el programa de una materia en las semanas del año lectivo listadas abajo.\n\n'+
+'REGLAS:\n'+
+'- Si la semana es íntegramente feriado/vacaciones, dejá el tema vacío.\n'+
+'- Si tiene algún feriado parcial, ajustá la carga.\n'+
+'- El tema es una línea breve (1–2 frases) con el tema principal y sub-temas clave.\n'+
+'- Reservá semanas para evaluaciones, repasos y laboratorios según el programa.\n'+
+'- Respetá el orden lógico pedagógico.\n\n'+
+'FORMATO DE RESPUESTA (OBLIGATORIO — sin explicaciones, sin markdown, sin texto extra):\n'+
+'- Una línea por semana, con el formato "N: tema" (N = número de semana).\n'+
+'- Para las semanas íntegramente de feriado, escribí solo "N:" con el tema vacío.\n'+
+'- Incluí TODAS las semanas, de la 1 a la '+mondays.length+'.\n\n'+
+'EJEMPLO:\n1: Presentación del curso. Cinemática: posición y desplazamiento.\n2: MRU, ecuación horaria y gráficas.\n3:\n4: MRUV y aceleración. Ejercicios de aplicación.\n\n'+
+'MATERIA: '+mat.name+(lvl?' ('+lvl.label+')':'')+'\n\n'+
+'SEMANAS DISPONIBLES:\n'+planWkText(mondays)+'\n\n'+
+'PROGRAMA / CONTENIDOS:\n'+prog;
+  planExtCtx={mat:curPlanMat,mondays};
+  document.getElementById('planExtArea').style.display='';
+  openPromptModal(prompt,'Copialo y pegalo en tu IA. La respuesta pegala en el cuadro "Pegá acá la respuesta de la IA externa" de esta pestaña y apretá Procesar respuesta.');
+}
+function planProcesarExterno(){
+  if(!planExtCtx||planExtCtx.mat!==curPlanMat){ showT('Primero generá el prompt para esta materia'); return; }
+  const raw=(document.getElementById('planExtResp').value||'').trim();
+  if(!raw){ showT('Pegá primero la respuesta de la IA'); return; }
+  const topics={};
+  for(let ln of raw.split(/\r?\n/)){
+    ln=ln.trim();
+    if(!ln||/^```/.test(ln)) continue;
+    const m=ln.match(/^\D{0,8}?(\d+)\s*[:;.\-]\s*(.*)$/);
+    if(m){ const i=parseInt(m[1]); if(i>=1&&i<=planExtCtx.mondays.length&&!(i in topics)) topics[i]=m[2].trim(); }
+  }
+  const found=Object.keys(topics).length;
+  if(!found){ showT('No se encontraron semanas. Formato esperado: "1: tema" por línea'); return; }
+  const planWeeks=planExtCtx.mondays.map((ms,i)=>({ start:ms, topic:topics[i+1]||'', _sel:false }));
+  plans[curPlanMat]={ program:(document.getElementById('planProg').value||'').trim(), fileName:(plans[curPlanMat]&&plans[curPlanMat].fileName)||'', weeks:planWeeks, updated:Date.now() };
+  savePlans();
+  document.getElementById('planExtResp').value='';
+  document.getElementById('planStatus').innerHTML='<div class="info-box">Plan cargado desde IA externa: <b>'+planWeeks.length+'</b> semanas ('+found+' con contenido). Editá abajo.</div>';
+  rPlanWeeks();
+  showT('Plan cargado desde IA externa');
+}
 
 async function generarPlanAnual(){
   if(!curPlanMat){ showT('Elegí una materia'); return; }
@@ -2398,17 +2527,7 @@ async function generarPlanAnual(){
   const st=document.getElementById('planStatus');
   st.innerHTML='<div class="ld-bar"><div class="spin"></div>Generando planificación anual...</div>';
 
-  const wkInfo=mondays.map((ms,i)=>{
-    const mon=new Date(ms+'T12:00:00');
-    const hols=[];
-    for(let j=0;j<5;j++){
-      const dd=new Date(mon); dd.setDate(mon.getDate()+j);
-      const ds=fI(dd); if(isHoliday(ds)) hols.push(DL[j+1]+' '+holidayName(ds));
-    }
-    const fri=new Date(mon); fri.setDate(mon.getDate()+4);
-    return { i:i+1, ms, label:fDS(mon)+'–'+fDS(fri), hols };
-  });
-  const wkText=wkInfo.map(w=>'Sem. '+w.i+' ('+w.label+')'+(w.hols.length?' [FERIADOS: '+w.hols.join(' / ')+']':'')).join('\n');
+  const wkText=planWkText(mondays);
 
   try{
     const lvl=levelOfMat(mat.id);
@@ -2496,6 +2615,20 @@ function buildDayGroupSel(){
   const prev=el.value;
   el.innerHTML=groupNames().sort().map(g=>'<option value="'+esc(g)+'">'+esc(g)+'</option>').join('');
   if(prev) el.value=prev;
+}
+// El "día a día sin API" ya existe: es la pestaña Prompt para otra IA.
+// Este botón lleva ahí con el grupo, fechas y temas ya cargados.
+function dayUsarPromptExterno(){
+  const g=document.getElementById('dayGroup').value;
+  const f=document.getElementById('dayFrom').value, t=document.getElementById('dayTo').value;
+  const topics=document.getElementById('dayTopics').value;
+  if(g) xpSel=new Set([g]);
+  swTab('write'); swWriteSub('write-prompt');
+  if(f) document.getElementById('xpFrom').value=f;
+  if(t) document.getElementById('xpTo').value=t;
+  if(topics.trim()) document.getElementById('xpTopics').value=topics;
+  xpRenderGroups();
+  showT('Mismo resultado sin API: generá el prompt acá y pegá la respuesta en el paso 2');
 }
 
 async function generarDiaADia(){
@@ -2930,9 +3063,25 @@ function fDS(d){return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth
 function esc(s){const d=document.createElement('div');d.textContent=s==null?'':s;return d.innerHTML}
 function showT(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500)}
 
-// cerrar modal con clic afuera o Escape
-document.addEventListener('click',e=>{ if(e.target.id==='editModal') closeModal(); });
-document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeModal(); });
+// ── Modal genérico de prompt para IA externa ──
+function openPromptModal(text,hint){
+  document.getElementById('pmText').value=text;
+  document.getElementById('pmHint').textContent=hint||'Copialo y pegalo en ChatGPT, Claude o Gemini. Después traé la respuesta como se indica.';
+  document.getElementById('promptModal').classList.add('show');
+}
+function closePromptModal(){ document.getElementById('promptModal').classList.remove('show'); }
+
+// cerrar modales con clic afuera o Escape
+document.addEventListener('click',e=>{
+  if(e.target.id==='editModal') closeModal();
+  if(e.target.id==='promptModal') closePromptModal();
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){
+    if(document.getElementById('promptModal').classList.contains('show')) closePromptModal();
+    else closeModal();
+  }
+});
 
 // ═══ INIT ═══
 function init(){
