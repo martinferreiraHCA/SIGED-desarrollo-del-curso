@@ -73,6 +73,18 @@
     return false;
   });
 
+  // Aviso cuando la pestaña queda oculta durante una carga: Chrome enlentece
+  // los timers de pestañas en segundo plano (mucho, pasados 5 minutos).
+  document.addEventListener('visibilitychange', () => {
+    if (!isProcessing) return;
+    if (document.hidden) {
+      progress(runState.current, runState.total, 'error',
+        '⚠️ La pestaña de SIGED quedó en segundo plano: la carga sigue, pero Chrome la enlentece (mucho si pasa más de 5 min oculta). Mantenela visible para velocidad normal.');
+    } else {
+      progress(runState.current, runState.total, 'info', 'Pestaña visible de nuevo: velocidad normal.');
+    }
+  });
+
   // === PAGE ANALYSIS ===
   function analyzePage() {
     const url = window.location.href;

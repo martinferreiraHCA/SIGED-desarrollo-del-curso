@@ -150,7 +150,9 @@ Una vez que dice "Listo para cargar":
 Vas a ver una barra de progreso y un log de lo que va haciendo. Cuando termina, te muestra cuántos registros se cargaron exitosamente.
 
 ### Importante
-- **No cierres la pestaña de SIGED** mientras se ejecuta
+- **No cierres ni recargues la pestaña de SIGED** mientras se ejecuta
+- Podés cerrar el popup: el ícono de la extensión muestra el avance (ej. "45%") y al reabrirlo se restaura el progreso y el log
+- **Dejá la pestaña de SIGED visible** (por ejemplo en una ventana aparte): si queda en segundo plano, Chrome enlentece los tiempos y la carga se vuelve mucho más lenta — sobre todo pasados 5 minutos oculta
 - Si necesitás parar, usá el botón **"Detener carga"**
 - Si SIGED anda lento, subí la pausa a 5000ms
 - Para cada libreta diferente, tenés que navegar a su "Desarrollo del curso" y ejecutar de nuevo
