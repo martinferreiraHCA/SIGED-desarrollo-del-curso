@@ -132,8 +132,62 @@ function showPanel(name) {
   else if (name === 'ready') panelReady.classList.add('active');
 }
 
-// Run detection on load
-detectPage();
+// === RECONEXIÓN A UN PROCESO EN CURSO ===
+// El popup se cierra al hacer clic afuera, pero la carga sigue corriendo en
+// la página. Al reabrir, pedimos el estado al content script y restauramos
+// la barra de progreso y el log.
+function openLogConsole() {
+  logConsole.classList.add('open');
+  logToggle.textContent = '▼ Ver detalle técnico';
+}
+function updateProgressUI(current, total) {
+  const pct = total ? Math.round((current / total) * 100) : 0;
+  progressFill.style.width = pct + '%';
+  progressCount.textContent = `${current} / ${total}`;
+  progressLabel.textContent = (total && current === total) ? '¡Completado!' : 'Cargando...';
+}
+async function tryRestoreRun() {
+  try {
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    if (!tab || !(tab.url || '').includes('siged.com.uy')) return;
+    const st = await chrome.tabs.sendMessage(tab.id, { action: 'getState' });
+    if (!st || (!st.running && !st.logs?.length)) {
+      try { chrome.action.setBadgeText({ text: '' }); } catch (e) {}
+      return;
+    }
+    // Hay (o hubo) una carga: restaurar la vista de progreso + log
+    showPanel('ready');
+    cardRun.style.display = 'block';
+    progressSection.classList.add('show');
+    logSection.classList.add('show');
+    openLogConsole();
+    logConsole.innerHTML = '';
+    for (const l of st.logs) addLog(l.text, l.type === 'error' ? 'err' : (l.type === 'ok' ? 'ok' : 'info'), l.time);
+    updateProgressUI(st.current, st.total);
+    if (st.running) {
+      isRunning = true;
+      btnRun.disabled = true;
+      btnStop.classList.add('show');
+      showStatus('ok', '⏳ Carga en curso...', `${st.current} de ${st.total} registros — no cierres la pestaña de SIGED`);
+    } else {
+      if (st.finished) {
+        progressLabel.textContent = '¡Completado!';
+        showStatus(st.errors ? 'warn' : 'ok',
+          st.errors ? `Completado con ${st.errors} errores` : '✅ Carga completada',
+          `${st.success} de ${st.total} registros cargados`);
+      } else if (st.stopped) {
+        showStatus('warn', 'Carga detenida', `Se cargaron ${st.success} de ${st.total} registros`);
+      }
+      try { chrome.action.setBadgeText({ text: '' }); } catch (e) {}
+    }
+  } catch (e) { /* sin content script en esta pestaña */ }
+}
+
+// Run detection on load, then re-attach to any run in progress
+(async () => {
+  await detectPage();
+  await tryRestoreRun();
+})();
 
 // === CSV LOADING ===
 csvFile.addEventListener('change', (e) => {
@@ -292,6 +346,7 @@ btnRun.addEventListener('click', async () => {
   btnStop.classList.add('show');
   progressSection.classList.add('show');
   logSection.classList.add('show');
+  openLogConsole();
   logConsole.innerHTML = '';
   progressFill.style.width = '0%';
 
@@ -361,10 +416,10 @@ function resetUI() {
   btnStop.classList.remove('show');
 }
 
-function addLog(text, type = 'info') {
+function addLog(text, type = 'info', time = null) {
   const d = document.createElement('div');
   d.className = 'log-entry ' + type;
-  const t = new Date().toLocaleTimeString('es-UY', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+  const t = time || new Date().toLocaleTimeString('es-UY', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
   d.textContent = `[${t}] ${text}`;
   logConsole.appendChild(d);
   logConsole.scrollTop = logConsole.scrollHeight;
