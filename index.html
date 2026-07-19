@@ -834,7 +834,21 @@ textarea { resize: vertical; min-height: 52px; line-height: 1.5; }
   <div class="pnl" id="pnl-export">
     <div class="card">
       <div class="card-title"><svg class="ic"><use href="#i-download"/></svg> Exportar CSV por grupo</div>
-      <div class="card-desc">Cada grupo genera su propio archivo para cargar en SIGED con la extensión de Chrome. También podés retocar el CSV a mano o con IA antes de descargarlo.</div>
+      <div class="card-desc">Cada grupo genera su propio archivo para cargar en SIGED con la extensión de Chrome. Podés exportar <b>solo un tramo de fechas</b> (por ejemplo, lo que generaste en esta sesión) o todo el historial. Al guardar un lote generado, el filtro queda automáticamente en ese tramo. También podés retocar el CSV a mano o con IA antes de descargarlo.</div>
+
+      <div class="row" style="align-items:flex-end;margin-bottom:.4rem">
+        <div class="fg wd"><label class="lbl">Desde (opcional)</label><input type="date" id="expFrom" onchange="rExp()"></div>
+        <div class="fg wd"><label class="lbl">Hasta (opcional)</label><input type="date" id="expTo" onchange="rExp()"></div>
+        <div class="fg" style="flex:1">
+          <div class="chips" style="margin:0">
+            <span class="chip" onclick="expPreset('all')">Todo</span>
+            <span class="chip" onclick="expPreset('week')">Última semana</span>
+            <span class="chip" onclick="expPreset('month')">Último mes</span>
+          </div>
+        </div>
+      </div>
+      <div id="expRangeInfo"></div>
+
       <div id="expA"></div>
     </div>
   </div>
@@ -1603,6 +1617,7 @@ function showPV(listId){
 
 function confirmar(){
   let n=0;
+  const batchDates=pending.map(e=>e.date);
   for(const e of pending){
     if(!data[e.g])data[e.g]=[];
     const ex=data[e.g].find(x=>x.date===e.date);
@@ -1614,7 +1629,9 @@ function confirmar(){
   saveD();cancelar();
   document.querySelectorAll('[id^="d_"]').forEach(ta=>{if(ta.tagName==='TEXTAREA')ta.value='';});
   document.querySelectorAll('[id^="nd_"]').forEach(cb=>{if(cb.type==='checkbox')cb.checked=false;});
-  showT(n+' entradas guardadas');
+  // dejar el filtro de Exportar apuntando al tramo recién guardado
+  setExpRangeFromDates(batchDates);
+  showT(n+' entradas guardadas — Exportar quedó filtrado en ese tramo');
 }
 function cancelar(){
   pending=[];
@@ -1697,25 +1714,73 @@ async function meAplicarIA(){
 // ═══════════════════════════════════════════════
 // EXPORTAR
 // ═══════════════════════════════════════════════
+// ── Filtro de tramo (por sesión de trabajo) ──
+function expRange(){
+  const f=document.getElementById('expFrom'), t=document.getElementById('expTo');
+  return { from:(f&&f.value)||'', to:(t&&t.value)||'' };
+}
+function inExpRange(date,r){ return (!r.from||date>=r.from)&&(!r.to||date<=r.to); }
+function entriesInRange(g){ const r=expRange(); return (data[g]||[]).filter(e=>inExpRange(e.date,r)); }
+function expPreset(p){
+  const f=document.getElementById('expFrom'), t=document.getElementById('expTo');
+  if(p==='all'){ f.value=''; t.value=''; }
+  else {
+    const today=new Date(); const d=new Date(today);
+    d.setDate(today.getDate()-(p==='week'?7:30));
+    f.value=fI(d); t.value=fI(today);
+  }
+  rExp();
+}
+function setExpRangeFromDates(dates){
+  if(!dates||!dates.length) return;
+  const sorted=[...dates].sort();
+  const f=document.getElementById('expFrom'), t=document.getElementById('expTo');
+  if(f) f.value=sorted[0];
+  if(t) t.value=sorted[sorted.length-1];
+}
+
 function buildCSV(g){
   const hdr='Fecha;Horas dictadas;Horas no dictadas;Desarrollo';
-  const lines=data[g].map(e=>{
+  const lines=entriesInRange(g).map(e=>{
     const p=e.date.split('-');
     return p[2]+'/'+p[1]+'/'+p[0]+';'+e.h+';'+(e.hnd||0)+';'+e.dev.replace(/;/g,',').replace(/\n/g,' ');
   });
   return hdr+'\n'+lines.join('\n');
 }
 
+// Reemplaza SOLO las entradas del tramo visible; lo de afuera del filtro no se toca
+function applyEditedEntries(g,newEntries){
+  const r=expRange();
+  const seen=new Set(newEntries.map(e=>e.date));
+  const outside=(data[g]||[]).filter(e=>!inExpRange(e.date,r)&&!seen.has(e.date));
+  data[g]=[...outside,...newEntries].sort((a,b)=>a.date.localeCompare(b.date));
+  if(!data[g].length) delete data[g];
+  saveD();
+}
+
 function rExp(){
   const el=document.getElementById('expA');
-  const gs=Object.keys(data).filter(g=>data[g]&&data[g].length).sort();
-  if(!gs.length){el.innerHTML='<div class="empty">Sin entradas.</div>';return;}
+  const r=expRange();
+  const filtered=!!(r.from||r.to);
+  const info=document.getElementById('expRangeInfo');
+  if(info){
+    info.innerHTML=filtered
+      ? '<div class="info-box">Exportando solo el tramo <b>'+(r.from?fmtDMY(r.from):'inicio')+'</b> a <b>'+(r.to?fmtDMY(r.to):'hoy')+'</b>. Lo que quede fuera del tramo no aparece en los CSV ni se modifica al editar.</div>'
+      : '';
+  }
+  const gs=Object.keys(data).filter(g=>entriesInRange(g).length).sort();
+  if(!gs.length){
+    el.innerHTML='<div class="empty">'+(filtered?'No hay entradas en el tramo elegido.':'Sin entradas.')+'</div>';
+    return;
+  }
   let h='';
   for(const g of gs){
     const csv=buildCSV(g);
+    const nIn=entriesInRange(g).length, nTot=(data[g]||[]).length;
+    const cnt=filtered&&nIn<nTot ? (nIn+' de '+nTot+' entradas') : (nIn+' entradas');
     const sl=g.replace(/[^a-zA-Z0-9]/g,'_');
     const gq=esc(g).replace(/'/g,"\\'");
-    h+='<div class="egc"><h3>'+esc(g)+'<span style="display:flex;gap:.3rem;flex-wrap:wrap">'+
+    h+='<div class="egc"><h3>'+esc(g)+' <span style="font-weight:400;font-size:.68rem;color:var(--text3)">'+cnt+'</span><span style="display:flex;gap:.3rem;flex-wrap:wrap">'+
       '<button class="btn btn-f btn-sm" onclick="cT(\'x'+sl+'\')"><svg class="ic"><use href="#i-copy"/></svg> Copiar</button>'+
       '<button class="btn btn-o btn-sm" onclick="dlC(\''+gq+'\',\'x'+sl+'\')"><svg class="ic"><use href="#i-download"/></svg> CSV</button>'+
       '</span></h3><textarea id="x'+sl+'" oninput="markCsvDirty(\''+sl+'\')">'+esc(csv)+'</textarea>'+
@@ -1755,8 +1820,9 @@ async function aiEdit(g,sl){
     const edited=out.replace(/```csv|```/gi,'').trim();
     const rows=edited.split('\n').map(r=>r.trim()).filter(r=>r);
     if(rows[0]&&rows[0].toLowerCase().startsWith('fecha'))rows.shift();
-    if(rows.length!==data[g].length){
-      if(!confirm('La IA devolvió '+rows.length+' filas (original: '+data[g].length+'). ¿Aplicar igual?')){
+    const nVisible=entriesInRange(g).length;
+    if(rows.length!==nVisible){
+      if(!confirm('La IA devolvió '+rows.length+' filas (el tramo tiene '+nVisible+'). ¿Aplicar igual?')){
         btn.disabled=false;return;
       }
     }
@@ -1770,8 +1836,7 @@ async function aiEdit(g,sl){
       newEntries.push({date:dp[2]+'-'+dp[1].padStart(2,'0')+'-'+dp[0].padStart(2,'0'),h:parseInt(hh)||0,hnd:parseInt(hnd)||0,dev});
     }
     if(!newEntries.length)throw new Error('Respuesta inválida');
-    data[g]=newEntries.sort((a,b)=>a.date.localeCompare(b.date));
-    saveD();
+    applyEditedEntries(g,newEntries.sort((a,b)=>a.date.localeCompare(b.date)));
     inp.value='';
     rExp();
     showT('CSV editado con IA');
@@ -1805,14 +1870,13 @@ function saveCsvEdits(g,sl){
     newEntries.push({date,h:hn,hnd:hndn,dev});
   }
   if(!newEntries.length){ showT('Sin filas válidas'); return; }
-  data[g]=newEntries.sort((a,b)=>a.date.localeCompare(b.date));
-  saveD();
+  applyEditedEntries(g,newEntries.sort((a,b)=>a.date.localeCompare(b.date)));
   const dd=document.getElementById('dirty_'+sl); if(dd){ dd.textContent='✓ guardado'; dd.style.color='var(--mint)'; }
   rExp(); showT(newEntries.length+' filas guardadas');
 }
 function cT(id){const t=document.getElementById(id);if(!t)return;navigator.clipboard.writeText(t.value).then(()=>showT('Copiado')).catch(()=>{t.select();document.execCommand('copy');showT('Copiado')});}
 function cpText(id){cT(id);}
-function dlC(g,id){const t=document.getElementById(id);if(!t)return;const fn='desarrollo_'+g.replace(/[^a-zA-Z0-9]/g,'_')+'.csv';const b=new Blob(['﻿'+t.value],{type:'text/csv;charset=utf-8;'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=fn;a.click();showT('Descargado');}
+function dlC(g,id){const t=document.getElementById(id);if(!t)return;const r=expRange();const suf=(r.from||r.to)?('_'+(r.from||'inicio').replace(/-/g,'')+'_a_'+(r.to||'hoy').replace(/-/g,'')):'';const fn='desarrollo_'+g.replace(/[^a-zA-Z0-9]/g,'_')+suf+'.csv';const b=new Blob(['﻿'+t.value],{type:'text/csv;charset=utf-8;'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=fn;a.click();showT('Descargado');}
 
 // ═══════════════════════════════════════════════
 // REDACTAR CLASE POR CLASE (IA)
